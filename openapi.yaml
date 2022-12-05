@@ -1,0 +1,93 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: Point API
+    version: 0.0.1
+paths:
+    /helloworld/{name}:
+        get:
+            tags:
+                - Point
+            description: Sends a greeting
+            operationId: Point_SayHello
+            parameters:
+                - name: name
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.point.v1.HelloReply'
+    /v1/point:
+        put:
+            tags:
+                - Point
+            operationId: Point_CreatePoints
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.point.v1.CreatePointsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+components:
+    schemas:
+        api.point.v1.CreatePointsRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+                    description: 幂等令牌
+                point:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.point.v1.PointInfo'
+                    description: 新增点数信息
+        api.point.v1.HelloReply:
+            type: object
+            properties:
+                message:
+                    type: string
+            description: The response message containing the greetings
+        api.point.v1.PointInfo:
+            type: object
+            properties:
+                ptId:
+                    type: integer
+                    description: 点数编号
+                    format: int64
+                num:
+                    type: integer
+                    description: 点数数量
+                    format: int32
+                desc:
+                    type: string
+                    description: 新增点数的描述
+                clickedAt:
+                    type: integer
+                    description: 点数新增时间
+                    format: int64
+                createdAt:
+                    type: integer
+                    description: 创建时间
+                    format: int64
+                updatedAt:
+                    type: integer
+                    description: 更新时间
+                    format: int64
+                deletedAt:
+                    type: integer
+                    description: 删除时间
+                    format: int64
+tags:
+    - name: Point
