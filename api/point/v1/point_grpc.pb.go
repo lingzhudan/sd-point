@@ -23,12 +23,15 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PointClient interface {
+	// 创建点数
 	CreatePoints(ctx context.Context, in *CreatePointsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// Sends a greeting
-	SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
+	// 更新点数
 	UpdatePoint(ctx context.Context, in *UpdatePointRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 删除点数
 	DeletePoint(ctx context.Context, in *DeletePointRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 获取点数
 	GetPoint(ctx context.Context, in *GetPointRequest, opts ...grpc.CallOption) (*GetPointReply, error)
+	// 获取点数列表
 	ListPoint(ctx context.Context, in *ListPointRequest, opts ...grpc.CallOption) (*ListPointReply, error)
 }
 
@@ -43,15 +46,6 @@ func NewPointClient(cc grpc.ClientConnInterface) PointClient {
 func (c *pointClient) CreatePoints(ctx context.Context, in *CreatePointsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/api.point.v1.Point/CreatePoints", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *pointClient) SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
-	out := new(HelloReply)
-	err := c.cc.Invoke(ctx, "/api.point.v1.Point/SayHello", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -98,12 +92,15 @@ func (c *pointClient) ListPoint(ctx context.Context, in *ListPointRequest, opts 
 // All implementations must embed UnimplementedPointServer
 // for forward compatibility
 type PointServer interface {
+	// 创建点数
 	CreatePoints(context.Context, *CreatePointsRequest) (*emptypb.Empty, error)
-	// Sends a greeting
-	SayHello(context.Context, *HelloRequest) (*HelloReply, error)
+	// 更新点数
 	UpdatePoint(context.Context, *UpdatePointRequest) (*emptypb.Empty, error)
+	// 删除点数
 	DeletePoint(context.Context, *DeletePointRequest) (*emptypb.Empty, error)
+	// 获取点数
 	GetPoint(context.Context, *GetPointRequest) (*GetPointReply, error)
+	// 获取点数列表
 	ListPoint(context.Context, *ListPointRequest) (*ListPointReply, error)
 	mustEmbedUnimplementedPointServer()
 }
@@ -114,9 +111,6 @@ type UnimplementedPointServer struct {
 
 func (UnimplementedPointServer) CreatePoints(context.Context, *CreatePointsRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreatePoints not implemented")
-}
-func (UnimplementedPointServer) SayHello(context.Context, *HelloRequest) (*HelloReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SayHello not implemented")
 }
 func (UnimplementedPointServer) UpdatePoint(context.Context, *UpdatePointRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePoint not implemented")
@@ -157,24 +151,6 @@ func _Point_CreatePoints_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PointServer).CreatePoints(ctx, req.(*CreatePointsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Point_SayHello_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(HelloRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PointServer).SayHello(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.point.v1.Point/SayHello",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PointServer).SayHello(ctx, req.(*HelloRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -261,10 +237,6 @@ var Point_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreatePoints",
 			Handler:    _Point_CreatePoints_Handler,
-		},
-		{
-			MethodName: "SayHello",
-			Handler:    _Point_SayHello_Handler,
 		},
 		{
 			MethodName: "UpdatePoint",

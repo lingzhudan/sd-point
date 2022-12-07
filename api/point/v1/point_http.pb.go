@@ -21,18 +21,26 @@ var _ = binding.EncodeURL
 const _ = http.SupportPackageIsVersion1
 
 const OperationPointCreatePoints = "/api.point.v1.Point/CreatePoints"
-const OperationPointSayHello = "/api.point.v1.Point/SayHello"
+const OperationPointDeletePoint = "/api.point.v1.Point/DeletePoint"
+const OperationPointGetPoint = "/api.point.v1.Point/GetPoint"
+const OperationPointListPoint = "/api.point.v1.Point/ListPoint"
+const OperationPointUpdatePoint = "/api.point.v1.Point/UpdatePoint"
 
 type PointHTTPServer interface {
 	CreatePoints(context.Context, *CreatePointsRequest) (*emptypb.Empty, error)
-	SayHello(context.Context, *HelloRequest) (*HelloReply, error)
+	DeletePoint(context.Context, *DeletePointRequest) (*emptypb.Empty, error)
+	GetPoint(context.Context, *GetPointRequest) (*GetPointReply, error)
+	ListPoint(context.Context, *ListPointRequest) (*ListPointReply, error)
+	UpdatePoint(context.Context, *UpdatePointRequest) (*emptypb.Empty, error)
 }
 
 func RegisterPointHTTPServer(s *http.Server, srv PointHTTPServer) {
 	r := s.Route("/")
 	r.PUT("/v1/point", _Point_CreatePoints0_HTTP_Handler(srv))
-	r.POST("/v1/greeter/say_hello", _Point_SayHello0_HTTP_Handler(srv))
-	r.GET("/helloworld/{name}", _Point_SayHello1_HTTP_Handler(srv))
+	r.POST("/v1/point", _Point_UpdatePoint0_HTTP_Handler(srv))
+	r.DELETE("/v1/point", _Point_DeletePoint0_HTTP_Handler(srv))
+	r.GET("/v1/point", _Point_GetPoint0_HTTP_Handler(srv))
+	r.GET("/v1/point/list", _Point_ListPoint0_HTTP_Handler(srv))
 }
 
 func _Point_CreatePoints0_HTTP_Handler(srv PointHTTPServer) func(ctx http.Context) error {
@@ -54,50 +62,88 @@ func _Point_CreatePoints0_HTTP_Handler(srv PointHTTPServer) func(ctx http.Contex
 	}
 }
 
-func _Point_SayHello0_HTTP_Handler(srv PointHTTPServer) func(ctx http.Context) error {
+func _Point_UpdatePoint0_HTTP_Handler(srv PointHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in HelloRequest
+		var in UpdatePointRequest
 		if err := ctx.Bind(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationPointSayHello)
+		http.SetOperation(ctx, OperationPointUpdatePoint)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.SayHello(ctx, req.(*HelloRequest))
+			return srv.UpdatePoint(ctx, req.(*UpdatePointRequest))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
 			return err
 		}
-		reply := out.(*HelloReply)
+		reply := out.(*emptypb.Empty)
 		return ctx.Result(200, reply)
 	}
 }
 
-func _Point_SayHello1_HTTP_Handler(srv PointHTTPServer) func(ctx http.Context) error {
+func _Point_DeletePoint0_HTTP_Handler(srv PointHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in HelloRequest
+		var in DeletePointRequest
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		if err := ctx.BindVars(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, OperationPointSayHello)
+		http.SetOperation(ctx, OperationPointDeletePoint)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.SayHello(ctx, req.(*HelloRequest))
+			return srv.DeletePoint(ctx, req.(*DeletePointRequest))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
 			return err
 		}
-		reply := out.(*HelloReply)
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Point_GetPoint0_HTTP_Handler(srv PointHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetPointRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationPointGetPoint)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetPoint(ctx, req.(*GetPointRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*GetPointReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Point_ListPoint0_HTTP_Handler(srv PointHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in ListPointRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationPointListPoint)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ListPoint(ctx, req.(*ListPointRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*ListPointReply)
 		return ctx.Result(200, reply)
 	}
 }
 
 type PointHTTPClient interface {
 	CreatePoints(ctx context.Context, req *CreatePointsRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
-	SayHello(ctx context.Context, req *HelloRequest, opts ...http.CallOption) (rsp *HelloReply, err error)
+	DeletePoint(ctx context.Context, req *DeletePointRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	GetPoint(ctx context.Context, req *GetPointRequest, opts ...http.CallOption) (rsp *GetPointReply, err error)
+	ListPoint(ctx context.Context, req *ListPointRequest, opts ...http.CallOption) (rsp *ListPointReply, err error)
+	UpdatePoint(ctx context.Context, req *UpdatePointRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 }
 
 type PointHTTPClientImpl struct {
@@ -121,13 +167,52 @@ func (c *PointHTTPClientImpl) CreatePoints(ctx context.Context, in *CreatePoints
 	return &out, err
 }
 
-func (c *PointHTTPClientImpl) SayHello(ctx context.Context, in *HelloRequest, opts ...http.CallOption) (*HelloReply, error) {
-	var out HelloReply
-	pattern := "/helloworld/{name}"
+func (c *PointHTTPClientImpl) DeletePoint(ctx context.Context, in *DeletePointRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/v1/point"
 	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation(OperationPointSayHello))
+	opts = append(opts, http.Operation(OperationPointDeletePoint))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *PointHTTPClientImpl) GetPoint(ctx context.Context, in *GetPointRequest, opts ...http.CallOption) (*GetPointReply, error) {
+	var out GetPointReply
+	pattern := "/v1/point"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationPointGetPoint))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *PointHTTPClientImpl) ListPoint(ctx context.Context, in *ListPointRequest, opts ...http.CallOption) (*ListPointReply, error) {
+	var out ListPointReply
+	pattern := "/v1/point/list"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationPointListPoint))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *PointHTTPClientImpl) UpdatePoint(ctx context.Context, in *UpdatePointRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/v1/point"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationPointUpdatePoint))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

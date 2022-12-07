@@ -10,29 +10,38 @@ option go_package = "sd-point/api/point/v1;v1";
 
 
 service Point {
+	// 创建点数
 	rpc CreatePoints (CreatePointsRequest) returns (google.protobuf.Empty){
 		option (google.api.http) = {
 			put: "/v1/point",
 			body:"*",
 		};
 	};
-	// Sends a greeting
-	rpc SayHello (HelloRequest) returns (HelloReply)  {
+	// 更新点数
+	rpc UpdatePoint (UpdatePointRequest) returns (google.protobuf.Empty){
 		option (google.api.http) = {
-			// 定义一个 GET 接口，并且把 name 映射到 HelloRequest
-			get: "/helloworld/{name}",
-			// 可以添加附加接口
-			additional_bindings {
-				// 定义一个 POST 接口，并且把 body 映射到 HelloRequest
-				post: "/v1/greeter/say_hello",
-				body: "*",
-			}
+			post: "/v1/point",
+			body: "*",
 		};
-	}
-	rpc UpdatePoint (UpdatePointRequest) returns (google.protobuf.Empty);
-	rpc DeletePoint (DeletePointRequest) returns (google.protobuf.Empty);
-	rpc GetPoint (GetPointRequest) returns (GetPointReply);
-	rpc ListPoint (ListPointRequest) returns (ListPointReply);
+	};
+	// 删除点数
+	rpc DeletePoint (DeletePointRequest) returns (google.protobuf.Empty){
+		option (google.api.http) = {
+			delete: "/v1/point",
+		};
+	};
+	// 获取点数
+	rpc GetPoint (GetPointRequest) returns (GetPointReply){
+		option (google.api.http) = {
+			get: "/v1/point",
+		};
+	};
+	// 获取点数列表
+	rpc ListPoint (ListPointRequest) returns (ListPointReply){
+		option (google.api.http) = {
+			get: "/v1/point/list",
+		};
+	};
 }
 
 message PointInfo {
@@ -89,14 +98,4 @@ message GetPointReply {
 message ListPointRequest {}
 message ListPointReply {
 	repeated PointInfo point = 1;
-}
-
-// The request message containing the user's name.
-message HelloRequest {
-	string name = 1;
-}
-
-// The response message containing the greetings
-message HelloReply {
-	string message = 1;
 }

@@ -40,11 +40,6 @@ func (s *PointService) CreatePoints(ctx context.Context, req *pb.CreatePointsReq
 	return &emptypb.Empty{}, nil
 }
 
-func (s *PointService) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloReply, error) {
-	log.Debugf("name: %+v", req.Name)
-	return &pb.HelloReply{Message: req.Name}, nil
-}
-
 func (s *PointService) UpdatePoint(ctx context.Context, req *pb.UpdatePointRequest) (reply *emptypb.Empty, err error) {
 	point := &biz.Point{
 		PID:       req.Point.Pid,

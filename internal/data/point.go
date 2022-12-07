@@ -48,7 +48,7 @@ func (pr *pointRepo) UpdatePoint(ctx context.Context, pid int32, point *biz.Poin
 }
 
 func (pr *pointRepo) DeletePoint(ctx context.Context, pid int32) (err error) {
-	if err = pr.data.db.WithContext(ctx).Model(&biz.Point{PID: pid}).Delete(&biz.Point{}).Error; err != nil {
+	if err = pr.data.db.WithContext(ctx).Model(&biz.Point{}).Delete(&biz.Point{}, pid).Error; err != nil {
 		pr.log.Debugf("failed to delete point, db error: %v", err)
 	}
 	return
