@@ -57,7 +57,7 @@ func (m *PointInfo) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for PtId
+	// no validation rules for Pid
 
 	if val := m.GetNum(); val < -65536 || val > 65535 {
 		err := PointInfoValidationError{
@@ -337,6 +337,48 @@ func (m *UpdatePointRequest) validate(all bool) error {
 
 	var errors []error
 
+	// no validation rules for Token
+
+	if m.GetPoint() == nil {
+		err := UpdatePointRequestValidationError{
+			field:  "Point",
+			reason: "value is required",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if all {
+		switch v := interface{}(m.GetPoint()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, UpdatePointRequestValidationError{
+					field:  "Point",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, UpdatePointRequestValidationError{
+					field:  "Point",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetPoint()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return UpdatePointRequestValidationError{
+				field:  "Point",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
 	if len(errors) > 0 {
 		return UpdatePointRequestMultiError(errors)
 	}
@@ -539,6 +581,10 @@ func (m *DeletePointRequest) validate(all bool) error {
 
 	var errors []error
 
+	// no validation rules for Token
+
+	// no validation rules for Pid
+
 	if len(errors) > 0 {
 		return DeletePointRequestMultiError(errors)
 	}
@@ -740,6 +786,10 @@ func (m *GetPointRequest) validate(all bool) error {
 	}
 
 	var errors []error
+
+	// no validation rules for Token
+
+	// no validation rules for Pid
 
 	if len(errors) > 0 {
 		return GetPointRequestMultiError(errors)

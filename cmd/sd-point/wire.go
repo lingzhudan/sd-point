@@ -6,7 +6,9 @@
 package main
 
 import (
+	"sd-point/internal/biz"
 	"sd-point/internal/conf"
+	"sd-point/internal/data"
 	"sd-point/internal/server"
 	"sd-point/internal/service"
 
@@ -17,6 +19,5 @@ import (
 
 // wireApp init kratos application.
 func wireApp(*conf.Server, *conf.Data, log.Logger) (*kratos.App, func(), error) {
-	//panic(wire.Build(server.ProviderSet, data.ProviderSet, biz.ProviderSet, service.ProviderSet, newApp))
-	panic(wire.Build(server.ProviderSet, service.ProviderSet, newApp))
+	panic(wire.Build(server.ProviderSet, data.ProviderSet, biz.ProviderSet, service.ProviderSet, newApp))
 }

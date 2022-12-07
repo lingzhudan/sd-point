@@ -26,8 +26,8 @@ type PointClient interface {
 	CreatePoints(ctx context.Context, in *CreatePointsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Sends a greeting
 	SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
-	UpdatePoint(ctx context.Context, in *UpdatePointRequest, opts ...grpc.CallOption) (*UpdatePointReply, error)
-	DeletePoint(ctx context.Context, in *DeletePointRequest, opts ...grpc.CallOption) (*DeletePointReply, error)
+	UpdatePoint(ctx context.Context, in *UpdatePointRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	DeletePoint(ctx context.Context, in *DeletePointRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetPoint(ctx context.Context, in *GetPointRequest, opts ...grpc.CallOption) (*GetPointReply, error)
 	ListPoint(ctx context.Context, in *ListPointRequest, opts ...grpc.CallOption) (*ListPointReply, error)
 }
@@ -58,8 +58,8 @@ func (c *pointClient) SayHello(ctx context.Context, in *HelloRequest, opts ...gr
 	return out, nil
 }
 
-func (c *pointClient) UpdatePoint(ctx context.Context, in *UpdatePointRequest, opts ...grpc.CallOption) (*UpdatePointReply, error) {
-	out := new(UpdatePointReply)
+func (c *pointClient) UpdatePoint(ctx context.Context, in *UpdatePointRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/api.point.v1.Point/UpdatePoint", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -67,8 +67,8 @@ func (c *pointClient) UpdatePoint(ctx context.Context, in *UpdatePointRequest, o
 	return out, nil
 }
 
-func (c *pointClient) DeletePoint(ctx context.Context, in *DeletePointRequest, opts ...grpc.CallOption) (*DeletePointReply, error) {
-	out := new(DeletePointReply)
+func (c *pointClient) DeletePoint(ctx context.Context, in *DeletePointRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/api.point.v1.Point/DeletePoint", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -101,8 +101,8 @@ type PointServer interface {
 	CreatePoints(context.Context, *CreatePointsRequest) (*emptypb.Empty, error)
 	// Sends a greeting
 	SayHello(context.Context, *HelloRequest) (*HelloReply, error)
-	UpdatePoint(context.Context, *UpdatePointRequest) (*UpdatePointReply, error)
-	DeletePoint(context.Context, *DeletePointRequest) (*DeletePointReply, error)
+	UpdatePoint(context.Context, *UpdatePointRequest) (*emptypb.Empty, error)
+	DeletePoint(context.Context, *DeletePointRequest) (*emptypb.Empty, error)
 	GetPoint(context.Context, *GetPointRequest) (*GetPointReply, error)
 	ListPoint(context.Context, *ListPointRequest) (*ListPointReply, error)
 	mustEmbedUnimplementedPointServer()
@@ -118,10 +118,10 @@ func (UnimplementedPointServer) CreatePoints(context.Context, *CreatePointsReque
 func (UnimplementedPointServer) SayHello(context.Context, *HelloRequest) (*HelloReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SayHello not implemented")
 }
-func (UnimplementedPointServer) UpdatePoint(context.Context, *UpdatePointRequest) (*UpdatePointReply, error) {
+func (UnimplementedPointServer) UpdatePoint(context.Context, *UpdatePointRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePoint not implemented")
 }
-func (UnimplementedPointServer) DeletePoint(context.Context, *DeletePointRequest) (*DeletePointReply, error) {
+func (UnimplementedPointServer) DeletePoint(context.Context, *DeletePointRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeletePoint not implemented")
 }
 func (UnimplementedPointServer) GetPoint(context.Context, *GetPointRequest) (*GetPointReply, error) {

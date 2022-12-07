@@ -62,7 +62,7 @@ components:
         api.point.v1.PointInfo:
             type: object
             properties:
-                ptId:
+                pid:
                     type: integer
                     description: 点数编号
                     format: int64
