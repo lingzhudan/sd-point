@@ -7,22 +7,6 @@ import (
 	"time"
 )
 
-type Point struct {
-	PID       int32     `gorm:"pid;primaryKey;comment:自律点编号;"`
-	UID       int32     `gorm:"uid;index;comment:用户编号;"`
-	ClickedAt time.Time `gorm:"clicked_at;comment:点击时间，由用户上传;"`
-	Num       int16     `gorm:"num;comment:点数次数;"`
-	Desc      string    `gorm:"desc;size:1024;comment:点数描述;"`
-
-	CreatedAt time.Time      `gorm:"created_at;autoCreateTime;comment:创建时间;"`
-	UpdatedAt time.Time      `gorm:"updated_at;autoUpdateTime;comment:更新时间;"`
-	DeletedAt gorm.DeletedAt `gorm:"deleted_at;comment:删除时间;"`
-}
-
-func (p *Point) TableName() string {
-	return "sd_point"
-}
-
 type PointUsecase struct {
 	repo PointRepo
 	log  *log.Helper
@@ -33,44 +17,113 @@ func NewPointUsecase(repo PointRepo, logger log.Logger) *PointUsecase {
 }
 
 type PointRepo interface {
-	ListPoint(ctx context.Context) (points []*Point, err error)
+	ListPoint(ctx context.Context, cond *PointCond) (points []*Point, err error)
 	GetPoint(ctx context.Context, pid int32) (point *Point, err error)
-	CreatePoints(ctx context.Context, point []*Point) (err error)
-	UpdatePoint(ctx context.Context, pid int32, point *Point) (err error)
+	CreatePoint(ctx context.Context, point *Point) (err error)
+	UpdatePoint(ctx context.Context, point *Point) (err error)
 	DeletePoint(ctx context.Context, pid int32) error
+
+	ListRecord(ctx context.Context, cond *RecordCond) (records []*PointRecord, err error)
+	CreateRecords(ctx context.Context, records []*PointRecord) (err error)
+	UpdateRecord(ctx context.Context, record *PointRecord) (err error)
+	DeleteRecord(ctx context.Context, rid int32) (err error)
 }
 
-func (uc *PointUsecase) Get(ctx context.Context, pid int32) (point *Point, err error) {
+type Point struct {
+	PID   int32  `gorm:"column:pid;primaryKey;comment:自律点编号;"`
+	UID   int32  `gorm:"column:uid;index;comment:用户编号;"`
+	Name  string `gorm:"column:name;size:32;comment:自律点名称;"`
+	Total int32  `gorm:"column:num;comment:点数总次数;"`
+	Desc  string `gorm:"column:desc;size:1024;comment:点数描述;"`
+
+	CreatedAt time.Time      `gorm:"column:created_at;autoCreateTime;comment:创建时间;"`
+	UpdatedAt time.Time      `gorm:"column:updated_at;autoUpdateTime;comment:更新时间;"`
+	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at;comment:删除时间;"`
+}
+
+func (p *Point) TableName() string {
+	return "sd_point"
+}
+
+type PointRecord struct {
+	RID       int32     `gorm:"column:rid;primaryKey;comment:点数记录编号;"`
+	PID       int32     `gorm:"column:pid;index;comment:自律点编号;"`
+	ClickedAt time.Time `gorm:"column:clicked_at;comment:点击时间，由用户上传;"`
+	Num       int16     `gorm:"column:num;comment:点数次数;"`
+	Desc      string    `gorm:"column:desc;size:1024;comment:记录描述;"`
+
+	CreatedAt time.Time      `gorm:"column:created_at;autoCreateTime;comment:创建时间;"`
+	UpdatedAt time.Time      `gorm:"column:updated_at;autoUpdateTime;comment:更新时间;"`
+	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at;comment:删除时间;"`
+}
+
+func (p *PointRecord) TableName() string {
+	return "sd_point_record"
+}
+
+// point method
+
+func (uc *PointUsecase) GetPoint(ctx context.Context, pid int32) (point *Point, err error) {
 	if point, err = uc.repo.GetPoint(ctx, pid); err != nil {
 		uc.log.Debugf("failed to get point, error: %v", err)
 	}
 	return
 }
 
-func (uc *PointUsecase) List(ctx context.Context) (points []*Point, err error) {
-	if points, err = uc.repo.ListPoint(ctx); err != nil {
+func (uc *PointUsecase) ListPint(ctx context.Context, cond *PointCond) (points []*Point, err error) {
+	if points, err = uc.repo.ListPoint(ctx, cond); err != nil {
 		uc.log.Debugf("failed to get points, error: %v", err)
 	}
 	return
 }
 
-func (uc *PointUsecase) Create(ctx context.Context, point []*Point) (err error) {
-	if err = uc.repo.CreatePoints(ctx, point); err != nil {
+func (uc *PointUsecase) CreatePoint(ctx context.Context, point *Point) (err error) {
+	if err = uc.repo.CreatePoint(ctx, point); err != nil {
 		uc.log.Debugf("failed to create point, error: %v", err)
 	}
 	return
 }
 
-func (uc *PointUsecase) Update(ctx context.Context, pid int32, point *Point) (err error) {
-	if err = uc.repo.UpdatePoint(ctx, pid, point); err != nil {
+func (uc *PointUsecase) UpdatePoint(ctx context.Context, point *Point) (err error) {
+	if err = uc.repo.UpdatePoint(ctx, point); err != nil {
 		uc.log.Debugf("failed to update point, error: %v", err)
 	}
 	return
 }
 
-func (uc *PointUsecase) Delete(ctx context.Context, pid int32) (err error) {
+func (uc *PointUsecase) DeletePoint(ctx context.Context, pid int32) (err error) {
 	if err = uc.repo.DeletePoint(ctx, pid); err != nil {
-		uc.log.Debugf("failed to delete point, error: %v", err)
+		uc.log.Errorf("failed to delete point, error: %v", err)
+	}
+	return
+}
+
+// point record method
+
+func (uc *PointUsecase) ListRecord(ctx context.Context, cond *RecordCond) (points []*PointRecord, err error) {
+	if points, err = uc.repo.ListRecord(ctx, cond); err != nil {
+		uc.log.Debugf("failed to get records, error: %v", err)
+	}
+	return
+}
+
+func (uc *PointUsecase) CreateRecords(ctx context.Context, records []*PointRecord) (err error) {
+	if err = uc.repo.CreateRecords(ctx, records); err != nil {
+		uc.log.Debugf("failed to create records, error: %v", err)
+	}
+	return
+}
+
+func (uc *PointUsecase) UpdateRecord(ctx context.Context, record *PointRecord) (err error) {
+	if err = uc.repo.UpdateRecord(ctx, record); err != nil {
+		uc.log.Debugf("failed to update record, error: %v", err)
+	}
+	return
+}
+
+func (uc *PointUsecase) DeleteRecord(ctx context.Context, rid int32) (err error) {
+	if err = uc.repo.DeleteRecord(ctx, rid); err != nil {
+		uc.log.Debugf("failed to delete record, error: %v", err)
 	}
 	return
 }

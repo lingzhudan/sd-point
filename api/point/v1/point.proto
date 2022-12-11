@@ -11,7 +11,7 @@ option go_package = "sd-point/api/point/v1;v1";
 
 service Point {
 	// 创建点数
-	rpc CreatePoints (CreatePointsRequest) returns (google.protobuf.Empty){
+	rpc CreatePoint (CreatePointRequest) returns (google.protobuf.Empty){
 		option (google.api.http) = {
 			put: "/v1/point",
 			body:"*",
@@ -42,17 +42,44 @@ service Point {
 			get: "/v1/point/list",
 		};
 	};
+
+	// 创建记录
+	rpc CreateRecords (CreateRecordsRequest) returns (google.protobuf.Empty){
+		option (google.api.http) = {
+			put: "/v1/record",
+			body:"*",
+		};
+	};
+	// 更新记录
+	rpc UpdateRecord (UpdateRecordRequest) returns (google.protobuf.Empty){
+		option (google.api.http) = {
+			post: "/v1/record",
+			body: "*",
+		};
+	};
+	// 删除记录
+	rpc DeleteRecord (DeleteRecordRequest) returns (google.protobuf.Empty){
+		option (google.api.http) = {
+			delete: "/v1/record",
+		};
+	};
+	// 获取记录列表
+	rpc ListRecord (ListRecordRequest) returns (ListRecordReply){
+		option (google.api.http) = {
+			get: "/v1/record/list",
+		};
+	};
 }
 
 message PointInfo {
 	// 点数编号
 	int32 pid = 1;
 	// 点数数量
-	int32 num = 2 [(validate.rules).int32 = {gte: -65536, lte: 65535}];
-	// 新增点数的描述
+	int32 total = 2 [(validate.rules).int32 = {gte: -65536, lte: 65535}];
+	// 点数名称
+	string name = 3 [(validate.rules).string = {max_len: 32}];
+	// 点数描述
 	string desc = 4 [(validate.rules).string = {max_len: 1024}];
-	// 点数新增时间
-	int64 clicked_at = 3;
 
 	// 创建时间
 	int64 created_at = 5;
@@ -62,40 +89,95 @@ message PointInfo {
 	int64 deleted_at = 7;
 }
 
-message CreatePointsRequest {
-	// 幂等令牌
-	string token = 1;
+message CreatePointRequest {
 	// 新增点数信息
-	repeated PointInfo point = 2 [(validate.rules).repeated = {min_items: 1}];
+	PointInfo point = 1 [(validate.rules).message.required = true];
 }
 
 message UpdatePointRequest {
-	// 幂等令牌
-	string token = 1;
 	// 待更新点数信息
-	PointInfo point = 2 [(validate.rules).message.required = true];
+	PointInfo point = 1 [(validate.rules).message.required = true];
 }
-message UpdatePointReply {}
 
 message DeletePointRequest {
-	// 幂等令牌
-	string token = 1;
 	// 待删除的点数编号
-	int32 pid = 2;
+	int32 pid = 1;
 }
-message DeletePointReply {}
 
 message GetPointRequest {
-	// 幂等令牌
-	string token = 1;
 	// 点数编号
-	int32 pid = 2;
+	int32 pid = 1;
 }
 message GetPointReply {
 	PointInfo point = 1;
 }
 
-message ListPointRequest {}
+message ListPointRequest {
+	int32 begin = 1;
+	int32 count = 2;
+	repeated int32 pids = 3;
+}
 message ListPointReply {
-	repeated PointInfo point = 1;
+	bool finished = 1;
+	int32 count = 2;
+	repeated PointInfo points = 3;
+}
+
+message RecordInfo {
+	// 记录编号
+	int32 rid = 1;
+	// 点数编号
+	int32 pid = 2;
+	// 点数数量
+	int32 num = 3 [(validate.rules).int32 = {gte: -65536, lte: 65535}];
+	// 记录新增时间
+	int64 clicked_at = 4;
+	// 记录描述
+	string desc = 5 [(validate.rules).string = {max_len: 1024}];
+
+	// 创建时间
+	int64 created_at = 6;
+	// 更新时间
+	int64 updated_at = 7;
+	// 删除时间
+	int64 deleted_at = 8;
+}
+
+message CreateRecordsRequest {
+	// 新增点数信息
+	repeated RecordInfo records = 1 [(validate.rules).repeated = {min_items: 1}];
+}
+
+message UpdateRecordRequest {
+	// 待更新点数信息
+	RecordInfo record = 1 [(validate.rules).message.required = true];
+}
+
+message DeleteRecordRequest {
+	// 待删除的记录编号
+	int32 rid = 1;
+}
+
+message CountRecordRequest {
+	repeated int32 rids = 1;
+	repeated int32 pids = 2;
+	int64 min_clicked_at = 3;
+	int64 max_clicked_at = 4;
+}
+message CountRecordReply {
+	int32 count = 1;
+}
+
+message ListRecordRequest {
+	int32 begin = 1;
+	int32 count = 2;
+	repeated int32 rids = 3;
+	repeated int32 pids = 4;
+	int64 min_clicked_at = 5;
+	int64 max_clicked_at = 6;
+}
+message ListRecordReply {
+	bool finished = 1;
+	int32 count = 2;
+	repeated RecordInfo records = 3;
 }

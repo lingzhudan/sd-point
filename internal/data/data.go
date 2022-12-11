@@ -86,5 +86,5 @@ func NewDatabase(driver, source string) (db *gorm.DB, err error) {
 }
 
 func DBAutoMigrate(db *gorm.DB) error {
-	return db.AutoMigrate(&biz.Point{})
+	return db.AutoMigrate(&biz.Point{}, &biz.PointRecord{})
 }

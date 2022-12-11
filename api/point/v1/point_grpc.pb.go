@@ -24,7 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PointClient interface {
 	// 创建点数
-	CreatePoints(ctx context.Context, in *CreatePointsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	CreatePoint(ctx context.Context, in *CreatePointRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// 更新点数
 	UpdatePoint(ctx context.Context, in *UpdatePointRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// 删除点数
@@ -33,6 +33,14 @@ type PointClient interface {
 	GetPoint(ctx context.Context, in *GetPointRequest, opts ...grpc.CallOption) (*GetPointReply, error)
 	// 获取点数列表
 	ListPoint(ctx context.Context, in *ListPointRequest, opts ...grpc.CallOption) (*ListPointReply, error)
+	// 创建记录
+	CreateRecords(ctx context.Context, in *CreateRecordsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 更新记录
+	UpdateRecord(ctx context.Context, in *UpdateRecordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 删除记录
+	DeleteRecord(ctx context.Context, in *DeleteRecordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 获取记录列表
+	ListRecord(ctx context.Context, in *ListRecordRequest, opts ...grpc.CallOption) (*ListRecordReply, error)
 }
 
 type pointClient struct {
@@ -43,9 +51,9 @@ func NewPointClient(cc grpc.ClientConnInterface) PointClient {
 	return &pointClient{cc}
 }
 
-func (c *pointClient) CreatePoints(ctx context.Context, in *CreatePointsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *pointClient) CreatePoint(ctx context.Context, in *CreatePointRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, "/api.point.v1.Point/CreatePoints", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.point.v1.Point/CreatePoint", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -88,12 +96,48 @@ func (c *pointClient) ListPoint(ctx context.Context, in *ListPointRequest, opts 
 	return out, nil
 }
 
+func (c *pointClient) CreateRecords(ctx context.Context, in *CreateRecordsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/api.point.v1.Point/CreateRecords", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *pointClient) UpdateRecord(ctx context.Context, in *UpdateRecordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/api.point.v1.Point/UpdateRecord", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *pointClient) DeleteRecord(ctx context.Context, in *DeleteRecordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/api.point.v1.Point/DeleteRecord", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *pointClient) ListRecord(ctx context.Context, in *ListRecordRequest, opts ...grpc.CallOption) (*ListRecordReply, error) {
+	out := new(ListRecordReply)
+	err := c.cc.Invoke(ctx, "/api.point.v1.Point/ListRecord", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PointServer is the server API for Point service.
 // All implementations must embed UnimplementedPointServer
 // for forward compatibility
 type PointServer interface {
 	// 创建点数
-	CreatePoints(context.Context, *CreatePointsRequest) (*emptypb.Empty, error)
+	CreatePoint(context.Context, *CreatePointRequest) (*emptypb.Empty, error)
 	// 更新点数
 	UpdatePoint(context.Context, *UpdatePointRequest) (*emptypb.Empty, error)
 	// 删除点数
@@ -102,6 +146,14 @@ type PointServer interface {
 	GetPoint(context.Context, *GetPointRequest) (*GetPointReply, error)
 	// 获取点数列表
 	ListPoint(context.Context, *ListPointRequest) (*ListPointReply, error)
+	// 创建记录
+	CreateRecords(context.Context, *CreateRecordsRequest) (*emptypb.Empty, error)
+	// 更新记录
+	UpdateRecord(context.Context, *UpdateRecordRequest) (*emptypb.Empty, error)
+	// 删除记录
+	DeleteRecord(context.Context, *DeleteRecordRequest) (*emptypb.Empty, error)
+	// 获取记录列表
+	ListRecord(context.Context, *ListRecordRequest) (*ListRecordReply, error)
 	mustEmbedUnimplementedPointServer()
 }
 
@@ -109,8 +161,8 @@ type PointServer interface {
 type UnimplementedPointServer struct {
 }
 
-func (UnimplementedPointServer) CreatePoints(context.Context, *CreatePointsRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreatePoints not implemented")
+func (UnimplementedPointServer) CreatePoint(context.Context, *CreatePointRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreatePoint not implemented")
 }
 func (UnimplementedPointServer) UpdatePoint(context.Context, *UpdatePointRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePoint not implemented")
@@ -123,6 +175,18 @@ func (UnimplementedPointServer) GetPoint(context.Context, *GetPointRequest) (*Ge
 }
 func (UnimplementedPointServer) ListPoint(context.Context, *ListPointRequest) (*ListPointReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListPoint not implemented")
+}
+func (UnimplementedPointServer) CreateRecords(context.Context, *CreateRecordsRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateRecords not implemented")
+}
+func (UnimplementedPointServer) UpdateRecord(context.Context, *UpdateRecordRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateRecord not implemented")
+}
+func (UnimplementedPointServer) DeleteRecord(context.Context, *DeleteRecordRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteRecord not implemented")
+}
+func (UnimplementedPointServer) ListRecord(context.Context, *ListRecordRequest) (*ListRecordReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListRecord not implemented")
 }
 func (UnimplementedPointServer) mustEmbedUnimplementedPointServer() {}
 
@@ -137,20 +201,20 @@ func RegisterPointServer(s grpc.ServiceRegistrar, srv PointServer) {
 	s.RegisterService(&Point_ServiceDesc, srv)
 }
 
-func _Point_CreatePoints_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreatePointsRequest)
+func _Point_CreatePoint_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreatePointRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PointServer).CreatePoints(ctx, in)
+		return srv.(PointServer).CreatePoint(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.point.v1.Point/CreatePoints",
+		FullMethod: "/api.point.v1.Point/CreatePoint",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PointServer).CreatePoints(ctx, req.(*CreatePointsRequest))
+		return srv.(PointServer).CreatePoint(ctx, req.(*CreatePointRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -227,6 +291,78 @@ func _Point_ListPoint_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Point_CreateRecords_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateRecordsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PointServer).CreateRecords(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.point.v1.Point/CreateRecords",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PointServer).CreateRecords(ctx, req.(*CreateRecordsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Point_UpdateRecord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateRecordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PointServer).UpdateRecord(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.point.v1.Point/UpdateRecord",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PointServer).UpdateRecord(ctx, req.(*UpdateRecordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Point_DeleteRecord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteRecordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PointServer).DeleteRecord(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.point.v1.Point/DeleteRecord",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PointServer).DeleteRecord(ctx, req.(*DeleteRecordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Point_ListRecord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListRecordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PointServer).ListRecord(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.point.v1.Point/ListRecord",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PointServer).ListRecord(ctx, req.(*ListRecordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Point_ServiceDesc is the grpc.ServiceDesc for Point service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -235,8 +371,8 @@ var Point_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*PointServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreatePoints",
-			Handler:    _Point_CreatePoints_Handler,
+			MethodName: "CreatePoint",
+			Handler:    _Point_CreatePoint_Handler,
 		},
 		{
 			MethodName: "UpdatePoint",
@@ -253,6 +389,22 @@ var Point_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListPoint",
 			Handler:    _Point_ListPoint_Handler,
+		},
+		{
+			MethodName: "CreateRecords",
+			Handler:    _Point_CreateRecords_Handler,
+		},
+		{
+			MethodName: "UpdateRecord",
+			Handler:    _Point_UpdateRecord_Handler,
+		},
+		{
+			MethodName: "DeleteRecord",
+			Handler:    _Point_DeleteRecord_Handler,
+		},
+		{
+			MethodName: "ListRecord",
+			Handler:    _Point_ListRecord_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
