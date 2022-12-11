@@ -816,6 +816,10 @@ func (m *ListPointRequest) validate(all bool) error {
 
 	var errors []error
 
+	// no validation rules for Begin
+
+	// no validation rules for Count
+
 	if len(errors) > 0 {
 		return ListPointRequestMultiError(errors)
 	}
@@ -915,6 +919,10 @@ func (m *ListPointReply) validate(all bool) error {
 	}
 
 	var errors []error
+
+	// no validation rules for Finished
+
+	// no validation rules for Count
 
 	for idx, item := range m.GetPoints() {
 		_, _ = idx, item
@@ -1554,6 +1562,214 @@ var _ interface {
 	ErrorName() string
 } = DeleteRecordRequestValidationError{}
 
+// Validate checks the field values on CountRecordRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *CountRecordRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CountRecordRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// CountRecordRequestMultiError, or nil if none found.
+func (m *CountRecordRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CountRecordRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for MinClickedAt
+
+	// no validation rules for MaxClickedAt
+
+	if len(errors) > 0 {
+		return CountRecordRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// CountRecordRequestMultiError is an error wrapping multiple validation errors
+// returned by CountRecordRequest.ValidateAll() if the designated constraints
+// aren't met.
+type CountRecordRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CountRecordRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CountRecordRequestMultiError) AllErrors() []error { return m }
+
+// CountRecordRequestValidationError is the validation error returned by
+// CountRecordRequest.Validate if the designated constraints aren't met.
+type CountRecordRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CountRecordRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CountRecordRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CountRecordRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CountRecordRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CountRecordRequestValidationError) ErrorName() string {
+	return "CountRecordRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CountRecordRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCountRecordRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CountRecordRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CountRecordRequestValidationError{}
+
+// Validate checks the field values on CountRecordReply with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *CountRecordReply) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CountRecordReply with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// CountRecordReplyMultiError, or nil if none found.
+func (m *CountRecordReply) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CountRecordReply) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Count
+
+	if len(errors) > 0 {
+		return CountRecordReplyMultiError(errors)
+	}
+
+	return nil
+}
+
+// CountRecordReplyMultiError is an error wrapping multiple validation errors
+// returned by CountRecordReply.ValidateAll() if the designated constraints
+// aren't met.
+type CountRecordReplyMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CountRecordReplyMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CountRecordReplyMultiError) AllErrors() []error { return m }
+
+// CountRecordReplyValidationError is the validation error returned by
+// CountRecordReply.Validate if the designated constraints aren't met.
+type CountRecordReplyValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CountRecordReplyValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CountRecordReplyValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CountRecordReplyValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CountRecordReplyValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CountRecordReplyValidationError) ErrorName() string { return "CountRecordReplyValidationError" }
+
+// Error satisfies the builtin error interface
+func (e CountRecordReplyValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCountRecordReply.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CountRecordReplyValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CountRecordReplyValidationError{}
+
 // Validate checks the field values on ListRecordRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, the
 // first error encountered is returned, or nil if there are no violations.
@@ -1685,6 +1901,10 @@ func (m *ListRecordReply) validate(all bool) error {
 	}
 
 	var errors []error
+
+	// no validation rules for Finished
+
+	// no validation rules for Count
 
 	for idx, item := range m.GetRecords() {
 		_, _ = idx, item

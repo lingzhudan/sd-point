@@ -46,3 +46,27 @@ func IsRecordNotFound(err error) bool {
 func ErrorRecordNotFound(format string, args ...interface{}) *errors.Error {
 	return errors.New(404, ErrorReason_RECORD_NOT_FOUND.String(), fmt.Sprintf(format, args...))
 }
+
+func IsDatabaseError(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ErrorReason_DATABASE_ERROR.String() && e.Code == 401
+}
+
+func ErrorDatabaseError(format string, args ...interface{}) *errors.Error {
+	return errors.New(401, ErrorReason_DATABASE_ERROR.String(), fmt.Sprintf(format, args...))
+}
+
+func IsServiceError(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ErrorReason_SERVICE_ERROR.String() && e.Code == 410
+}
+
+func ErrorServiceError(format string, args ...interface{}) *errors.Error {
+	return errors.New(410, ErrorReason_SERVICE_ERROR.String(), fmt.Sprintf(format, args...))
+}
