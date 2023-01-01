@@ -28,7 +28,6 @@ const OperationPointGetPoint = "/api.point.v1.Point/GetPoint"
 const OperationPointListPoint = "/api.point.v1.Point/ListPoint"
 const OperationPointListRecord = "/api.point.v1.Point/ListRecord"
 const OperationPointUpdatePoint = "/api.point.v1.Point/UpdatePoint"
-const OperationPointUpdateRecord = "/api.point.v1.Point/UpdateRecord"
 
 type PointHTTPServer interface {
 	CreatePoint(context.Context, *CreatePointRequest) (*emptypb.Empty, error)
@@ -39,7 +38,6 @@ type PointHTTPServer interface {
 	ListPoint(context.Context, *ListPointRequest) (*ListPointReply, error)
 	ListRecord(context.Context, *ListRecordRequest) (*ListRecordReply, error)
 	UpdatePoint(context.Context, *UpdatePointRequest) (*emptypb.Empty, error)
-	UpdateRecord(context.Context, *UpdateRecordRequest) (*emptypb.Empty, error)
 }
 
 func RegisterPointHTTPServer(s *http.Server, srv PointHTTPServer) {
@@ -50,7 +48,6 @@ func RegisterPointHTTPServer(s *http.Server, srv PointHTTPServer) {
 	r.GET("/v1/point", _Point_GetPoint0_HTTP_Handler(srv))
 	r.GET("/v1/point/list", _Point_ListPoint0_HTTP_Handler(srv))
 	r.PUT("/v1/record", _Point_CreateRecords0_HTTP_Handler(srv))
-	r.POST("/v1/record", _Point_UpdateRecord0_HTTP_Handler(srv))
 	r.DELETE("/v1/record", _Point_DeleteRecord0_HTTP_Handler(srv))
 	r.GET("/v1/record/list", _Point_ListRecord0_HTTP_Handler(srv))
 }
@@ -169,25 +166,6 @@ func _Point_CreateRecords0_HTTP_Handler(srv PointHTTPServer) func(ctx http.Conte
 	}
 }
 
-func _Point_UpdateRecord0_HTTP_Handler(srv PointHTTPServer) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		var in UpdateRecordRequest
-		if err := ctx.Bind(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, OperationPointUpdateRecord)
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.UpdateRecord(ctx, req.(*UpdateRecordRequest))
-		})
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-		reply := out.(*emptypb.Empty)
-		return ctx.Result(200, reply)
-	}
-}
-
 func _Point_DeleteRecord0_HTTP_Handler(srv PointHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in DeleteRecordRequest
@@ -235,7 +213,6 @@ type PointHTTPClient interface {
 	ListPoint(ctx context.Context, req *ListPointRequest, opts ...http.CallOption) (rsp *ListPointReply, err error)
 	ListRecord(ctx context.Context, req *ListRecordRequest, opts ...http.CallOption) (rsp *ListRecordReply, err error)
 	UpdatePoint(ctx context.Context, req *UpdatePointRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
-	UpdateRecord(ctx context.Context, req *UpdateRecordRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 }
 
 type PointHTTPClientImpl struct {
@@ -342,19 +319,6 @@ func (c *PointHTTPClientImpl) UpdatePoint(ctx context.Context, in *UpdatePointRe
 	pattern := "/v1/point"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationPointUpdatePoint))
-	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, err
-}
-
-func (c *PointHTTPClientImpl) UpdateRecord(ctx context.Context, in *UpdateRecordRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
-	var out emptypb.Empty
-	pattern := "/v1/record"
-	path := binding.EncodeURL(pattern, in, false)
-	opts = append(opts, http.Operation(OperationPointUpdateRecord))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {

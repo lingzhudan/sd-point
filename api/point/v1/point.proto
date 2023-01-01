@@ -50,13 +50,6 @@ service Point {
 			body:"*",
 		};
 	};
-	// 更新记录
-	rpc UpdateRecord (UpdateRecordRequest) returns (google.protobuf.Empty){
-		option (google.api.http) = {
-			post: "/v1/record",
-			body: "*",
-		};
-	};
 	// 删除记录
 	rpc DeleteRecord (DeleteRecordRequest) returns (google.protobuf.Empty){
 		option (google.api.http) = {
@@ -146,11 +139,6 @@ message RecordInfo {
 message CreateRecordsRequest {
 	// 新增点数信息
 	repeated RecordInfo records = 1 [(validate.rules).repeated = {min_items: 1}];
-}
-
-message UpdateRecordRequest {
-	// 待更新点数信息
-	RecordInfo record = 1 [(validate.rules).message.required = true];
 }
 
 message DeleteRecordRequest {
