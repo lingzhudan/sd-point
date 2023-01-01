@@ -49,7 +49,8 @@ func NewData(c *conf.Data, logger log.Logger) (*Data, func(), error) {
 	rdb.AddHook(redisotel.TracingHook{})
 
 	return &Data{
-		db: db,
+		db:  db,
+		rdb: rdb,
 	}, cleanup, nil
 }
 

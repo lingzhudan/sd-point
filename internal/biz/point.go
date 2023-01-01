@@ -174,6 +174,7 @@ func (uc *PointUsecase) MSetPointTotal(ctx context.Context, pointTotals map[int3
 }
 
 func (uc *PointUsecase) MGetPointTotal(ctx context.Context, pids []int32) (data map[int32]int32, err error) {
+	data = make(map[int32]int32)
 	var keys []string
 	var values []interface{}
 	for _, pid := range pids {
@@ -183,7 +184,17 @@ func (uc *PointUsecase) MGetPointTotal(ctx context.Context, pids []int32) (data 
 		uc.log.Errorf("failed to get keys, error: %v", err)
 	}
 	for i := range values {
-		data[pids[i]] = values[i].(int32)
+		value, ok := values[i].(string)
+		if ok {
+			var num int
+			num, err = strconv.Atoi(value)
+			if err != nil {
+				uc.log.Errorf("failed to get int form string, error: %v", err)
+			}
+			data[pids[i]] = int32(num)
+		} else {
+			uc.log.Errorf("failed to get string type of value")
+		}
 	}
 	return
 }

@@ -30,7 +30,7 @@ func (pr *pointRepo) ListPoint(ctx context.Context, cond *biz.PointCond) (points
 }
 
 func (pr *pointRepo) GetPoint(ctx context.Context, pid int32) (point *biz.Point, err error) {
-	if err = pr.data.db.WithContext(ctx).Model(&biz.Point{PID: pid}).First(&point).Error; err != nil {
+	if err = pr.data.db.WithContext(ctx).Model(&biz.Point{}).First(&point, pid).Error; err != nil {
 		pr.log.Debugf("db error: %v", err)
 	}
 	return

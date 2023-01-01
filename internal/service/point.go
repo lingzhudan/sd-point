@@ -73,6 +73,7 @@ func (s *PointService) GetPoint(ctx context.Context, req *pb.GetPointRequest) (r
 		s.log.Errorf("internal error: %v", err)
 		return nil, err
 	}
+	s.log.Debugf("pt: %v", ptMap[req.Pid])
 	reply.Point = &pb.PointInfo{
 		Pid:       point.PID,
 		Name:      point.Name,
