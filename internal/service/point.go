@@ -109,7 +109,7 @@ func (s *PointService) ListPoint(ctx context.Context, req *pb.ListPointRequest) 
 		return
 	}
 	for i, p := range points {
-		if i > int(req.Count) {
+		if i >= int(req.Count) {
 			reply.Finished = false
 			break
 		}
@@ -165,6 +165,31 @@ func (s *PointService) DeleteRecord(ctx context.Context, req *pb.DeleteRecordReq
 	return
 }
 
+func (s *PointService) UpdateRecord(ctx context.Context, req *pb.UpdateRecordRequest) (reply *emptypb.Empty, err error) {
+	var record *biz.PointRecord
+	if record, err = s.uc.GetRecord(ctx, req.Record.Rid); err != nil {
+		s.log.Errorf("internal error: %v", err)
+	}
+	if err = s.uc.UpdateRecord(ctx, &biz.PointRecord{
+		RID:  req.Record.Rid,
+		Num:  int16(req.Record.Num),
+		Desc: req.Record.Desc,
+	}); err != nil {
+		s.log.Errorf("internal error: %v", err)
+	}
+	alterNum := int16(req.Record.Num) - record.Num
+	if alterNum > 0 {
+		if _, err = s.uc.IncrPointTotal(ctx, map[int32]int16{record.PID: record.Num}); err != nil {
+			s.log.Errorf("internal error: %v", err)
+		}
+	} else if alterNum < 0 {
+		if _, err = s.uc.DecrPointTotal(ctx, map[int32]int16{record.PID: record.Num}); err != nil {
+			s.log.Errorf("internal error: %v", err)
+		}
+	}
+	return
+}
+
 func (s *PointService) ListRecord(ctx context.Context, req *pb.ListRecordRequest) (reply *pb.ListRecordReply, err error) {
 	reply = &pb.ListRecordReply{Finished: true}
 	var records []*biz.PointRecord
@@ -180,7 +205,7 @@ func (s *PointService) ListRecord(ctx context.Context, req *pb.ListRecordRequest
 		return nil, err
 	}
 	for i, r := range records {
-		if i > int(req.Count) {
+		if i >= int(req.Count) {
 			reply.Finished = false
 			break
 		}

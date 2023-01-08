@@ -56,6 +56,13 @@ service Point {
 			delete: "/v1/record",
 		};
 	};
+	// 删除记录
+	rpc UpdateRecord (UpdateRecordRequest) returns (google.protobuf.Empty){
+		option (google.api.http) = {
+			post: "/v1/record",
+			body: "*",
+		};
+	};
 	// 获取记录列表
 	rpc ListRecord (ListRecordRequest) returns (ListRecordReply){
 		option (google.api.http) = {
@@ -94,7 +101,7 @@ message UpdatePointRequest {
 
 message DeletePointRequest {
 	// 待删除的点数编号
-	int32 pid = 1;
+	int32 pid = 1 [(validate.rules).int32 = {gt: 0}];
 }
 
 message GetPointRequest {
@@ -106,8 +113,8 @@ message GetPointReply {
 }
 
 message ListPointRequest {
-	int32 begin = 1;
-	int32 count = 2;
+	int32 begin = 1 [(validate.rules).int32 = {gte: 0}];
+	int32 count = 2 [(validate.rules).int32 = {gt: 0}];
 	repeated int32 pids = 3;
 }
 message ListPointReply {
@@ -143,7 +150,12 @@ message CreateRecordsRequest {
 
 message DeleteRecordRequest {
 	// 待删除的记录编号
-	int32 rid = 1;
+	int32 rid = 1 [(validate.rules).int32 = {gt: 0}];
+}
+
+message UpdateRecordRequest {
+	// 待更新的记录编号
+	RecordInfo record = 1 [(validate.rules).message.required = true];
 }
 
 message CountRecordRequest {
@@ -157,8 +169,8 @@ message CountRecordReply {
 }
 
 message ListRecordRequest {
-	int32 begin = 1;
-	int32 count = 2;
+	int32 begin = 1 [(validate.rules).int32 = {gte: 0}];
+	int32 count = 2 [(validate.rules).int32 = {gt: 0}];
 	repeated int32 rids = 3;
 	repeated int32 pids = 4;
 	int64 min_clicked_at = 5;
