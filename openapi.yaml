@@ -122,7 +122,7 @@ paths:
         post:
             tags:
                 - Point
-            description: 更新记录
+            description: 删除记录
             operationId: Point_UpdateRecord
             requestBody:
                 content:
