@@ -3,71 +3,21 @@
 
 openapi: 3.0.3
 info:
-    title: Point API
+    title: SdPointInterface API
     version: 0.0.1
 paths:
     /v1/point:
-        get:
-            tags:
-                - Point
-            description: 获取点数
-            operationId: Point_GetPoint
-            parameters:
-                - name: pid
-                  in: query
-                  description: 点数编号
-                  schema:
-                    type: integer
-                    format: int32
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/api.point.v1.GetPointReply'
-        put:
-            tags:
-                - Point
-            description: 创建点数
-            operationId: Point_CreatePoint
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/api.point.v1.CreatePointRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content: {}
         post:
             tags:
-                - Point
-            description: 更新点数
-            operationId: Point_UpdatePoint
+                - SdPointInterface
+            description: 创建点数
+            operationId: SdPointInterface_CreatePoint
             requestBody:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/api.point.v1.UpdatePointRequest'
+                            $ref: '#/components/schemas/api.sd_point.interface.v1.CreatePointRequest'
                 required: true
-            responses:
-                "200":
-                    description: OK
-                    content: {}
-        delete:
-            tags:
-                - Point
-            description: 删除点数
-            operationId: Point_DeletePoint
-            parameters:
-                - name: pid
-                  in: query
-                  description: 待删除的点数编号
-                  schema:
-                    type: integer
-                    format: int32
             responses:
                 "200":
                     description: OK
@@ -75,77 +25,106 @@ paths:
     /v1/point/list:
         get:
             tags:
-                - Point
+                - SdPointInterface
             description: 获取点数列表
-            operationId: Point_ListPoint
+            operationId: SdPointInterface_ListPoint
             parameters:
                 - name: begin
                   in: query
                   schema:
                     type: integer
-                    format: int32
+                    format: uint32
                 - name: count
                   in: query
                   schema:
                     type: integer
-                    format: int32
+                    format: uint32
                 - name: pids
                   in: query
                   schema:
                     type: array
                     items:
                         type: integer
-                        format: int32
+                        format: uint32
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.point.v1.ListPointReply'
-    /v1/record:
-        put:
+                                $ref: '#/components/schemas/api.sd_point.interface.v1.ListPointReply'
+    /v1/point/{pid}:
+        get:
             tags:
-                - Point
-            description: 创建记录
-            operationId: Point_CreateRecords
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/api.point.v1.CreateRecordsRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content: {}
-        post:
-            tags:
-                - Point
-            description: 删除记录
-            operationId: Point_UpdateRecord
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/api.point.v1.UpdateRecordRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content: {}
-        delete:
-            tags:
-                - Point
-            description: 删除记录
-            operationId: Point_DeleteRecord
+                - SdPointInterface
+            description: 获取点数
+            operationId: SdPointInterface_GetPoint
             parameters:
-                - name: rid
-                  in: query
-                  description: 待删除的记录编号
+                - name: pid
+                  in: path
+                  description: 点数编号
+                  required: true
                   schema:
                     type: integer
-                    format: int32
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.sd_point.interface.v1.GetPointReply'
+        delete:
+            tags:
+                - SdPointInterface
+            description: 删除点数
+            operationId: SdPointInterface_DeletePoint
+            parameters:
+                - name: pid
+                  in: path
+                  description: 待删除的点数编号
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /v1/point/{point.pid}:
+        put:
+            tags:
+                - SdPointInterface
+            description: 更新点数
+            operationId: SdPointInterface_UpdatePoint
+            parameters:
+                - name: point.pid
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.sd_point.interface.v1.UpdatePointRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /v1/record:
+        post:
+            tags:
+                - SdPointInterface
+            description: 创建记录
+            operationId: SdPointInterface_CreateRecord
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.sd_point.interface.v1.CreateRecordRequest'
+                required: true
             responses:
                 "200":
                     description: OK
@@ -153,102 +132,248 @@ paths:
     /v1/record/list:
         get:
             tags:
-                - Point
+                - SdPointInterface
             description: 获取记录列表
-            operationId: Point_ListRecord
+            operationId: SdPointInterface_ListRecord
             parameters:
                 - name: begin
                   in: query
                   schema:
                     type: integer
-                    format: int32
+                    format: uint32
                 - name: count
                   in: query
                   schema:
                     type: integer
-                    format: int32
+                    format: uint32
                 - name: rids
                   in: query
                   schema:
                     type: array
                     items:
                         type: integer
-                        format: int32
+                        format: uint32
                 - name: pids
                   in: query
                   schema:
                     type: array
                     items:
                         type: integer
-                        format: int32
+                        format: uint32
                 - name: minClickedAt
                   in: query
                   schema:
                     type: integer
-                    format: int64
+                    format: uint64
                 - name: maxClickedAt
                   in: query
                   schema:
                     type: integer
-                    format: int64
+                    format: uint64
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.point.v1.ListRecordReply'
+                                $ref: '#/components/schemas/api.sd_point.interface.v1.ListRecordReply'
+    /v1/record/{record.rid}:
+        put:
+            tags:
+                - SdPointInterface
+            description: 更新记录
+            operationId: SdPointInterface_UpdateRecord
+            parameters:
+                - name: record.rid
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.sd_point.interface.v1.UpdateRecordRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /v1/record/{rid}:
+        delete:
+            tags:
+                - SdPointInterface
+            description: 删除记录
+            operationId: SdPointInterface_DeleteRecord
+            parameters:
+                - name: rid
+                  in: path
+                  description: 待删除的记录编号
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /v1/user/bind/{bindType}:
+        post:
+            tags:
+                - SdPointInterface
+            description: 用户绑定其他登录方式
+            operationId: SdPointInterface_BindAccount
+            parameters:
+                - name: bindType
+                  in: path
+                  description: 绑定类型 0 为微信
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.sd_point.interface.v1.BindAccountRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /v1/user/list:
+        get:
+            tags:
+                - SdPointInterface
+            description: 用户列表
+            operationId: SdPointInterface_ListUser
+            parameters:
+                - name: uids
+                  in: query
+                  schema:
+                    type: array
+                    items:
+                        type: integer
+                        format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.sd_point.interface.v1.ListUserReply'
+    /v1/user/login:
+        post:
+            tags:
+                - SdPointInterface
+            description: 用户登录
+            operationId: SdPointInterface_Login
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.sd_point.interface.v1.LoginRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.sd_point.interface.v1.LoginReply'
+    /v1/user/logout:
+        post:
+            tags:
+                - SdPointInterface
+            description: 用户登出
+            operationId: SdPointInterface_Logout
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.sd_point.interface.v1.LogoutRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /v1/user/register/{registerType}:
+        post:
+            tags:
+                - SdPointInterface
+            description: 用户注册
+            operationId: SdPointInterface_Register
+            parameters:
+                - name: registerType
+                  in: path
+                  description: 注册类型 0 为账号密码 1 为微信
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint64
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.sd_point.interface.v1.RegisterRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /v1/user/{uid}:
+        get:
+            tags:
+                - SdPointInterface
+            description: 用户信息
+            operationId: SdPointInterface_GetUser
+            parameters:
+                - name: uid
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.sd_point.interface.v1.GetUserReply'
 components:
     schemas:
-        api.point.v1.CreatePointRequest:
+        api.sd_point.interface.v1.BindAccountRequest:
+            type: object
+            properties:
+                bindType:
+                    type: integer
+                    description: 绑定类型 0 为微信
+                    format: uint32
+                wechatAccount:
+                    $ref: '#/components/schemas/api.sd_point.interface.v1.LoginRequest_WechatAccount'
+        api.sd_point.interface.v1.CreatePointRequest:
             type: object
             properties:
                 point:
-                    $ref: '#/components/schemas/api.point.v1.PointInfo'
-        api.point.v1.CreateRecordsRequest:
+                    $ref: '#/components/schemas/api.sd_point.interface.v1.GetPointReply_Point'
+        api.sd_point.interface.v1.CreateRecordRequest:
             type: object
             properties:
                 records:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/api.point.v1.RecordInfo'
-                    description: 新增点数信息
-        api.point.v1.GetPointReply:
+                    $ref: '#/components/schemas/api.sd_point.interface.v1.Record'
+        api.sd_point.interface.v1.GetPointReply:
             type: object
             properties:
                 point:
-                    $ref: '#/components/schemas/api.point.v1.PointInfo'
-        api.point.v1.ListPointReply:
-            type: object
-            properties:
-                finished:
-                    type: boolean
-                count:
-                    type: integer
-                    format: int32
-                points:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/api.point.v1.PointInfo'
-        api.point.v1.ListRecordReply:
-            type: object
-            properties:
-                finished:
-                    type: boolean
-                count:
-                    type: integer
-                    format: int32
-                records:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/api.point.v1.RecordInfo'
-        api.point.v1.PointInfo:
+                    $ref: '#/components/schemas/api.sd_point.interface.v1.GetPointReply_Point'
+        api.sd_point.interface.v1.GetPointReply_Point:
             type: object
             properties:
                 pid:
                     type: integer
                     description: 点数编号
-                    format: int32
+                    format: uint32
                 total:
                     type: integer
                     description: 点数数量
@@ -262,26 +387,105 @@ components:
                 createdAt:
                     type: integer
                     description: 创建时间
-                    format: int64
+                    format: uint64
                 updatedAt:
                     type: integer
                     description: 更新时间
-                    format: int64
+                    format: uint64
                 deletedAt:
                     type: integer
                     description: 删除时间
-                    format: int64
-        api.point.v1.RecordInfo:
+                    format: uint64
+        api.sd_point.interface.v1.GetUserReply:
+            type: object
+            properties:
+                user:
+                    $ref: '#/components/schemas/api.sd_point.interface.v1.GetUserReply_User'
+        api.sd_point.interface.v1.GetUserReply_User:
+            type: object
+            properties:
+                uid:
+                    type: integer
+                    format: uint32
+                username:
+                    type: string
+        api.sd_point.interface.v1.ListPointReply:
+            type: object
+            properties:
+                finished:
+                    type: boolean
+                count:
+                    type: integer
+                    format: uint32
+                points:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.sd_point.interface.v1.GetPointReply_Point'
+        api.sd_point.interface.v1.ListRecordReply:
+            type: object
+            properties:
+                finished:
+                    type: boolean
+                count:
+                    type: integer
+                    format: uint32
+                records:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.sd_point.interface.v1.Record'
+        api.sd_point.interface.v1.ListUserReply:
+            type: object
+            properties:
+                users:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.sd_point.interface.v1.GetUserReply_User'
+        api.sd_point.interface.v1.LoginReply:
+            type: object
+            properties:
+                sessionId:
+                    type: string
+        api.sd_point.interface.v1.LoginRequest:
+            type: object
+            properties:
+                originAccount:
+                    $ref: '#/components/schemas/api.sd_point.interface.v1.LoginRequest_OriginalAccount'
+                wechatAccount:
+                    $ref: '#/components/schemas/api.sd_point.interface.v1.LoginRequest_WechatAccount'
+        api.sd_point.interface.v1.LoginRequest_OriginalAccount:
+            type: object
+            properties:
+                account:
+                    type: string
+                    description: 用户账号
+                password:
+                    type: string
+                    description: 用户密码 经公钥加密
+        api.sd_point.interface.v1.LoginRequest_WechatAccount:
+            type: object
+            properties:
+                openIdCode:
+                    type: string
+                    description: 微信换取openID的code字符串
+                phoneNumberCode:
+                    type: string
+                    description: 微信换取手机号的code字符串
+        api.sd_point.interface.v1.LogoutRequest:
+            type: object
+            properties:
+                sessionId:
+                    type: string
+        api.sd_point.interface.v1.Record:
             type: object
             properties:
                 rid:
                     type: integer
                     description: 记录编号
-                    format: int32
+                    format: uint32
                 pid:
                     type: integer
                     description: 点数编号
-                    format: int32
+                    format: uint32
                 num:
                     type: integer
                     description: 点数数量
@@ -289,31 +493,42 @@ components:
                 clickedAt:
                     type: integer
                     description: 记录新增时间
-                    format: int64
+                    format: uint64
                 desc:
                     type: string
                     description: 记录描述
                 createdAt:
                     type: integer
                     description: 创建时间
-                    format: int64
+                    format: uint64
                 updatedAt:
                     type: integer
                     description: 更新时间
-                    format: int64
+                    format: uint64
                 deletedAt:
                     type: integer
                     description: 删除时间
-                    format: int64
-        api.point.v1.UpdatePointRequest:
+                    format: uint64
+        api.sd_point.interface.v1.RegisterRequest:
+            type: object
+            properties:
+                registerType:
+                    type: integer
+                    description: 注册类型 0 为账号密码 1 为微信
+                    format: uint64
+                originAccount:
+                    $ref: '#/components/schemas/api.sd_point.interface.v1.LoginRequest_OriginalAccount'
+                wechatAccount:
+                    $ref: '#/components/schemas/api.sd_point.interface.v1.LoginRequest_WechatAccount'
+        api.sd_point.interface.v1.UpdatePointRequest:
             type: object
             properties:
                 point:
-                    $ref: '#/components/schemas/api.point.v1.PointInfo'
-        api.point.v1.UpdateRecordRequest:
+                    $ref: '#/components/schemas/api.sd_point.interface.v1.GetPointReply_Point'
+        api.sd_point.interface.v1.UpdateRecordRequest:
             type: object
             properties:
                 record:
-                    $ref: '#/components/schemas/api.point.v1.RecordInfo'
+                    $ref: '#/components/schemas/api.sd_point.interface.v1.Record'
 tags:
-    - name: Point
+    - name: SdPointInterface

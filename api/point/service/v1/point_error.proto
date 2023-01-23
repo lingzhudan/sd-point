@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package api.point.v1;
+
+import "errors/errors.proto";
+
+option go_package = "sd-point/api/point/v1;v1";
+
+enum ErrorReason {
+  // 缺省错误码
+  option (errors.default_code) = 500;
+
+  // 没有找到点数
+  POINT_NOT_FOUND = 0 [(errors.code) = 404];
+}

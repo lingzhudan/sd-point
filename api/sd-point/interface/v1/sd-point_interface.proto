@@ -1,0 +1,306 @@
+syntax = "proto3";
+
+package api.sd_point.interface.v1;
+
+option go_package = "sd-point/api/sd-point/interface/v1;v1";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "validate/validate.proto";
+
+service SdPointInterface {
+	/* 点数模块 */
+
+	// 创建点数
+	rpc CreatePoint (CreatePointRequest) returns (google.protobuf.Empty){
+		option (google.api.http) = {
+			post: "/v1/point",
+			body:"*",
+		};
+	};
+
+	// 更新点数
+	rpc UpdatePoint (UpdatePointRequest) returns (google.protobuf.Empty){
+		option (google.api.http) = {
+			put: "/v1/point/{point.pid}",
+			body: "*",
+		};
+	};
+
+	// 删除点数
+	rpc DeletePoint (DeletePointRequest) returns (google.protobuf.Empty){
+		option (google.api.http) = {
+			delete: "/v1/point/{pid}",
+		};
+	};
+
+	// 获取点数
+	rpc GetPoint (GetPointRequest) returns (GetPointReply){
+		option (google.api.http) = {
+			get: "/v1/point/{pid}",
+		};
+	};
+
+	// 获取点数列表
+	rpc ListPoint (ListPointRequest) returns (ListPointReply){
+		option (google.api.http) = {
+			get: "/v1/point/list",
+		};
+	};
+
+	// 创建记录
+	rpc CreateRecord (CreateRecordRequest) returns (google.protobuf.Empty){
+		option (google.api.http) = {
+			post: "/v1/record",
+			body:"*",
+		};
+	};
+
+	// 删除记录
+	rpc DeleteRecord (DeleteRecordRequest) returns (google.protobuf.Empty){
+		option (google.api.http) = {
+			delete: "/v1/record/{rid}",
+		};
+	};
+
+	// 更新记录
+	rpc UpdateRecord (UpdateRecordRequest) returns (google.protobuf.Empty){
+		option (google.api.http) = {
+			put: "/v1/record/{record.rid}",
+			body: "*",
+		};
+	};
+
+	// 获取记录列表
+	rpc ListRecord (ListRecordRequest) returns (ListRecordReply){
+		option (google.api.http) = {
+			get: "/v1/record/list",
+		};
+	};
+
+	/* 用户模块 */
+
+	// 用户登录
+	rpc Login (LoginRequest) returns (LoginReply) {
+		option (google.api.http) = {
+			post: "/v1/user/login",
+			body: "*",
+		};
+	};
+
+	// 用户登出
+	rpc Logout (LogoutRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = {
+			post: "/v1/user/logout",
+			body: "*",
+		};
+	};
+
+	// 用户注册
+	rpc Register (RegisterRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = {
+			post: "/v1/user/register/{register_type}",
+			body: "*",
+		};
+	};
+
+	// 用户绑定其他登录方式
+	rpc BindAccount (BindAccountRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = {
+			post: "/v1/user/bind/{bind_type}",
+			body: "*",
+		};
+	};
+
+	// 用户信息
+	rpc GetUser (GetUserRequest) returns (GetUserReply) {
+		option (google.api.http) = {
+			get: "/v1/user/{uid}",
+		};
+	};
+
+	// 用户列表
+	rpc ListUser (ListUserRequest) returns (ListUserReply) {
+		option (google.api.http) = {
+			get: "/v1/user/list",
+		};
+	};
+}
+
+/* 点数模块 */
+
+message CreatePointRequest {
+	// 新增点数信息
+	GetPointReply.Point point = 1;
+}
+
+message UpdatePointRequest {
+	// 待更新点数信息
+	GetPointReply.Point point = 1;
+}
+
+message DeletePointRequest {
+	// 待删除的点数编号
+	uint32 pid = 1;
+}
+
+message GetPointRequest {
+	// 点数编号
+	uint32 pid = 1;
+}
+message GetPointReply {
+	message Point {
+		// 点数编号
+		uint32 pid = 1;
+		// 点数数量
+		int32 total = 2;
+		// 点数名称
+		string name = 3 [(validate.rules).string = {min_len: 1, max_len: 32}];
+		// 点数描述
+		string desc = 4 [(validate.rules).string = {max_len: 1024}];
+
+		// 创建时间
+		uint64 created_at = 5;
+		// 更新时间
+		uint64 updated_at = 6;
+		// 删除时间
+		uint64 deleted_at = 7;
+	}
+	Point point = 1;
+}
+
+message ListPointRequest {
+	uint32 begin = 1;
+	uint32 count = 2;
+	repeated uint32 pids = 3;
+}
+message ListPointReply {
+	bool finished = 1;
+	uint32 count = 2;
+	repeated GetPointReply.Point points = 3;
+}
+
+message Record {
+	// 记录编号
+	uint32 rid = 1;
+	// 点数编号
+	uint32 pid = 2;
+	// 点数数量
+	int32 num = 3 [(validate.rules).int32 = {gte: -65536, lte: 65535}];
+	// 记录新增时间
+	uint64 clicked_at = 4;
+	// 记录描述
+	string desc = 5 [(validate.rules).string = {max_len: 1024}];
+
+	// 创建时间
+	uint64 created_at = 6;
+	// 更新时间
+	uint64 updated_at = 7;
+	// 删除时间
+	uint64 deleted_at = 8;
+}
+
+message CreateRecordRequest {
+	// 新增点数信息
+	Record records = 1 [(validate.rules).message = {required: true}];
+}
+
+message DeleteRecordRequest {
+	// 待删除的记录编号
+	uint32 rid = 1;
+}
+
+message UpdateRecordRequest {
+	// 待更新的记录编号
+	Record record = 1 [(validate.rules).message.required = true];
+}
+
+message CountRecordRequest {
+	repeated uint32 rids = 1;
+	repeated uint32 pids = 2;
+	uint64 min_clicked_at = 3;
+	uint64 max_clicked_at = 4;
+}
+message CountRecordReply {
+	uint32 count = 1;
+}
+
+message ListRecordRequest {
+	uint32 begin = 1;
+	uint32 count = 2;
+	repeated uint32 rids = 3;
+	repeated uint32 pids = 4;
+	uint64 min_clicked_at = 5;
+	uint64 max_clicked_at = 6;
+}
+message ListRecordReply {
+	bool finished = 1;
+	uint32 count = 2;
+	repeated Record records = 3;
+}
+
+/* 用户模块 */
+
+message LoginRequest {
+	message OriginalAccount {
+		// 用户账号
+		string account = 1 [(validate.rules).string = {min_len: 8, max_len: 64}];
+		// 用户密码 经公钥加密
+		string password = 2 [(validate.rules).string = {min_len: 1}];
+	}
+	message WechatAccount {
+		// 微信换取openID的code字符串
+		string open_id_code = 1 [(validate.rules).string = {len: 32}];
+		// 微信换取手机号的code字符串
+		string phone_number_code = 2 [(validate.rules).string = {len: 32}];
+	}
+	// 原始账号信息
+	LoginRequest.OriginalAccount origin_account = 2;
+	// 微信账号信息
+	LoginRequest.WechatAccount wechat_account = 3;
+
+}
+message LoginReply {
+	string session_id = 1;
+}
+
+message LogoutRequest {
+	string session_id = 1;
+}
+
+message RegisterRequest {
+	// 注册类型 0 为账号密码 1 为微信
+	uint64 register_type = 1 [(validate.rules).uint64 = {lte: 1}];
+	// 原始账号信息
+	LoginRequest.OriginalAccount origin_account = 2;
+	// 微信账号信息
+	LoginRequest.WechatAccount wechat_account = 3;
+}
+message RegisterReply {
+	uint32 uid = 1;
+}
+
+message BindAccountRequest {
+	// 绑定类型 0 为微信
+	uint32 bind_type = 1 [(validate.rules).uint32 = {in: [0]}];
+	// 微信账号信息
+	LoginRequest.WechatAccount wechat_account = 2;
+}
+
+message GetUserRequest {
+	uint32 uid = 1;
+}
+message GetUserReply {
+	message User {
+		uint32 uid = 1;
+		string username = 2;
+	}
+	User user = 1;
+}
+
+message ListUserRequest {
+	repeated uint32 uids = 1;
+}
+message ListUserReply {
+	repeated GetUserReply.User users = 1;
+}

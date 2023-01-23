@@ -1,46 +1,67 @@
-# Kratos Project Template
+# 自律点
+采用go-kratos搭建
 
-## Install Kratos
-```
-go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
-```
-## Create a service
-```
-# Create a template project
-kratos new server
+## 使用技术
 
-cd server
-# Add a proto template
-kratos proto add api/server/server.proto
-# Generate the proto code
-kratos proto client api/server/server.proto
-# Generate the source code of service by proto file
-kratos proto server api/server/server.proto -t internal/service
+### 服务发现注册
+etcd
+### 参数校验
+github.com/envoyproxy/protoc-gen-validate
+### 认证
+内部服务调用grpc采用jwt认证
 
-go generate ./...
-go build -o ./bin/ ./...
+外部服务调用计划采用sessionID方式
+### 日志
+kratos/log
+### 监控
+待添加
+### 链路追踪
+待添加
+### 熔断机制
+待添加
+### 限流器
+待添加
+### 负载均衡
+待添加
+### 错误处理
+待添加
+### 运维
+计划采用docker+k8s部署微服务
+
+## 待优化事项
+
+### （一）/sd-point/app_makefile
+makefile中docker部分内容待更新
+
+### （二）/sd-point/app/sd-point/interface/internal/service/sd-point_interface
+service实现方法待实现
+
+## 项目初始化
+```
+# 先安装go环境后再执行此命令
+make init
+```
+
+## 常用快捷命令
+```
+# 新增proto模板
+kratos proto add api/xxx{服务名}/v1{版本}/xxx.proto
+# 生成pb.go文件
+kratos proto client api/xxx{服务名}/v1{版本}/xxx.proto 
+    # 或
+make api
+
+# 生成service文件
+kratos proto server api/xxx{服务名}/v1{版本}/xxx.proto -t \
+ app/xxx{服务名}/internal/service
+
+# 生成二进制执行文件
+cd app/xxx{服务名}/service && make all
+# 运行
 ./bin/server -conf ./configs
 ```
-## Generate other auxiliary files by Makefile
-```
-# Download and update dependencies
-make init
-# Generate API files (include: pb.go, http, grpc, validate, swagger) by proto file
-make api
-# Generate all files
-make all
-```
-## Automated Initialization (wire)
-```
-# install wire
-go get github.com/google/wire/cmd/wire
 
-# generate wire
-cd cmd/server
-wire
-```
-
-## Docker
+## Docker 此项待更新 不具有效性
 ```bash
 # build
 docker build -t <your-docker-image-name> .

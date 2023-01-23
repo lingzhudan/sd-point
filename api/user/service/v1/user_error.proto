@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package api.user.v1;
+
+import "errors/errors.proto";
+
+option go_package = "sd-point/api/user/v1;v1";
+
+enum ErrorReason {
+  // 缺省错误码
+  option (errors.default_code) = 500;
+
+  // 用户名错误
+  ACCOUNT_ERROR = 0 [(errors.code) = 401];
+  // 密码错误
+  PASSWORD_ERROR = 1 [(errors.code) = 401];
+  // 无此sessionID
+  SESSION_ID_NOT_FOUND = 2 [(errors.code) = 404];
+  // 账号已注册
+  ACCOUNT_REGISTERED = 3 [(errors.code) = 401];
+  // 非法账号名
+  ACCOUNT_INVALID = 4 [(errors.code) = 401];
+  // 非法密码
+  PASSWORD_INVALID = 5 [(errors.code) = 401];
+  // 微信已注册
+  WECHAT_REGISTERED = 6 [(errors.code) = 401];
+  // 微信code错误
+  WECHAT_CODE_ERROR = 7 [(errors.code) = 401];
+  // 无此用户
+  USER_NOT_FOUND = 8 [(errors.code) = 404];
+}

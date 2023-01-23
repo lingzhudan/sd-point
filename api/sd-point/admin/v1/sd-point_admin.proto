@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package api.sd_point.admin.v1;
+
+option go_package = "sd-point/api/sd-point/admin/v1;v1";
+
+service SdPointAdmin {
+	rpc CreateSdPointAdmin (CreateSdPointAdminRequest) returns (CreateSdPointAdminReply);
+	rpc UpdateSdPointAdmin (UpdateSdPointAdminRequest) returns (UpdateSdPointAdminReply);
+	rpc DeleteSdPointAdmin (DeleteSdPointAdminRequest) returns (DeleteSdPointAdminReply);
+	rpc GetSdPointAdmin (GetSdPointAdminRequest) returns (GetSdPointAdminReply);
+	rpc ListSdPointAdmin (ListSdPointAdminRequest) returns (ListSdPointAdminReply);
+}
+
+message CreateSdPointAdminRequest {}
+message CreateSdPointAdminReply {}
+
+message UpdateSdPointAdminRequest {}
+message UpdateSdPointAdminReply {}
+
+message DeleteSdPointAdminRequest {}
+message DeleteSdPointAdminReply {}
+
+message GetSdPointAdminRequest {}
+message GetSdPointAdminReply {}
+
+message ListSdPointAdminRequest {}
+message ListSdPointAdminReply {}
