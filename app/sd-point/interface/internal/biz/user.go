@@ -69,6 +69,13 @@ func (uc *UserUseCase) Login(ctx context.Context, account *OriginAccount) (sessi
 	return
 }
 
+func (uc *UserUseCase) Logout(ctx context.Context, sessionId string) (err error) {
+	if err = uc.repo.Logout(ctx, sessionId); err != nil {
+		uc.log.Errorf("failed to logout, error: %v", err)
+	}
+	return
+}
+
 func (uc *UserUseCase) Register(ctx context.Context, account *OriginAccount) (uid uint32, err error) {
 	if uid, err = uc.repo.Register(ctx, account); err != nil {
 		uc.log.Errorf("failed to register, error: %v", err)
@@ -83,10 +90,20 @@ func (uc *UserUseCase) WechatLogin(ctx context.Context, account *WechatAccount) 
 	return
 }
 
+func (uc *UserUseCase) WechatPhoneNumberLogin(ctx context.Context, account *WechatAccount) (sessionId string, err error) {
+	// TODO
+	return
+}
+
 func (uc *UserUseCase) WechatRegister(ctx context.Context, account *WechatAccount) (uid uint32, err error) {
 	if uid, err = uc.repo.WechatRegister(ctx, account); err != nil {
 		uc.log.Errorf("failed to login by wechat, error: %v", err)
 	}
+	return
+}
+
+func (uc *UserUseCase) WechatPhoneNumberRegister(ctx context.Context, account *WechatAccount) (uid uint32, err error) {
+	// TODO
 	return
 }
 
@@ -97,7 +114,7 @@ func (uc *UserUseCase) WechatBind(ctx context.Context, account *WechatAccount) (
 	return
 }
 
-// EncryptionPassword 通过用户的某些属性和密码混合加密生成加密数据
-func (uc *UserUseCase) EncryptionPassword(ctx context.Context, user *User) (pwd string) {
-	return ""
+func (uc *UserUseCase) WechatPhoneNumberBind(ctx context.Context, account *WechatAccount) (err error) {
+	// TODO
+	return
 }

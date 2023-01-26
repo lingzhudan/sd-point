@@ -4,7 +4,7 @@ package api.point.v1;
 
 import "errors/errors.proto";
 
-option go_package = "sd-point/api/point/v1;v1";
+option go_package = "sd-point/api/point/service/v1;v1";
 
 enum ErrorReason {
   // 缺省错误码

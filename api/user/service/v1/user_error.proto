@@ -4,7 +4,7 @@ package api.user.v1;
 
 import "errors/errors.proto";
 
-option go_package = "sd-point/api/user/v1;v1";
+option go_package = "sd-point/api/user/service/v1;v1";
 
 enum ErrorReason {
   // 缺省错误码
@@ -28,4 +28,6 @@ enum ErrorReason {
   WECHAT_CODE_ERROR = 7 [(errors.code) = 401];
   // 无此用户
   USER_NOT_FOUND = 8 [(errors.code) = 404];
+  // 微信已注册
+  PHONE_NUMBER_REGISTERED = 9 [(errors.code) = 401];
 }

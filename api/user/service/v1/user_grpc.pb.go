@@ -27,14 +27,24 @@ type UserClient interface {
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginReply, error)
 	// 用户登录
 	WechatLogin(ctx context.Context, in *WechatLoginRequest, opts ...grpc.CallOption) (*LoginReply, error)
+	// 用户登录
+	PhoneNumberLogin(ctx context.Context, in *PhoneNumberLoginRequest, opts ...grpc.CallOption) (*LoginReply, error)
 	// 用户登出
 	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// 用户注册
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterReply, error)
 	// 微信用户注册
 	WechatRegister(ctx context.Context, in *WechatRegisterRequest, opts ...grpc.CallOption) (*RegisterReply, error)
-	// 用户绑定其他登录方式
+	// 手机号用户注册
+	PhoneNumberRegister(ctx context.Context, in *PhoneNumberRegisterRequest, opts ...grpc.CallOption) (*RegisterReply, error)
+	// 用户绑定微信登录方式
 	WechatBind(ctx context.Context, in *WechatBindRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 微信换绑
+	WechatSwitchBind(ctx context.Context, in *WechatSwitchBindRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 用户绑定手机号登录方式
+	PhoneNumberBind(ctx context.Context, in *PhoneNumberBindRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 手机号换绑
+	PhoneNumberSwitchBind(ctx context.Context, in *PhoneNumberSwitchBindRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// 用户信息
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserReply, error)
 	// 用户列表
@@ -61,6 +71,15 @@ func (c *userClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.C
 func (c *userClient) WechatLogin(ctx context.Context, in *WechatLoginRequest, opts ...grpc.CallOption) (*LoginReply, error) {
 	out := new(LoginReply)
 	err := c.cc.Invoke(ctx, "/api.user.v1.User/WechatLogin", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) PhoneNumberLogin(ctx context.Context, in *PhoneNumberLoginRequest, opts ...grpc.CallOption) (*LoginReply, error) {
+	out := new(LoginReply)
+	err := c.cc.Invoke(ctx, "/api.user.v1.User/PhoneNumberLogin", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -94,9 +113,45 @@ func (c *userClient) WechatRegister(ctx context.Context, in *WechatRegisterReque
 	return out, nil
 }
 
+func (c *userClient) PhoneNumberRegister(ctx context.Context, in *PhoneNumberRegisterRequest, opts ...grpc.CallOption) (*RegisterReply, error) {
+	out := new(RegisterReply)
+	err := c.cc.Invoke(ctx, "/api.user.v1.User/PhoneNumberRegister", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userClient) WechatBind(ctx context.Context, in *WechatBindRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/api.user.v1.User/WechatBind", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) WechatSwitchBind(ctx context.Context, in *WechatSwitchBindRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/api.user.v1.User/WechatSwitchBind", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) PhoneNumberBind(ctx context.Context, in *PhoneNumberBindRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/api.user.v1.User/PhoneNumberBind", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) PhoneNumberSwitchBind(ctx context.Context, in *PhoneNumberSwitchBindRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/api.user.v1.User/PhoneNumberSwitchBind", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -129,14 +184,24 @@ type UserServer interface {
 	Login(context.Context, *LoginRequest) (*LoginReply, error)
 	// 用户登录
 	WechatLogin(context.Context, *WechatLoginRequest) (*LoginReply, error)
+	// 用户登录
+	PhoneNumberLogin(context.Context, *PhoneNumberLoginRequest) (*LoginReply, error)
 	// 用户登出
 	Logout(context.Context, *LogoutRequest) (*emptypb.Empty, error)
 	// 用户注册
 	Register(context.Context, *RegisterRequest) (*RegisterReply, error)
 	// 微信用户注册
 	WechatRegister(context.Context, *WechatRegisterRequest) (*RegisterReply, error)
-	// 用户绑定其他登录方式
+	// 手机号用户注册
+	PhoneNumberRegister(context.Context, *PhoneNumberRegisterRequest) (*RegisterReply, error)
+	// 用户绑定微信登录方式
 	WechatBind(context.Context, *WechatBindRequest) (*emptypb.Empty, error)
+	// 微信换绑
+	WechatSwitchBind(context.Context, *WechatSwitchBindRequest) (*emptypb.Empty, error)
+	// 用户绑定手机号登录方式
+	PhoneNumberBind(context.Context, *PhoneNumberBindRequest) (*emptypb.Empty, error)
+	// 手机号换绑
+	PhoneNumberSwitchBind(context.Context, *PhoneNumberSwitchBindRequest) (*emptypb.Empty, error)
 	// 用户信息
 	GetUser(context.Context, *GetUserRequest) (*GetUserReply, error)
 	// 用户列表
@@ -154,6 +219,9 @@ func (UnimplementedUserServer) Login(context.Context, *LoginRequest) (*LoginRepl
 func (UnimplementedUserServer) WechatLogin(context.Context, *WechatLoginRequest) (*LoginReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method WechatLogin not implemented")
 }
+func (UnimplementedUserServer) PhoneNumberLogin(context.Context, *PhoneNumberLoginRequest) (*LoginReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PhoneNumberLogin not implemented")
+}
 func (UnimplementedUserServer) Logout(context.Context, *LogoutRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Logout not implemented")
 }
@@ -163,8 +231,20 @@ func (UnimplementedUserServer) Register(context.Context, *RegisterRequest) (*Reg
 func (UnimplementedUserServer) WechatRegister(context.Context, *WechatRegisterRequest) (*RegisterReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method WechatRegister not implemented")
 }
+func (UnimplementedUserServer) PhoneNumberRegister(context.Context, *PhoneNumberRegisterRequest) (*RegisterReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PhoneNumberRegister not implemented")
+}
 func (UnimplementedUserServer) WechatBind(context.Context, *WechatBindRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method WechatBind not implemented")
+}
+func (UnimplementedUserServer) WechatSwitchBind(context.Context, *WechatSwitchBindRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WechatSwitchBind not implemented")
+}
+func (UnimplementedUserServer) PhoneNumberBind(context.Context, *PhoneNumberBindRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PhoneNumberBind not implemented")
+}
+func (UnimplementedUserServer) PhoneNumberSwitchBind(context.Context, *PhoneNumberSwitchBindRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PhoneNumberSwitchBind not implemented")
 }
 func (UnimplementedUserServer) GetUser(context.Context, *GetUserRequest) (*GetUserReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
@@ -217,6 +297,24 @@ func _User_WechatLogin_Handler(srv interface{}, ctx context.Context, dec func(in
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServer).WechatLogin(ctx, req.(*WechatLoginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_PhoneNumberLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PhoneNumberLoginRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).PhoneNumberLogin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.user.v1.User/PhoneNumberLogin",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).PhoneNumberLogin(ctx, req.(*PhoneNumberLoginRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -275,6 +373,24 @@ func _User_WechatRegister_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_PhoneNumberRegister_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PhoneNumberRegisterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).PhoneNumberRegister(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.user.v1.User/PhoneNumberRegister",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).PhoneNumberRegister(ctx, req.(*PhoneNumberRegisterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _User_WechatBind_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(WechatBindRequest)
 	if err := dec(in); err != nil {
@@ -289,6 +405,60 @@ func _User_WechatBind_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServer).WechatBind(ctx, req.(*WechatBindRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_WechatSwitchBind_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WechatSwitchBindRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).WechatSwitchBind(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.user.v1.User/WechatSwitchBind",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).WechatSwitchBind(ctx, req.(*WechatSwitchBindRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_PhoneNumberBind_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PhoneNumberBindRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).PhoneNumberBind(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.user.v1.User/PhoneNumberBind",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).PhoneNumberBind(ctx, req.(*PhoneNumberBindRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_PhoneNumberSwitchBind_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PhoneNumberSwitchBindRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).PhoneNumberSwitchBind(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.user.v1.User/PhoneNumberSwitchBind",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).PhoneNumberSwitchBind(ctx, req.(*PhoneNumberSwitchBindRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -345,6 +515,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _User_WechatLogin_Handler,
 		},
 		{
+			MethodName: "PhoneNumberLogin",
+			Handler:    _User_PhoneNumberLogin_Handler,
+		},
+		{
 			MethodName: "Logout",
 			Handler:    _User_Logout_Handler,
 		},
@@ -357,8 +531,24 @@ var User_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _User_WechatRegister_Handler,
 		},
 		{
+			MethodName: "PhoneNumberRegister",
+			Handler:    _User_PhoneNumberRegister_Handler,
+		},
+		{
 			MethodName: "WechatBind",
 			Handler:    _User_WechatBind_Handler,
+		},
+		{
+			MethodName: "WechatSwitchBind",
+			Handler:    _User_WechatSwitchBind_Handler,
+		},
+		{
+			MethodName: "PhoneNumberBind",
+			Handler:    _User_PhoneNumberBind_Handler,
+		},
+		{
+			MethodName: "PhoneNumberSwitchBind",
+			Handler:    _User_PhoneNumberSwitchBind_Handler,
 		},
 		{
 			MethodName: "GetUser",

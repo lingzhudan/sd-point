@@ -123,7 +123,7 @@ func (uc *PointUseCase) ListRecord(ctx context.Context, cond *RecordCond) (recor
 	return
 }
 
-func (uc *PointUseCase) CreatRecorde(ctx context.Context, record *Record) (err error) {
+func (uc *PointUseCase) CreatRecord(ctx context.Context, record *Record) (err error) {
 	if err = uc.repo.CreateRecord(ctx, record); err != nil {
 		uc.log.Debugf("failed to create records, error: %v", err)
 	}

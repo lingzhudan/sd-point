@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-http v2.5.3
 // - protoc             v3.19.1
-// source: v1/sd-point_interface.proto
+// source: sd-point/interface/v1/sd-point_interface.proto
 
 package v1
 
@@ -48,7 +48,7 @@ type SdPointInterfaceHTTPServer interface {
 	ListRecord(context.Context, *ListRecordRequest) (*ListRecordReply, error)
 	ListUser(context.Context, *ListUserRequest) (*ListUserReply, error)
 	Login(context.Context, *LoginRequest) (*LoginReply, error)
-	Logout(context.Context, *LogoutRequest) (*emptypb.Empty, error)
+	Logout(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 	Register(context.Context, *RegisterRequest) (*emptypb.Empty, error)
 	UpdatePoint(context.Context, *UpdatePointRequest) (*emptypb.Empty, error)
 	UpdateRecord(context.Context, *UpdateRecordRequest) (*emptypb.Empty, error)
@@ -280,13 +280,13 @@ func _SdPointInterface_Login0_HTTP_Handler(srv SdPointInterfaceHTTPServer) func(
 
 func _SdPointInterface_Logout0_HTTP_Handler(srv SdPointInterfaceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in LogoutRequest
+		var in emptypb.Empty
 		if err := ctx.Bind(&in); err != nil {
 			return err
 		}
 		http.SetOperation(ctx, OperationSdPointInterfaceLogout)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.Logout(ctx, req.(*LogoutRequest))
+			return srv.Logout(ctx, req.(*emptypb.Empty))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
@@ -394,7 +394,7 @@ type SdPointInterfaceHTTPClient interface {
 	ListRecord(ctx context.Context, req *ListRecordRequest, opts ...http.CallOption) (rsp *ListRecordReply, err error)
 	ListUser(ctx context.Context, req *ListUserRequest, opts ...http.CallOption) (rsp *ListUserReply, err error)
 	Login(ctx context.Context, req *LoginRequest, opts ...http.CallOption) (rsp *LoginReply, err error)
-	Logout(ctx context.Context, req *LogoutRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	Logout(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	Register(ctx context.Context, req *RegisterRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	UpdatePoint(ctx context.Context, req *UpdatePointRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	UpdateRecord(ctx context.Context, req *UpdateRecordRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
@@ -551,7 +551,7 @@ func (c *SdPointInterfaceHTTPClientImpl) Login(ctx context.Context, in *LoginReq
 	return &out, err
 }
 
-func (c *SdPointInterfaceHTTPClientImpl) Logout(ctx context.Context, in *LogoutRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+func (c *SdPointInterfaceHTTPClientImpl) Logout(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*emptypb.Empty, error) {
 	var out emptypb.Empty
 	pattern := "/v1/user/logout"
 	path := binding.EncodeURL(pattern, in, false)

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package api.user.v1;
 
-option go_package = "sd-point/api/user/v1;v1";
+option go_package = "sd-point/api/user/service/v1;v1";
 
 import "google/protobuf/empty.proto";
 import "validate/validate.proto";
@@ -14,6 +14,9 @@ service User {
 	// 用户登录
 	rpc WechatLogin (WechatLoginRequest) returns (LoginReply) {};
 
+	// 用户登录
+	rpc PhoneNumberLogin (PhoneNumberLoginRequest) returns (LoginReply) {};
+
 	// 用户登出
 	rpc Logout (LogoutRequest) returns (google.protobuf.Empty) {};
 
@@ -23,8 +26,20 @@ service User {
 	// 微信用户注册
 	rpc WechatRegister (WechatRegisterRequest) returns (RegisterReply) {};
 
-	// 用户绑定其他登录方式
+	// 手机号用户注册
+	rpc PhoneNumberRegister (PhoneNumberRegisterRequest) returns (RegisterReply) {};
+
+	// 用户绑定微信登录方式
 	rpc WechatBind (WechatBindRequest) returns (google.protobuf.Empty) {};
+
+	// 微信换绑
+	rpc WechatSwitchBind (WechatSwitchBindRequest) returns (google.protobuf.Empty) {};
+
+	// 用户绑定手机号登录方式
+	rpc PhoneNumberBind (PhoneNumberBindRequest) returns (google.protobuf.Empty) {};
+
+	// 手机号换绑
+	rpc PhoneNumberSwitchBind (PhoneNumberSwitchBindRequest) returns (google.protobuf.Empty) {};
 
 	// 用户信息
 	rpc GetUser (GetUserRequest) returns (GetUserReply) {};
@@ -42,8 +57,10 @@ message LoginRequest {
 message WechatLoginRequest {
 	// 微信openID
 	string open_id = 1 [(validate.rules).string = {len: 32}];
-	// 微信手机号
-	string phone_number = 2 [(validate.rules).string = {min_len: 10, max_len: 16}];
+}
+message PhoneNumberLoginRequest {
+	// 手机号
+	string phone_number = 1 [(validate.rules).string = {min_len: 10, max_len: 16}];
 }
 message LoginReply {
 	string session_id = 1;
@@ -61,8 +78,10 @@ message RegisterRequest {
 message WechatRegisterRequest {
 	// 微信openID
 	string open_id = 1 [(validate.rules).string = {len: 32}];
-	// 微信手机号
-	string phone_number = 2 [(validate.rules).string = {min_len: 10, max_len: 16}];
+}
+message PhoneNumberRegisterRequest {
+	// 手机号
+	string phone_number = 1 [(validate.rules).string = {min_len: 10, max_len: 16}];
 }
 message RegisterReply {
 	uint32 uid = 1;
@@ -73,10 +92,28 @@ message WechatBindRequest {
 	uint32 uid = 1;
 	// 微信openID
 	string open_id = 2 [(validate.rules).string = {len: 32}];
+}
+message PhoneNumberBindRequest {
+	// 待绑定用户编号
+	uint32 uid = 1;
 	// TODO 手机号区号
 
-	// 微信手机号
-	string phone_number = 3 [(validate.rules).string = {min_len: 10, max_len: 16}];
+	// 手机号
+	string phone_number = 2 [(validate.rules).string = {min_len: 10, max_len: 16}];
+}
+message WechatSwitchBindRequest {
+	// 待绑定用户编号
+	uint32 uid = 1;
+	// 微信openID
+	string open_id = 2 [(validate.rules).string = {len: 32}];
+}
+message PhoneNumberSwitchBindRequest {
+	// 待绑定用户编号
+	uint32 uid = 1;
+	// TODO 手机号区号
+
+	// 手机号
+	string phone_number = 2 [(validate.rules).string = {min_len: 10, max_len: 16}];
 }
 
 message GetUserRequest {

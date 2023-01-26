@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.19.1
-// source: v1/sd-point_interface.proto
+// source: sd-point/interface/v1/sd-point_interface.proto
 
 package v1
 
@@ -44,7 +44,7 @@ type SdPointInterfaceClient interface {
 	// 用户登录
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginReply, error)
 	// 用户登出
-	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	Logout(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// 用户注册
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// 用户绑定其他登录方式
@@ -153,7 +153,7 @@ func (c *sdPointInterfaceClient) Login(ctx context.Context, in *LoginRequest, op
 	return out, nil
 }
 
-func (c *sdPointInterfaceClient) Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *sdPointInterfaceClient) Logout(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/api.sd_point.interface.v1.SdPointInterface/Logout", in, out, opts...)
 	if err != nil {
@@ -223,7 +223,7 @@ type SdPointInterfaceServer interface {
 	// 用户登录
 	Login(context.Context, *LoginRequest) (*LoginReply, error)
 	// 用户登出
-	Logout(context.Context, *LogoutRequest) (*emptypb.Empty, error)
+	Logout(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 	// 用户注册
 	Register(context.Context, *RegisterRequest) (*emptypb.Empty, error)
 	// 用户绑定其他登录方式
@@ -269,7 +269,7 @@ func (UnimplementedSdPointInterfaceServer) ListRecord(context.Context, *ListReco
 func (UnimplementedSdPointInterfaceServer) Login(context.Context, *LoginRequest) (*LoginReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
-func (UnimplementedSdPointInterfaceServer) Logout(context.Context, *LogoutRequest) (*emptypb.Empty, error) {
+func (UnimplementedSdPointInterfaceServer) Logout(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Logout not implemented")
 }
 func (UnimplementedSdPointInterfaceServer) Register(context.Context, *RegisterRequest) (*emptypb.Empty, error) {
@@ -478,7 +478,7 @@ func _SdPointInterface_Login_Handler(srv interface{}, ctx context.Context, dec f
 }
 
 func _SdPointInterface_Logout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LogoutRequest)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -490,7 +490,7 @@ func _SdPointInterface_Logout_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: "/api.sd_point.interface.v1.SdPointInterface/Logout",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SdPointInterfaceServer).Logout(ctx, req.(*LogoutRequest))
+		return srv.(SdPointInterfaceServer).Logout(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -636,5 +636,5 @@ var SdPointInterface_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "v1/sd-point_interface.proto",
+	Metadata: "sd-point/interface/v1/sd-point_interface.proto",
 }

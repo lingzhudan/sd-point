@@ -89,7 +89,7 @@ service SdPointInterface {
 	};
 
 	// 用户登出
-	rpc Logout (LogoutRequest) returns (google.protobuf.Empty) {
+	rpc Logout (google.protobuf.Empty) returns (google.protobuf.Empty) {
 		option (google.api.http) = {
 			post: "/v1/user/logout",
 			body: "*",
@@ -202,7 +202,7 @@ message Record {
 
 message CreateRecordRequest {
 	// 新增点数信息
-	Record records = 1 [(validate.rules).message = {required: true}];
+	Record record = 1 [(validate.rules).message = {required: true}];
 }
 
 message DeleteRecordRequest {
@@ -254,22 +254,19 @@ message LoginRequest {
 		// 微信换取手机号的code字符串
 		string phone_number_code = 2 [(validate.rules).string = {len: 32}];
 	}
+	// 登录类型 0 为原始账号 1 为微信登录 2 为微信手机号登录 4 为手机号登录
+	uint32 login_type = 1;
 	// 原始账号信息
 	LoginRequest.OriginalAccount origin_account = 2;
 	// 微信账号信息
 	LoginRequest.WechatAccount wechat_account = 3;
-
 }
 message LoginReply {
 	string session_id = 1;
 }
 
-message LogoutRequest {
-	string session_id = 1;
-}
-
 message RegisterRequest {
-	// 注册类型 0 为账号密码 1 为微信
+	// 注册类型 0 为账号密码注册 1 为微信注册 2 为微信手机号注册 4 为手机号注册
 	uint64 register_type = 1 [(validate.rules).uint64 = {lte: 1}];
 	// 原始账号信息
 	LoginRequest.OriginalAccount origin_account = 2;
