@@ -26,6 +26,7 @@ const OperationSdPointInterfaceCreateRecord = "/api.sd_point.interface.v1.SdPoin
 const OperationSdPointInterfaceDeletePoint = "/api.sd_point.interface.v1.SdPointInterface/DeletePoint"
 const OperationSdPointInterfaceDeleteRecord = "/api.sd_point.interface.v1.SdPointInterface/DeleteRecord"
 const OperationSdPointInterfaceGetPoint = "/api.sd_point.interface.v1.SdPointInterface/GetPoint"
+const OperationSdPointInterfaceGetPublicKey = "/api.sd_point.interface.v1.SdPointInterface/GetPublicKey"
 const OperationSdPointInterfaceGetUser = "/api.sd_point.interface.v1.SdPointInterface/GetUser"
 const OperationSdPointInterfaceListPoint = "/api.sd_point.interface.v1.SdPointInterface/ListPoint"
 const OperationSdPointInterfaceListRecord = "/api.sd_point.interface.v1.SdPointInterface/ListRecord"
@@ -43,13 +44,14 @@ type SdPointInterfaceHTTPServer interface {
 	DeletePoint(context.Context, *DeletePointRequest) (*emptypb.Empty, error)
 	DeleteRecord(context.Context, *DeleteRecordRequest) (*emptypb.Empty, error)
 	GetPoint(context.Context, *GetPointRequest) (*GetPointReply, error)
+	GetPublicKey(context.Context, *emptypb.Empty) (*GetPublicKeyReply, error)
 	GetUser(context.Context, *GetUserRequest) (*GetUserReply, error)
 	ListPoint(context.Context, *ListPointRequest) (*ListPointReply, error)
 	ListRecord(context.Context, *ListRecordRequest) (*ListRecordReply, error)
 	ListUser(context.Context, *ListUserRequest) (*ListUserReply, error)
 	Login(context.Context, *LoginRequest) (*LoginReply, error)
 	Logout(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
-	Register(context.Context, *RegisterRequest) (*emptypb.Empty, error)
+	Register(context.Context, *RegisterRequest) (*RegisterReply, error)
 	UpdatePoint(context.Context, *UpdatePointRequest) (*emptypb.Empty, error)
 	UpdateRecord(context.Context, *UpdateRecordRequest) (*emptypb.Empty, error)
 }
@@ -60,12 +62,13 @@ func RegisterSdPointInterfaceHTTPServer(s *http.Server, srv SdPointInterfaceHTTP
 	r.PUT("/v1/point/{point.pid}", _SdPointInterface_UpdatePoint0_HTTP_Handler(srv))
 	r.DELETE("/v1/point/{pid}", _SdPointInterface_DeletePoint0_HTTP_Handler(srv))
 	r.GET("/v1/point/{pid}", _SdPointInterface_GetPoint0_HTTP_Handler(srv))
-	r.GET("/v1/point/list", _SdPointInterface_ListPoint0_HTTP_Handler(srv))
+	r.GET("/v1/point", _SdPointInterface_ListPoint0_HTTP_Handler(srv))
 	r.POST("/v1/record", _SdPointInterface_CreateRecord0_HTTP_Handler(srv))
 	r.DELETE("/v1/record/{rid}", _SdPointInterface_DeleteRecord0_HTTP_Handler(srv))
 	r.PUT("/v1/record/{record.rid}", _SdPointInterface_UpdateRecord0_HTTP_Handler(srv))
-	r.GET("/v1/record/list", _SdPointInterface_ListRecord0_HTTP_Handler(srv))
-	r.POST("/v1/user/login", _SdPointInterface_Login0_HTTP_Handler(srv))
+	r.GET("/v1/record", _SdPointInterface_ListRecord0_HTTP_Handler(srv))
+	r.GET("/v1/user/public_key", _SdPointInterface_GetPublicKey0_HTTP_Handler(srv))
+	r.POST("/v1/user/login/{login_type}", _SdPointInterface_Login0_HTTP_Handler(srv))
 	r.POST("/v1/user/logout", _SdPointInterface_Logout0_HTTP_Handler(srv))
 	r.POST("/v1/user/register/{register_type}", _SdPointInterface_Register0_HTTP_Handler(srv))
 	r.POST("/v1/user/bind/{bind_type}", _SdPointInterface_BindAccount0_HTTP_Handler(srv))
@@ -259,10 +262,32 @@ func _SdPointInterface_ListRecord0_HTTP_Handler(srv SdPointInterfaceHTTPServer) 
 	}
 }
 
+func _SdPointInterface_GetPublicKey0_HTTP_Handler(srv SdPointInterfaceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in emptypb.Empty
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationSdPointInterfaceGetPublicKey)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetPublicKey(ctx, req.(*emptypb.Empty))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*GetPublicKeyReply)
+		return ctx.Result(200, reply)
+	}
+}
+
 func _SdPointInterface_Login0_HTTP_Handler(srv SdPointInterfaceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in LoginRequest
 		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
 			return err
 		}
 		http.SetOperation(ctx, OperationSdPointInterfaceLogin)
@@ -314,7 +339,7 @@ func _SdPointInterface_Register0_HTTP_Handler(srv SdPointInterfaceHTTPServer) fu
 		if err != nil {
 			return err
 		}
-		reply := out.(*emptypb.Empty)
+		reply := out.(*RegisterReply)
 		return ctx.Result(200, reply)
 	}
 }
@@ -389,13 +414,14 @@ type SdPointInterfaceHTTPClient interface {
 	DeletePoint(ctx context.Context, req *DeletePointRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	DeleteRecord(ctx context.Context, req *DeleteRecordRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	GetPoint(ctx context.Context, req *GetPointRequest, opts ...http.CallOption) (rsp *GetPointReply, err error)
+	GetPublicKey(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *GetPublicKeyReply, err error)
 	GetUser(ctx context.Context, req *GetUserRequest, opts ...http.CallOption) (rsp *GetUserReply, err error)
 	ListPoint(ctx context.Context, req *ListPointRequest, opts ...http.CallOption) (rsp *ListPointReply, err error)
 	ListRecord(ctx context.Context, req *ListRecordRequest, opts ...http.CallOption) (rsp *ListRecordReply, err error)
 	ListUser(ctx context.Context, req *ListUserRequest, opts ...http.CallOption) (rsp *ListUserReply, err error)
 	Login(ctx context.Context, req *LoginRequest, opts ...http.CallOption) (rsp *LoginReply, err error)
 	Logout(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
-	Register(ctx context.Context, req *RegisterRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	Register(ctx context.Context, req *RegisterRequest, opts ...http.CallOption) (rsp *RegisterReply, err error)
 	UpdatePoint(ctx context.Context, req *UpdatePointRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	UpdateRecord(ctx context.Context, req *UpdateRecordRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 }
@@ -486,6 +512,19 @@ func (c *SdPointInterfaceHTTPClientImpl) GetPoint(ctx context.Context, in *GetPo
 	return &out, err
 }
 
+func (c *SdPointInterfaceHTTPClientImpl) GetPublicKey(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*GetPublicKeyReply, error) {
+	var out GetPublicKeyReply
+	pattern := "/v1/user/public_key"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationSdPointInterfaceGetPublicKey))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
 func (c *SdPointInterfaceHTTPClientImpl) GetUser(ctx context.Context, in *GetUserRequest, opts ...http.CallOption) (*GetUserReply, error) {
 	var out GetUserReply
 	pattern := "/v1/user/{uid}"
@@ -501,7 +540,7 @@ func (c *SdPointInterfaceHTTPClientImpl) GetUser(ctx context.Context, in *GetUse
 
 func (c *SdPointInterfaceHTTPClientImpl) ListPoint(ctx context.Context, in *ListPointRequest, opts ...http.CallOption) (*ListPointReply, error) {
 	var out ListPointReply
-	pattern := "/v1/point/list"
+	pattern := "/v1/point"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationSdPointInterfaceListPoint))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -514,7 +553,7 @@ func (c *SdPointInterfaceHTTPClientImpl) ListPoint(ctx context.Context, in *List
 
 func (c *SdPointInterfaceHTTPClientImpl) ListRecord(ctx context.Context, in *ListRecordRequest, opts ...http.CallOption) (*ListRecordReply, error) {
 	var out ListRecordReply
-	pattern := "/v1/record/list"
+	pattern := "/v1/record"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationSdPointInterfaceListRecord))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -540,7 +579,7 @@ func (c *SdPointInterfaceHTTPClientImpl) ListUser(ctx context.Context, in *ListU
 
 func (c *SdPointInterfaceHTTPClientImpl) Login(ctx context.Context, in *LoginRequest, opts ...http.CallOption) (*LoginReply, error) {
 	var out LoginReply
-	pattern := "/v1/user/login"
+	pattern := "/v1/user/login/{login_type}"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationSdPointInterfaceLogin))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -564,8 +603,8 @@ func (c *SdPointInterfaceHTTPClientImpl) Logout(ctx context.Context, in *emptypb
 	return &out, err
 }
 
-func (c *SdPointInterfaceHTTPClientImpl) Register(ctx context.Context, in *RegisterRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
-	var out emptypb.Empty
+func (c *SdPointInterfaceHTTPClientImpl) Register(ctx context.Context, in *RegisterRequest, opts ...http.CallOption) (*RegisterReply, error) {
+	var out RegisterReply
 	pattern := "/v1/user/register/{register_type}"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationSdPointInterfaceRegister))

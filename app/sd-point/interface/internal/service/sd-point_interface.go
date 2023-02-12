@@ -14,22 +14,28 @@ type SdPointInterfaceService struct {
 
 	uc *biz.UserUseCase
 	pc *biz.PointUseCase
+	wc *biz.WechatUseCase
 
 	log *log.Helper
 }
 
-func NewSdPointInterfaceService(uc *biz.UserUseCase, pc *biz.PointUseCase, logger log.Logger) *SdPointInterfaceService {
+func NewSdPointInterfaceService(
+	uc *biz.UserUseCase,
+	pc *biz.PointUseCase,
+	wc *biz.WechatUseCase,
+	logger log.Logger) *SdPointInterfaceService {
 	return &SdPointInterfaceService{
 		uc:  uc,
 		pc:  pc,
+		wc:  wc,
 		log: log.NewHelper(logger),
 	}
 }
 
 func (s *SdPointInterfaceService) CreatePoint(ctx context.Context, req *pb.CreatePointRequest) (_ *emptypb.Empty, err error) {
-	// TODO 用户模块待完善
+	uid := GetSession(ctx).UID
 	if err = s.pc.CreatePoint(ctx, &biz.Point{
-		//UID:  uid,
+		UID:  uid,
 		Name: req.Point.Name,
 		Desc: req.Point.Desc,
 	}); err != nil {
@@ -38,10 +44,11 @@ func (s *SdPointInterfaceService) CreatePoint(ctx context.Context, req *pb.Creat
 	return
 }
 func (s *SdPointInterfaceService) UpdatePoint(ctx context.Context, req *pb.UpdatePointRequest) (_ *emptypb.Empty, err error) {
+	uid := GetSession(ctx).UID
 	p := req.Point
 	if err = s.pc.UpdatePoint(ctx, &biz.Point{
-		PID: p.Pid,
-		//UID:       uid,
+		PID:  p.Pid,
+		UID:  uid,
 		Name: p.Name,
 		Desc: p.Desc,
 	}); err != nil {
@@ -72,12 +79,13 @@ func (s *SdPointInterfaceService) GetPoint(ctx context.Context, req *pb.GetPoint
 	return
 }
 func (s *SdPointInterfaceService) ListPoint(ctx context.Context, req *pb.ListPointRequest) (rep *pb.ListPointReply, err error) {
+	uid := GetSession(ctx).UID
 	var ps []*biz.Point
 	if ps, err = s.pc.ListPoint(ctx, &biz.PointCond{
 		Begin: req.Begin,
 		Count: req.Count,
 		PIDs:  req.Pids,
-		//UIDs:  []uint32{uid},
+		UIDs:  []uint32{uid},
 	}); err != nil {
 		s.log.Errorf("internal error: %v", err)
 	}
@@ -156,6 +164,15 @@ func (s *SdPointInterfaceService) ListRecord(ctx context.Context, req *pb.ListRe
 	rep.Count = uint32(len(rep.Records))
 	return
 }
+func (s *SdPointInterfaceService) GetPublicKey(ctx context.Context, _ *emptypb.Empty) (rep *pb.GetPublicKeyReply, err error) {
+	rep = new(pb.GetPublicKeyReply)
+	var bs []byte
+	if bs, err = s.uc.GetPublicKey(ctx); err != nil {
+		s.log.Errorf("internal error: %v", err)
+	}
+	rep.PublicKey = string(bs)
+	return
+}
 func (s *SdPointInterfaceService) Login(ctx context.Context, req *pb.LoginRequest) (rep *pb.LoginReply, err error) {
 	rep = new(pb.LoginReply)
 	switch req.LoginType {
@@ -170,18 +187,29 @@ func (s *SdPointInterfaceService) Login(ctx context.Context, req *pb.LoginReques
 		}
 	case 1:
 		// 微信账号登录
-		a := req.WechatAccount
-		if rep.SessionId, err = s.uc.WechatLogin(ctx, &biz.WechatAccount{
-			OpenIDCode: a.OpenIdCode,
+		c := req.WechatAccountCode
+		var a *biz.WechatAccount
+		if a, err = s.wc.GetOpenid(ctx, &biz.WechatAccountCode{
+			OpenidCode:      c.OpenidCode,
+			PhoneNumberCode: c.PhoneNumberCode,
 		}); err != nil {
+			s.log.Errorf("internal error: %v", err)
+			return
+		}
+		if rep.SessionId, err = s.uc.WechatLogin(ctx, a); err != nil {
 			s.log.Errorf("internal error: %v", err)
 		}
 	case 2:
 		// 微信手机号登录
-		a := req.WechatAccount
-		if rep.SessionId, err = s.uc.WechatPhoneNumberLogin(ctx, &biz.WechatAccount{
-			PhoneNumberCode: a.PhoneNumberCode,
+		c := req.WechatAccountCode
+		var a *biz.WechatAccount
+		if a, err = s.wc.GetPhoneNumber(ctx, &biz.WechatAccountCode{
+			PhoneNumberCode: c.PhoneNumberCode,
 		}); err != nil {
+			s.log.Errorf("internal error: %v", err)
+			return
+		}
+		if rep.SessionId, err = s.uc.WechatPhoneNumberLogin(ctx, a); err != nil {
 			s.log.Errorf("internal error: %v", err)
 		}
 	case 4:
@@ -211,17 +239,31 @@ func (s *SdPointInterfaceService) Register(ctx context.Context, req *pb.Register
 		}
 	case 1:
 		// 微信账号注册
-		a := req.WechatAccount
+		var a *biz.WechatAccount
+		c := req.WechatAccount
+		if a, err = s.wc.GetOpenid(ctx, &biz.WechatAccountCode{
+			OpenidCode: c.OpenidCode,
+		}); err != nil {
+			s.log.Errorf("internal error: %v", err)
+			return
+		}
 		if rep.Uid, err = s.uc.WechatRegister(ctx, &biz.WechatAccount{
-			OpenIDCode: a.OpenIdCode,
+			Openid: a.Openid,
 		}); err != nil {
 			s.log.Errorf("internal error: %v", err)
 		}
 	case 2:
 		// 微信手机号注册
-		a := req.WechatAccount
+		var a *biz.WechatAccount
+		c := req.WechatAccount
+		if a, err = s.wc.GetPhoneNumber(ctx, &biz.WechatAccountCode{
+			PhoneNumberCode: c.PhoneNumberCode,
+		}); err != nil {
+			s.log.Errorf("internal error: %v", err)
+			return
+		}
 		if rep.Uid, err = s.uc.WechatPhoneNumberRegister(ctx, &biz.WechatAccount{
-			PhoneNumberCode: a.PhoneNumberCode,
+			PhoneNumber: a.PhoneNumber,
 		}); err != nil {
 			s.log.Errorf("internal error: %v", err)
 		}
@@ -231,15 +273,32 @@ func (s *SdPointInterfaceService) Register(ctx context.Context, req *pb.Register
 	return
 }
 func (s *SdPointInterfaceService) BindAccount(ctx context.Context, req *pb.BindAccountRequest) (_ *emptypb.Empty, err error) {
+	var uid uint32
 	switch req.BindType {
 	case 0:
+		var a *biz.WechatAccount
+		c := req.WechatAccountCode
+		if a, err = s.wc.GetOpenid(ctx, &biz.WechatAccountCode{
+			OpenidCode: c.OpenidCode,
+		}); err != nil {
+			s.log.Errorf("internal error: %v", err)
+			return
+		}
 		// 微信账号绑定
-		if err = s.uc.WechatBind(ctx, &biz.WechatAccount{OpenIDCode: req.WechatAccount.OpenIdCode}); err != nil {
+		if err = s.uc.WechatBind(ctx, uid, a); err != nil {
 			s.log.Errorf("internal error: %v", err)
 		}
 	case 1:
+		var a *biz.WechatAccount
+		c := req.WechatAccountCode
+		if a, err = s.wc.GetPhoneNumber(ctx, &biz.WechatAccountCode{
+			PhoneNumberCode: c.PhoneNumberCode,
+		}); err != nil {
+			s.log.Errorf("internal error: %v", err)
+			return
+		}
 		// 微信手机号绑定
-		if err = s.uc.WechatPhoneNumberBind(ctx, &biz.WechatAccount{OpenIDCode: req.WechatAccount.OpenIdCode}); err != nil {
+		if err = s.uc.WechatPhoneNumberBind(ctx, &biz.WechatAccount{PhoneNumber: a.PhoneNumber}); err != nil {
 			s.log.Errorf("internal error: %v", err)
 		}
 	case 2:

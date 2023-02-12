@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package api.interface.v1;
+
+import "errors/errors.proto";
+
+option go_package = "sd-point/api/sd-point/interface/v1;v1";
+
+enum ErrorReason {
+  // 缺省错误码
+  option (errors.default_code) = 500;
+
+  // 用户未登录
+  NOT_LOGGED_IN = 0 [(errors.code) = 403];
+
+}

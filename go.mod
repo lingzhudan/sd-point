@@ -14,9 +14,9 @@ require (
 	github.com/google/wire v0.5.0
 	go.etcd.io/etcd/client/v3 v3.5.7
 	go.uber.org/automaxprocs v1.5.1
-	google.golang.org/genproto v0.0.0-20220524023933-508584e28198
-	google.golang.org/grpc v1.50.1
-	google.golang.org/protobuf v1.28.0
+	google.golang.org/genproto v0.0.0-20230127162408-596548ed4efa
+	google.golang.org/grpc v1.51.0
+	google.golang.org/protobuf v1.28.1
 	gorm.io/driver/mysql v1.4.4
 	gorm.io/gorm v1.24.2
 )
@@ -46,9 +46,9 @@ require (
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/zap v1.17.0 // indirect
-	golang.org/x/net v0.0.0-20220520000938-2e3eb7b945c2 // indirect
-	golang.org/x/sync v0.0.0-20220513210516-0976fa681c29 // indirect
-	golang.org/x/sys v0.0.0-20220919091848-fb04ddd9f9c8 // indirect
-	golang.org/x/text v0.3.7 // indirect
+	golang.org/x/net v0.5.0 // indirect
+	golang.org/x/sync v0.1.0 // indirect
+	golang.org/x/sys v0.4.0 // indirect
+	golang.org/x/text v0.6.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

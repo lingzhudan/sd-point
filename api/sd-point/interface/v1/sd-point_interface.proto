@@ -44,7 +44,7 @@ service SdPointInterface {
 	// 获取点数列表
 	rpc ListPoint (ListPointRequest) returns (ListPointReply){
 		option (google.api.http) = {
-			get: "/v1/point/list",
+			get: "/v1/point",
 		};
 	};
 
@@ -74,16 +74,23 @@ service SdPointInterface {
 	// 获取记录列表
 	rpc ListRecord (ListRecordRequest) returns (ListRecordReply){
 		option (google.api.http) = {
-			get: "/v1/record/list",
+			get: "/v1/record",
 		};
 	};
 
 	/* 用户模块 */
 
+	// 获取公钥
+	rpc GetPublicKey (google.protobuf.Empty) returns (GetPublicKeyReply) {
+		option (google.api.http) = {
+			get: "/v1/user/public_key",
+		};
+	};
+
 	// 用户登录
 	rpc Login (LoginRequest) returns (LoginReply) {
 		option (google.api.http) = {
-			post: "/v1/user/login",
+			post: "/v1/user/login/{login_type}",
 			body: "*",
 		};
 	};
@@ -97,7 +104,7 @@ service SdPointInterface {
 	};
 
 	// 用户注册
-	rpc Register (RegisterRequest) returns (google.protobuf.Empty) {
+	rpc Register (RegisterRequest) returns (RegisterReply) {
 		option (google.api.http) = {
 			post: "/v1/user/register/{register_type}",
 			body: "*",
@@ -241,6 +248,11 @@ message ListRecordReply {
 
 /* 用户模块 */
 
+message GetPublicKeyReply {
+	// 公钥
+	string public_key = 1;
+}
+
 message LoginRequest {
 	message OriginalAccount {
 		// 用户账号
@@ -248,9 +260,9 @@ message LoginRequest {
 		// 用户密码 经公钥加密
 		string password = 2 [(validate.rules).string = {min_len: 1}];
 	}
-	message WechatAccount {
-		// 微信换取openID的code字符串
-		string open_id_code = 1 [(validate.rules).string = {len: 32}];
+	message WechatAccountCode {
+		// 微信换取openid的code字符串
+		string openid_code = 1 [(validate.rules).string = {len: 32}];
 		// 微信换取手机号的code字符串
 		string phone_number_code = 2 [(validate.rules).string = {len: 32}];
 	}
@@ -259,7 +271,7 @@ message LoginRequest {
 	// 原始账号信息
 	LoginRequest.OriginalAccount origin_account = 2;
 	// 微信账号信息
-	LoginRequest.WechatAccount wechat_account = 3;
+	LoginRequest.WechatAccountCode wechat_account_code = 3;
 }
 message LoginReply {
 	string session_id = 1;
@@ -271,7 +283,7 @@ message RegisterRequest {
 	// 原始账号信息
 	LoginRequest.OriginalAccount origin_account = 2;
 	// 微信账号信息
-	LoginRequest.WechatAccount wechat_account = 3;
+	LoginRequest.WechatAccountCode wechat_account = 3;
 }
 message RegisterReply {
 	uint32 uid = 1;
@@ -281,7 +293,7 @@ message BindAccountRequest {
 	// 绑定类型 0 为微信
 	uint32 bind_type = 1 [(validate.rules).uint32 = {in: [0]}];
 	// 微信账号信息
-	LoginRequest.WechatAccount wechat_account = 2;
+	LoginRequest.WechatAccountCode wechat_account_code = 2;
 }
 
 message GetUserRequest {

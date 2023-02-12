@@ -23,6 +23,10 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserClient interface {
+	// 获取公钥
+	GetPublicKey(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetPublicKeyReply, error)
+	// 获取session
+	GetSession(ctx context.Context, in *GetSessionRequest, opts ...grpc.CallOption) (*GetSessionReply, error)
 	// 用户登录
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginReply, error)
 	// 用户登录
@@ -57,6 +61,24 @@ type userClient struct {
 
 func NewUserClient(cc grpc.ClientConnInterface) UserClient {
 	return &userClient{cc}
+}
+
+func (c *userClient) GetPublicKey(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetPublicKeyReply, error) {
+	out := new(GetPublicKeyReply)
+	err := c.cc.Invoke(ctx, "/api.user.v1.User/GetPublicKey", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) GetSession(ctx context.Context, in *GetSessionRequest, opts ...grpc.CallOption) (*GetSessionReply, error) {
+	out := new(GetSessionReply)
+	err := c.cc.Invoke(ctx, "/api.user.v1.User/GetSession", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *userClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginReply, error) {
@@ -180,6 +202,10 @@ func (c *userClient) ListUser(ctx context.Context, in *ListUserRequest, opts ...
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility
 type UserServer interface {
+	// 获取公钥
+	GetPublicKey(context.Context, *emptypb.Empty) (*GetPublicKeyReply, error)
+	// 获取session
+	GetSession(context.Context, *GetSessionRequest) (*GetSessionReply, error)
 	// 用户登录
 	Login(context.Context, *LoginRequest) (*LoginReply, error)
 	// 用户登录
@@ -213,6 +239,12 @@ type UserServer interface {
 type UnimplementedUserServer struct {
 }
 
+func (UnimplementedUserServer) GetPublicKey(context.Context, *emptypb.Empty) (*GetPublicKeyReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPublicKey not implemented")
+}
+func (UnimplementedUserServer) GetSession(context.Context, *GetSessionRequest) (*GetSessionReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSession not implemented")
+}
 func (UnimplementedUserServer) Login(context.Context, *LoginRequest) (*LoginReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
@@ -263,6 +295,42 @@ type UnsafeUserServer interface {
 
 func RegisterUserServer(s grpc.ServiceRegistrar, srv UserServer) {
 	s.RegisterService(&User_ServiceDesc, srv)
+}
+
+func _User_GetPublicKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).GetPublicKey(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.user.v1.User/GetPublicKey",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).GetPublicKey(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_GetSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSessionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).GetSession(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.user.v1.User/GetSession",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).GetSession(ctx, req.(*GetSessionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _User_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -506,6 +574,14 @@ var User_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "api.user.v1.User",
 	HandlerType: (*UserServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetPublicKey",
+			Handler:    _User_GetPublicKey_Handler,
+		},
+		{
+			MethodName: "GetSession",
+			Handler:    _User_GetSession_Handler,
+		},
 		{
 			MethodName: "Login",
 			Handler:    _User_Login_Handler,

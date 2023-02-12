@@ -17,7 +17,8 @@ type RecordRepo interface {
 
 type RecordUseCase struct {
 	repo RecordRepo
-	log  *log.Helper
+	TotalRepo
+	log *log.Helper
 }
 
 func NewRecordUseCase(repo RecordRepo, logger log.Logger) *RecordUseCase {
@@ -46,35 +47,35 @@ func (r *Record) TableName() string {
 
 func (uc *RecordUseCase) Get(ctx context.Context, rid uint32) (record *Record, err error) {
 	if record, err = uc.repo.GetRecord(ctx, rid); err != nil {
-		uc.log.Debugf("failed to get record, error: %v", err)
+		uc.log.Errorf("failed to get record, error: %v", err)
 	}
 	return
 }
 
 func (uc *RecordUseCase) List(ctx context.Context, cond *RecordCond) (records []*Record, err error) {
 	if records, err = uc.repo.ListRecord(ctx, cond); err != nil {
-		uc.log.Debugf("failed to get records, error: %v", err)
+		uc.log.Errorf("failed to get records, error: %v", err)
 	}
 	return
 }
 
 func (uc *RecordUseCase) Create(ctx context.Context, record *Record) (err error) {
 	if err = uc.repo.CreateRecord(ctx, record); err != nil {
-		uc.log.Debugf("failed to create records, error: %v", err)
+		uc.log.Errorf("failed to create records, error: %v", err)
 	}
 	return
 }
 
 func (uc *RecordUseCase) Update(ctx context.Context, record *Record) (err error) {
 	if err = uc.repo.UpdateRecord(ctx, record); err != nil {
-		uc.log.Debugf("failed to update record, error: %v", err)
+		uc.log.Errorf("failed to update record, error: %v", err)
 	}
 	return
 }
 
 func (uc *RecordUseCase) Delete(ctx context.Context, rid uint32) (err error) {
 	if err = uc.repo.DeleteRecord(ctx, rid); err != nil {
-		uc.log.Debugf("failed to delete record, error: %v", err)
+		uc.log.Errorf("failed to delete record, error: %v", err)
 	}
 	return
 }

@@ -262,12 +262,20 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/api.sd_point.interface.v1.ListUserReply'
-    /v1/user/login:
+    /v1/user/login/{loginType}:
         post:
             tags:
                 - SdPointInterface
             description: 用户登录
             operationId: SdPointInterface_Login
+            parameters:
+                - name: loginType
+                  in: path
+                  description: 登录类型 0 为原始账号 1 为微信登录 2 为微信手机号登录 4 为手机号登录
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
             requestBody:
                 content:
                     application/json:
@@ -289,14 +297,25 @@ paths:
             operationId: SdPointInterface_Logout
             requestBody:
                 content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/api.sd_point.interface.v1.LogoutRequest'
+                    application/json: {}
                 required: true
             responses:
                 "200":
                     description: OK
                     content: {}
+    /v1/user/public_key:
+        get:
+            tags:
+                - SdPointInterface
+            description: 获取公钥
+            operationId: SdPointInterface_GetPublicKey
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.sd_point.interface.v1.GetPublicKeyReply'
     /v1/user/register/{registerType}:
         post:
             tags:
@@ -306,7 +325,7 @@ paths:
             parameters:
                 - name: registerType
                   in: path
-                  description: 注册类型 0 为账号密码 1 为微信
+                  description: 注册类型 0 为账号密码注册 1 为微信注册 2 为微信手机号注册 4 为手机号注册
                   required: true
                   schema:
                     type: integer
@@ -320,7 +339,10 @@ paths:
             responses:
                 "200":
                     description: OK
-                    content: {}
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.sd_point.interface.v1.RegisterReply'
     /v1/user/{uid}:
         get:
             tags:
@@ -350,8 +372,8 @@ components:
                     type: integer
                     description: 绑定类型 0 为微信
                     format: uint32
-                wechatAccount:
-                    $ref: '#/components/schemas/api.sd_point.interface.v1.LoginRequest_WechatAccount'
+                wechatAccountCode:
+                    $ref: '#/components/schemas/api.sd_point.interface.v1.LoginRequest_WechatAccountCode'
         api.sd_point.interface.v1.CreatePointRequest:
             type: object
             properties:
@@ -360,7 +382,7 @@ components:
         api.sd_point.interface.v1.CreateRecordRequest:
             type: object
             properties:
-                records:
+                record:
                     $ref: '#/components/schemas/api.sd_point.interface.v1.Record'
         api.sd_point.interface.v1.GetPointReply:
             type: object
@@ -396,6 +418,13 @@ components:
                     type: integer
                     description: 删除时间
                     format: uint64
+        api.sd_point.interface.v1.GetPublicKeyReply:
+            type: object
+            properties:
+                publicKey:
+                    type: string
+                    description: 公钥
+                    format: bytes
         api.sd_point.interface.v1.GetUserReply:
             type: object
             properties:
@@ -448,10 +477,14 @@ components:
         api.sd_point.interface.v1.LoginRequest:
             type: object
             properties:
+                loginType:
+                    type: integer
+                    description: 登录类型 0 为原始账号 1 为微信登录 2 为微信手机号登录 4 为手机号登录
+                    format: uint32
                 originAccount:
                     $ref: '#/components/schemas/api.sd_point.interface.v1.LoginRequest_OriginalAccount'
-                wechatAccount:
-                    $ref: '#/components/schemas/api.sd_point.interface.v1.LoginRequest_WechatAccount'
+                wechatAccountCode:
+                    $ref: '#/components/schemas/api.sd_point.interface.v1.LoginRequest_WechatAccountCode'
         api.sd_point.interface.v1.LoginRequest_OriginalAccount:
             type: object
             properties:
@@ -461,20 +494,15 @@ components:
                 password:
                     type: string
                     description: 用户密码 经公钥加密
-        api.sd_point.interface.v1.LoginRequest_WechatAccount:
+        api.sd_point.interface.v1.LoginRequest_WechatAccountCode:
             type: object
             properties:
-                openIdCode:
+                openidCode:
                     type: string
-                    description: 微信换取openID的code字符串
+                    description: 微信换取openid的code字符串
                 phoneNumberCode:
                     type: string
                     description: 微信换取手机号的code字符串
-        api.sd_point.interface.v1.LogoutRequest:
-            type: object
-            properties:
-                sessionId:
-                    type: string
         api.sd_point.interface.v1.Record:
             type: object
             properties:
@@ -509,17 +537,23 @@ components:
                     type: integer
                     description: 删除时间
                     format: uint64
+        api.sd_point.interface.v1.RegisterReply:
+            type: object
+            properties:
+                uid:
+                    type: integer
+                    format: uint32
         api.sd_point.interface.v1.RegisterRequest:
             type: object
             properties:
                 registerType:
                     type: integer
-                    description: 注册类型 0 为账号密码 1 为微信
+                    description: 注册类型 0 为账号密码注册 1 为微信注册 2 为微信手机号注册 4 为手机号注册
                     format: uint64
                 originAccount:
                     $ref: '#/components/schemas/api.sd_point.interface.v1.LoginRequest_OriginalAccount'
                 wechatAccount:
-                    $ref: '#/components/schemas/api.sd_point.interface.v1.LoginRequest_WechatAccount'
+                    $ref: '#/components/schemas/api.sd_point.interface.v1.LoginRequest_WechatAccountCode'
         api.sd_point.interface.v1.UpdatePointRequest:
             type: object
             properties:

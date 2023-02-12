@@ -3,8 +3,10 @@ package data
 import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
+	"google.golang.org/protobuf/types/known/emptypb"
 	userv1 "sd-point/api/user/service/v1"
 	"sd-point/app/sd-point/interface/internal/biz"
+	"sd-point/app/sd-point/interface/internal/define"
 )
 
 type userRepo struct {
@@ -18,6 +20,30 @@ func NewUserRepo(data *Data, logger log.Logger) biz.UserRepo {
 		data: data,
 		log:  log.NewHelper(logger),
 	}
+}
+
+func (r *userRepo) GetPublicKey(ctx context.Context) (key []byte, err error) {
+	var reply *userv1.GetPublicKeyReply
+	if reply, err = r.data.uc.GetPublicKey(ctx, &emptypb.Empty{}); err != nil {
+		r.log.Errorf("grpc client error: %v", err)
+	}
+	key = reply.PublicKey
+	return
+}
+
+func (r *userRepo) GetSession(ctx context.Context, sessionId string) (s *biz.Session, err error) {
+	s = new(biz.Session)
+	var reply *userv1.GetSessionReply
+	if reply, err = r.data.uc.GetSession(ctx, &userv1.GetSessionRequest{SessionId: sessionId}); err != nil {
+		if define.IsErrRecordNotFound(err) {
+			r.log.Error("session not found")
+			return
+		}
+		r.log.Errorf("grpc client error: %v", err)
+		return
+	}
+	s.UID = reply.Session.Uid
+	return
 }
 
 func (r *userRepo) GetUser(ctx context.Context, uid uint32) (user *biz.User, err error) {
@@ -84,11 +110,8 @@ func (r *userRepo) Register(ctx context.Context, account *biz.OriginAccount) (ui
 
 func (r *userRepo) WechatLogin(ctx context.Context, account *biz.WechatAccount) (sessionId string, err error) {
 	var reply *userv1.LoginReply
-	// TODO 向微信后台服务器换取openID和手机号
-	openID, phoneNumber := account.OpenIDCode, account.PhoneNumberCode
 	if reply, err = r.data.uc.WechatLogin(ctx, &userv1.WechatLoginRequest{
-		OpenId:      openID,
-		PhoneNumber: phoneNumber,
+		OpenId: account.Openid,
 	}); err != nil {
 		r.log.Errorf("grpc client error: %v", err)
 		return
@@ -99,11 +122,8 @@ func (r *userRepo) WechatLogin(ctx context.Context, account *biz.WechatAccount) 
 
 func (r *userRepo) WechatRegister(ctx context.Context, account *biz.WechatAccount) (uid uint32, err error) {
 	var reply *userv1.RegisterReply
-	// TODO 向微信后台服务器换取openID和手机号
-	openID, phoneNumber := account.OpenIDCode, account.PhoneNumberCode
 	if reply, err = r.data.uc.WechatRegister(ctx, &userv1.WechatRegisterRequest{
-		OpenId:      openID,
-		PhoneNumber: phoneNumber,
+		Openid: account.Openid,
 	}); err != nil {
 		r.log.Errorf("grpc client error: %v", err)
 		return
@@ -112,15 +132,10 @@ func (r *userRepo) WechatRegister(ctx context.Context, account *biz.WechatAccoun
 	return
 }
 
-func (r *userRepo) WechatBind(ctx context.Context, account *biz.WechatAccount) (err error) {
-	// TODO 获取用户编号
-	uid := uint32(0)
-	// TODO 向微信后台服务器换取openID和手机号
-	openID, phoneNumber := account.OpenIDCode, account.PhoneNumberCode
+func (r *userRepo) WechatBind(ctx context.Context, uid uint32, account *biz.WechatAccount) (err error) {
 	if _, err = r.data.uc.WechatBind(ctx, &userv1.WechatBindRequest{
-		Uid:         uid,
-		OpenId:      openID,
-		PhoneNumber: phoneNumber,
+		Uid:    uid,
+		Openid: account.Openid,
 	}); err != nil {
 		r.log.Errorf("grpc client error: %v", err)
 	}

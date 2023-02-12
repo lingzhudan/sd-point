@@ -27,6 +27,26 @@ func NewUserService(uc *biz.UserUseCase, sc *biz.SessionUseCase, logger log.Logg
 	}
 }
 
+func (s *UserService) GetPublicKey(ctx context.Context, _ *emptypb.Empty) (rep *pb.GetPublicKeyReply, _ error) {
+	rep = new(pb.GetPublicKeyReply)
+	rep.PublicKey = s.uc.GetPublicKeyBytes(ctx)
+	return
+}
+
+func (s *UserService) GetSession(ctx context.Context, req *pb.GetSessionRequest) (rep *pb.GetSessionReply, err error) {
+	rep = new(pb.GetSessionReply)
+	var session *biz.Session
+	if session, err = s.sc.GetSession(ctx, req.SessionId); err != nil {
+		if define.IsErrRecordNotFound(err) {
+			s.log.Errorf("session not found")
+			return
+		}
+		s.log.Errorf("internal error: %v", err)
+		return
+	}
+	rep.Session = &pb.GetSessionReply_Session{Uid: session.UID}
+	return
+}
 func (s *UserService) Login(ctx context.Context, req *pb.LoginRequest) (rep *pb.LoginReply, err error) {
 	rep = new(pb.LoginReply)
 	var u *biz.User
@@ -118,7 +138,7 @@ func (s *UserService) Register(ctx context.Context, req *pb.RegisterRequest) (re
 func (s *UserService) WechatRegister(ctx context.Context, req *pb.WechatRegisterRequest) (rep *pb.RegisterReply, err error) {
 	rep = new(pb.RegisterReply)
 	user := &biz.User{
-		OpenID: req.OpenId,
+		Openid: req.Openid,
 	}
 	if err = s.uc.WechatRegister(ctx, user); err != nil {
 		if define.IsErrDuplicateKey(err) {
@@ -150,7 +170,7 @@ func (s *UserService) PhoneNumberRegister(ctx context.Context, req *pb.PhoneNumb
 	return
 }
 func (s *UserService) WechatBind(ctx context.Context, req *pb.WechatBindRequest) (_ *emptypb.Empty, err error) {
-	if err = s.uc.WechatBind(ctx, &biz.User{UID: req.Uid, OpenID: req.OpenId}); err != nil {
+	if err = s.uc.WechatBind(ctx, &biz.User{UID: req.Uid, Openid: req.Openid}); err != nil {
 		s.log.Errorf("internal error: %v", err)
 	}
 	return
@@ -173,6 +193,11 @@ func (s *UserService) GetUser(ctx context.Context, req *pb.GetUserRequest) (rep 
 	rep = new(pb.GetUserReply)
 	var user *biz.User
 	if user, err = s.uc.Get(ctx, &biz.UserCond{UIDs: []uint32{req.Uid}}); err != nil {
+		if define.IsErrRecordNotFound(err) {
+			s.log.Error(pb.ErrorReason_USER_NOT_FOUND.String())
+			err = pb.ErrorUserNotFound("", "")
+			return
+		}
 		s.log.Errorf("internal error: %v", err)
 		return
 	}

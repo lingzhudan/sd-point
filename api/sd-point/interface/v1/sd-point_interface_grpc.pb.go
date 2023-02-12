@@ -41,12 +41,14 @@ type SdPointInterfaceClient interface {
 	UpdateRecord(ctx context.Context, in *UpdateRecordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// 获取记录列表
 	ListRecord(ctx context.Context, in *ListRecordRequest, opts ...grpc.CallOption) (*ListRecordReply, error)
+	// 获取公钥
+	GetPublicKey(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetPublicKeyReply, error)
 	// 用户登录
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginReply, error)
 	// 用户登出
 	Logout(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// 用户注册
-	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterReply, error)
 	// 用户绑定其他登录方式
 	BindAccount(ctx context.Context, in *BindAccountRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// 用户信息
@@ -144,6 +146,15 @@ func (c *sdPointInterfaceClient) ListRecord(ctx context.Context, in *ListRecordR
 	return out, nil
 }
 
+func (c *sdPointInterfaceClient) GetPublicKey(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetPublicKeyReply, error) {
+	out := new(GetPublicKeyReply)
+	err := c.cc.Invoke(ctx, "/api.sd_point.interface.v1.SdPointInterface/GetPublicKey", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *sdPointInterfaceClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginReply, error) {
 	out := new(LoginReply)
 	err := c.cc.Invoke(ctx, "/api.sd_point.interface.v1.SdPointInterface/Login", in, out, opts...)
@@ -162,8 +173,8 @@ func (c *sdPointInterfaceClient) Logout(ctx context.Context, in *emptypb.Empty, 
 	return out, nil
 }
 
-func (c *sdPointInterfaceClient) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
+func (c *sdPointInterfaceClient) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterReply, error) {
+	out := new(RegisterReply)
 	err := c.cc.Invoke(ctx, "/api.sd_point.interface.v1.SdPointInterface/Register", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -220,12 +231,14 @@ type SdPointInterfaceServer interface {
 	UpdateRecord(context.Context, *UpdateRecordRequest) (*emptypb.Empty, error)
 	// 获取记录列表
 	ListRecord(context.Context, *ListRecordRequest) (*ListRecordReply, error)
+	// 获取公钥
+	GetPublicKey(context.Context, *emptypb.Empty) (*GetPublicKeyReply, error)
 	// 用户登录
 	Login(context.Context, *LoginRequest) (*LoginReply, error)
 	// 用户登出
 	Logout(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 	// 用户注册
-	Register(context.Context, *RegisterRequest) (*emptypb.Empty, error)
+	Register(context.Context, *RegisterRequest) (*RegisterReply, error)
 	// 用户绑定其他登录方式
 	BindAccount(context.Context, *BindAccountRequest) (*emptypb.Empty, error)
 	// 用户信息
@@ -266,13 +279,16 @@ func (UnimplementedSdPointInterfaceServer) UpdateRecord(context.Context, *Update
 func (UnimplementedSdPointInterfaceServer) ListRecord(context.Context, *ListRecordRequest) (*ListRecordReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListRecord not implemented")
 }
+func (UnimplementedSdPointInterfaceServer) GetPublicKey(context.Context, *emptypb.Empty) (*GetPublicKeyReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPublicKey not implemented")
+}
 func (UnimplementedSdPointInterfaceServer) Login(context.Context, *LoginRequest) (*LoginReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
 func (UnimplementedSdPointInterfaceServer) Logout(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Logout not implemented")
 }
-func (UnimplementedSdPointInterfaceServer) Register(context.Context, *RegisterRequest) (*emptypb.Empty, error) {
+func (UnimplementedSdPointInterfaceServer) Register(context.Context, *RegisterRequest) (*RegisterReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
 }
 func (UnimplementedSdPointInterfaceServer) BindAccount(context.Context, *BindAccountRequest) (*emptypb.Empty, error) {
@@ -459,6 +475,24 @@ func _SdPointInterface_ListRecord_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SdPointInterface_GetPublicKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SdPointInterfaceServer).GetPublicKey(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.sd_point.interface.v1.SdPointInterface/GetPublicKey",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SdPointInterfaceServer).GetPublicKey(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _SdPointInterface_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(LoginRequest)
 	if err := dec(in); err != nil {
@@ -609,6 +643,10 @@ var SdPointInterface_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListRecord",
 			Handler:    _SdPointInterface_ListRecord_Handler,
+		},
+		{
+			MethodName: "GetPublicKey",
+			Handler:    _SdPointInterface_GetPublicKey_Handler,
 		},
 		{
 			MethodName: "Login",

@@ -55,3 +55,12 @@ message Registry {
 message Auth {
   string jwt_key = 1;
 }
+
+message Wechat {
+  string app_id = 1;
+  string app_secret = 2;
+  string token_url = 3;
+  int64 token_effective_time = 4;
+  string openid_url = 5;
+  string phone_number_url = 6;
+}

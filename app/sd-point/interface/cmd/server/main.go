@@ -78,8 +78,12 @@ func main() {
 	if err := c.Scan(&rc); err != nil {
 		panic(err)
 	}
+	var wc conf.Wechat
+	if err := c.Scan(&wc); err != nil {
+		panic(err)
+	}
 
-	app, cleanup, err := wireApp(bc.Server, &rc, bc.Data, bc.Auth, logger)
+	app, cleanup, err := wireApp(bc.Server, &rc, &wc, bc.Data, bc.Auth, logger)
 	if err != nil {
 		panic(err)
 	}

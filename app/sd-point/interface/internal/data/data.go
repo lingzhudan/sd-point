@@ -25,6 +25,7 @@ var ProviderSet = wire.NewSet(
 	NewDiscovery,
 	NewUserServiceClient,
 	NewPointServiceClient,
+	NewWechatRepo,
 	NewUserRepo,
 	NewPointRepo,
 )

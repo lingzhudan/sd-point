@@ -8,6 +8,12 @@ import "google/protobuf/empty.proto";
 import "validate/validate.proto";
 
 service User {
+	// 获取公钥
+	rpc GetPublicKey (google.protobuf.Empty) returns (GetPublicKeyReply) {};
+
+	// 获取session
+	rpc GetSession (GetSessionRequest) returns (GetSessionReply) {};
+
 	// 用户登录
 	rpc Login (LoginRequest) returns (LoginReply) {};
 
@@ -48,6 +54,22 @@ service User {
 	rpc ListUser (ListUserRequest) returns (ListUserReply) {};
 }
 
+message GetPublicKeyReply {
+	// 公钥
+	bytes public_key = 1;
+}
+
+message GetSessionRequest {
+	string session_id  = 1 [(validate.rules).string = {len: 36}];
+}
+message GetSessionReply {
+	message Session {
+		// 用户编号
+		uint32 uid = 1;
+	}
+	Session session  = 1;
+}
+
 message LoginRequest {
 	// 用户账号
 	string account = 1 [(validate.rules).string = {max_len: 64}];
@@ -76,8 +98,8 @@ message RegisterRequest {
 	string password = 2 [(validate.rules).string = {min_len: 1}];
 }
 message WechatRegisterRequest {
-	// 微信openID
-	string open_id = 1 [(validate.rules).string = {len: 32}];
+	// 微信openid
+	string openid = 1 [(validate.rules).string = {len: 32}];
 }
 message PhoneNumberRegisterRequest {
 	// 手机号
@@ -90,8 +112,8 @@ message RegisterReply {
 message WechatBindRequest {
 	// 待绑定用户编号
 	uint32 uid = 1;
-	// 微信openID
-	string open_id = 2 [(validate.rules).string = {len: 32}];
+	// 微信openid
+	string openid = 2 [(validate.rules).string = {len: 32}];
 }
 message PhoneNumberBindRequest {
 	// 待绑定用户编号
@@ -104,8 +126,8 @@ message PhoneNumberBindRequest {
 message WechatSwitchBindRequest {
 	// 待绑定用户编号
 	uint32 uid = 1;
-	// 微信openID
-	string open_id = 2 [(validate.rules).string = {len: 32}];
+	// 微信openid
+	string openid = 2 [(validate.rules).string = {len: 32}];
 }
 message PhoneNumberSwitchBindRequest {
 	// 待绑定用户编号

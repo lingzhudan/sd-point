@@ -1,0 +1,6 @@
+wechat:
+  openIdUrl: https://api.weixin.qq.com/sns/jscode2session?grant_type=authorization_code&appid=%s&secret=%s&js_code=%s
+  tokenUrl: https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s
+  phoneNumberUrl: https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=%s
+  appId: 你的appID
+  appSecret: 你的app密码

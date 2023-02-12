@@ -35,6 +35,353 @@ var (
 	_ = sort.Sort
 )
 
+// Validate checks the field values on GetPublicKeyReply with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *GetPublicKeyReply) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetPublicKeyReply with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetPublicKeyReplyMultiError, or nil if none found.
+func (m *GetPublicKeyReply) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetPublicKeyReply) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for PublicKey
+
+	if len(errors) > 0 {
+		return GetPublicKeyReplyMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetPublicKeyReplyMultiError is an error wrapping multiple validation errors
+// returned by GetPublicKeyReply.ValidateAll() if the designated constraints
+// aren't met.
+type GetPublicKeyReplyMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetPublicKeyReplyMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetPublicKeyReplyMultiError) AllErrors() []error { return m }
+
+// GetPublicKeyReplyValidationError is the validation error returned by
+// GetPublicKeyReply.Validate if the designated constraints aren't met.
+type GetPublicKeyReplyValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetPublicKeyReplyValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetPublicKeyReplyValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetPublicKeyReplyValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetPublicKeyReplyValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetPublicKeyReplyValidationError) ErrorName() string {
+	return "GetPublicKeyReplyValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetPublicKeyReplyValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetPublicKeyReply.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetPublicKeyReplyValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetPublicKeyReplyValidationError{}
+
+// Validate checks the field values on GetSessionRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *GetSessionRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetSessionRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetSessionRequestMultiError, or nil if none found.
+func (m *GetSessionRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetSessionRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if utf8.RuneCountInString(m.GetSessionId()) != 36 {
+		err := GetSessionRequestValidationError{
+			field:  "SessionId",
+			reason: "value length must be 36 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+
+	}
+
+	if len(errors) > 0 {
+		return GetSessionRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetSessionRequestMultiError is an error wrapping multiple validation errors
+// returned by GetSessionRequest.ValidateAll() if the designated constraints
+// aren't met.
+type GetSessionRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetSessionRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetSessionRequestMultiError) AllErrors() []error { return m }
+
+// GetSessionRequestValidationError is the validation error returned by
+// GetSessionRequest.Validate if the designated constraints aren't met.
+type GetSessionRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetSessionRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetSessionRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetSessionRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetSessionRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetSessionRequestValidationError) ErrorName() string {
+	return "GetSessionRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetSessionRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetSessionRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetSessionRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetSessionRequestValidationError{}
+
+// Validate checks the field values on GetSessionReply with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *GetSessionReply) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetSessionReply with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetSessionReplyMultiError, or nil if none found.
+func (m *GetSessionReply) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetSessionReply) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetSession()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, GetSessionReplyValidationError{
+					field:  "Session",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, GetSessionReplyValidationError{
+					field:  "Session",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetSession()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GetSessionReplyValidationError{
+				field:  "Session",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return GetSessionReplyMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetSessionReplyMultiError is an error wrapping multiple validation errors
+// returned by GetSessionReply.ValidateAll() if the designated constraints
+// aren't met.
+type GetSessionReplyMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetSessionReplyMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetSessionReplyMultiError) AllErrors() []error { return m }
+
+// GetSessionReplyValidationError is the validation error returned by
+// GetSessionReply.Validate if the designated constraints aren't met.
+type GetSessionReplyValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetSessionReplyValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetSessionReplyValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetSessionReplyValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetSessionReplyValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetSessionReplyValidationError) ErrorName() string { return "GetSessionReplyValidationError" }
+
+// Error satisfies the builtin error interface
+func (e GetSessionReplyValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetSessionReply.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetSessionReplyValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetSessionReplyValidationError{}
+
 // Validate checks the field values on LoginRequest with the rules defined in
 // the proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.
@@ -190,17 +537,6 @@ func (m *WechatLoginRequest) validate(all bool) error {
 
 	}
 
-	if l := utf8.RuneCountInString(m.GetPhoneNumber()); l < 10 || l > 16 {
-		err := WechatLoginRequestValidationError{
-			field:  "PhoneNumber",
-			reason: "value length must be between 10 and 16 runes, inclusive",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
 	if len(errors) > 0 {
 		return WechatLoginRequestMultiError(errors)
 	}
@@ -280,6 +616,119 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = WechatLoginRequestValidationError{}
+
+// Validate checks the field values on PhoneNumberLoginRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *PhoneNumberLoginRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on PhoneNumberLoginRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// PhoneNumberLoginRequestMultiError, or nil if none found.
+func (m *PhoneNumberLoginRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *PhoneNumberLoginRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if l := utf8.RuneCountInString(m.GetPhoneNumber()); l < 10 || l > 16 {
+		err := PhoneNumberLoginRequestValidationError{
+			field:  "PhoneNumber",
+			reason: "value length must be between 10 and 16 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return PhoneNumberLoginRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// PhoneNumberLoginRequestMultiError is an error wrapping multiple validation
+// errors returned by PhoneNumberLoginRequest.ValidateAll() if the designated
+// constraints aren't met.
+type PhoneNumberLoginRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m PhoneNumberLoginRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m PhoneNumberLoginRequestMultiError) AllErrors() []error { return m }
+
+// PhoneNumberLoginRequestValidationError is the validation error returned by
+// PhoneNumberLoginRequest.Validate if the designated constraints aren't met.
+type PhoneNumberLoginRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e PhoneNumberLoginRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e PhoneNumberLoginRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e PhoneNumberLoginRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e PhoneNumberLoginRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e PhoneNumberLoginRequestValidationError) ErrorName() string {
+	return "PhoneNumberLoginRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e PhoneNumberLoginRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sPhoneNumberLoginRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = PhoneNumberLoginRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = PhoneNumberLoginRequestValidationError{}
 
 // Validate checks the field values on LoginReply with the rules defined in the
 // proto definition for this message. If any rules are violated, the first
@@ -628,9 +1077,9 @@ func (m *WechatRegisterRequest) validate(all bool) error {
 
 	var errors []error
 
-	if utf8.RuneCountInString(m.GetOpenId()) != 32 {
+	if utf8.RuneCountInString(m.GetOpenid()) != 32 {
 		err := WechatRegisterRequestValidationError{
-			field:  "OpenId",
+			field:  "Openid",
 			reason: "value length must be 32 runes",
 		}
 		if !all {
@@ -638,17 +1087,6 @@ func (m *WechatRegisterRequest) validate(all bool) error {
 		}
 		errors = append(errors, err)
 
-	}
-
-	if l := utf8.RuneCountInString(m.GetPhoneNumber()); l < 10 || l > 16 {
-		err := WechatRegisterRequestValidationError{
-			field:  "PhoneNumber",
-			reason: "value length must be between 10 and 16 runes, inclusive",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
 	}
 
 	if len(errors) > 0 {
@@ -730,6 +1168,119 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = WechatRegisterRequestValidationError{}
+
+// Validate checks the field values on PhoneNumberRegisterRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *PhoneNumberRegisterRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on PhoneNumberRegisterRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// PhoneNumberRegisterRequestMultiError, or nil if none found.
+func (m *PhoneNumberRegisterRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *PhoneNumberRegisterRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if l := utf8.RuneCountInString(m.GetPhoneNumber()); l < 10 || l > 16 {
+		err := PhoneNumberRegisterRequestValidationError{
+			field:  "PhoneNumber",
+			reason: "value length must be between 10 and 16 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return PhoneNumberRegisterRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// PhoneNumberRegisterRequestMultiError is an error wrapping multiple
+// validation errors returned by PhoneNumberRegisterRequest.ValidateAll() if
+// the designated constraints aren't met.
+type PhoneNumberRegisterRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m PhoneNumberRegisterRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m PhoneNumberRegisterRequestMultiError) AllErrors() []error { return m }
+
+// PhoneNumberRegisterRequestValidationError is the validation error returned
+// by PhoneNumberRegisterRequest.Validate if the designated constraints aren't met.
+type PhoneNumberRegisterRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e PhoneNumberRegisterRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e PhoneNumberRegisterRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e PhoneNumberRegisterRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e PhoneNumberRegisterRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e PhoneNumberRegisterRequestValidationError) ErrorName() string {
+	return "PhoneNumberRegisterRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e PhoneNumberRegisterRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sPhoneNumberRegisterRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = PhoneNumberRegisterRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = PhoneNumberRegisterRequestValidationError{}
 
 // Validate checks the field values on RegisterReply with the rules defined in
 // the proto definition for this message. If any rules are violated, the first
@@ -855,9 +1406,11 @@ func (m *WechatBindRequest) validate(all bool) error {
 
 	var errors []error
 
-	if utf8.RuneCountInString(m.GetOpenId()) != 32 {
+	// no validation rules for Uid
+
+	if utf8.RuneCountInString(m.GetOpenid()) != 32 {
 		err := WechatBindRequestValidationError{
-			field:  "OpenId",
+			field:  "Openid",
 			reason: "value length must be 32 runes",
 		}
 		if !all {
@@ -865,17 +1418,6 @@ func (m *WechatBindRequest) validate(all bool) error {
 		}
 		errors = append(errors, err)
 
-	}
-
-	if l := utf8.RuneCountInString(m.GetPhoneNumber()); l < 10 || l > 16 {
-		err := WechatBindRequestValidationError{
-			field:  "PhoneNumber",
-			reason: "value length must be between 10 and 16 runes, inclusive",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
 	}
 
 	if len(errors) > 0 {
@@ -957,6 +1499,353 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = WechatBindRequestValidationError{}
+
+// Validate checks the field values on PhoneNumberBindRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *PhoneNumberBindRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on PhoneNumberBindRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// PhoneNumberBindRequestMultiError, or nil if none found.
+func (m *PhoneNumberBindRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *PhoneNumberBindRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Uid
+
+	if l := utf8.RuneCountInString(m.GetPhoneNumber()); l < 10 || l > 16 {
+		err := PhoneNumberBindRequestValidationError{
+			field:  "PhoneNumber",
+			reason: "value length must be between 10 and 16 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return PhoneNumberBindRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// PhoneNumberBindRequestMultiError is an error wrapping multiple validation
+// errors returned by PhoneNumberBindRequest.ValidateAll() if the designated
+// constraints aren't met.
+type PhoneNumberBindRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m PhoneNumberBindRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m PhoneNumberBindRequestMultiError) AllErrors() []error { return m }
+
+// PhoneNumberBindRequestValidationError is the validation error returned by
+// PhoneNumberBindRequest.Validate if the designated constraints aren't met.
+type PhoneNumberBindRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e PhoneNumberBindRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e PhoneNumberBindRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e PhoneNumberBindRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e PhoneNumberBindRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e PhoneNumberBindRequestValidationError) ErrorName() string {
+	return "PhoneNumberBindRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e PhoneNumberBindRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sPhoneNumberBindRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = PhoneNumberBindRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = PhoneNumberBindRequestValidationError{}
+
+// Validate checks the field values on WechatSwitchBindRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *WechatSwitchBindRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on WechatSwitchBindRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// WechatSwitchBindRequestMultiError, or nil if none found.
+func (m *WechatSwitchBindRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *WechatSwitchBindRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Uid
+
+	if utf8.RuneCountInString(m.GetOpenid()) != 32 {
+		err := WechatSwitchBindRequestValidationError{
+			field:  "Openid",
+			reason: "value length must be 32 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+
+	}
+
+	if len(errors) > 0 {
+		return WechatSwitchBindRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// WechatSwitchBindRequestMultiError is an error wrapping multiple validation
+// errors returned by WechatSwitchBindRequest.ValidateAll() if the designated
+// constraints aren't met.
+type WechatSwitchBindRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m WechatSwitchBindRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m WechatSwitchBindRequestMultiError) AllErrors() []error { return m }
+
+// WechatSwitchBindRequestValidationError is the validation error returned by
+// WechatSwitchBindRequest.Validate if the designated constraints aren't met.
+type WechatSwitchBindRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e WechatSwitchBindRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e WechatSwitchBindRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e WechatSwitchBindRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e WechatSwitchBindRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e WechatSwitchBindRequestValidationError) ErrorName() string {
+	return "WechatSwitchBindRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e WechatSwitchBindRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sWechatSwitchBindRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = WechatSwitchBindRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = WechatSwitchBindRequestValidationError{}
+
+// Validate checks the field values on PhoneNumberSwitchBindRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *PhoneNumberSwitchBindRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on PhoneNumberSwitchBindRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// PhoneNumberSwitchBindRequestMultiError, or nil if none found.
+func (m *PhoneNumberSwitchBindRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *PhoneNumberSwitchBindRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Uid
+
+	if l := utf8.RuneCountInString(m.GetPhoneNumber()); l < 10 || l > 16 {
+		err := PhoneNumberSwitchBindRequestValidationError{
+			field:  "PhoneNumber",
+			reason: "value length must be between 10 and 16 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return PhoneNumberSwitchBindRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// PhoneNumberSwitchBindRequestMultiError is an error wrapping multiple
+// validation errors returned by PhoneNumberSwitchBindRequest.ValidateAll() if
+// the designated constraints aren't met.
+type PhoneNumberSwitchBindRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m PhoneNumberSwitchBindRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m PhoneNumberSwitchBindRequestMultiError) AllErrors() []error { return m }
+
+// PhoneNumberSwitchBindRequestValidationError is the validation error returned
+// by PhoneNumberSwitchBindRequest.Validate if the designated constraints
+// aren't met.
+type PhoneNumberSwitchBindRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e PhoneNumberSwitchBindRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e PhoneNumberSwitchBindRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e PhoneNumberSwitchBindRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e PhoneNumberSwitchBindRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e PhoneNumberSwitchBindRequestValidationError) ErrorName() string {
+	return "PhoneNumberSwitchBindRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e PhoneNumberSwitchBindRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sPhoneNumberSwitchBindRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = PhoneNumberSwitchBindRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = PhoneNumberSwitchBindRequestValidationError{}
 
 // Validate checks the field values on GetUserRequest with the rules defined in
 // the proto definition for this message. If any rules are violated, the first
@@ -1432,6 +2321,110 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = ListUserReplyValidationError{}
+
+// Validate checks the field values on GetSessionReply_Session with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetSessionReply_Session) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetSessionReply_Session with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetSessionReply_SessionMultiError, or nil if none found.
+func (m *GetSessionReply_Session) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetSessionReply_Session) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Uid
+
+	if len(errors) > 0 {
+		return GetSessionReply_SessionMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetSessionReply_SessionMultiError is an error wrapping multiple validation
+// errors returned by GetSessionReply_Session.ValidateAll() if the designated
+// constraints aren't met.
+type GetSessionReply_SessionMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetSessionReply_SessionMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetSessionReply_SessionMultiError) AllErrors() []error { return m }
+
+// GetSessionReply_SessionValidationError is the validation error returned by
+// GetSessionReply_Session.Validate if the designated constraints aren't met.
+type GetSessionReply_SessionValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetSessionReply_SessionValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetSessionReply_SessionValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetSessionReply_SessionValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetSessionReply_SessionValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetSessionReply_SessionValidationError) ErrorName() string {
+	return "GetSessionReply_SessionValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetSessionReply_SessionValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetSessionReply_Session.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetSessionReply_SessionValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetSessionReply_SessionValidationError{}
 
 // Validate checks the field values on GetUserReply_User with the rules defined
 // in the proto definition for this message. If any rules are violated, the

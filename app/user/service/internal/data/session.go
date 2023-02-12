@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
 	"sd-point/app/user/service/internal/biz"
+	"sd-point/app/user/service/internal/define"
 )
 
 type sessionRepo struct {
@@ -31,6 +32,9 @@ func (r *sessionRepo) Set(ctx context.Context, key string, value interface{}) (e
 func (r *sessionRepo) Get(ctx context.Context, key string) (value interface{}, err error) {
 	if value, err = r.data.rdb.Get(ctx, key).Result(); err != nil {
 		r.log.Errorf("rdb error: %v", err)
+	}
+	if value == "" {
+		err = define.ErrRecordNotFound
 	}
 	return
 }

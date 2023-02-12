@@ -2,8 +2,11 @@ package data
 
 import (
 	"context"
+	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
+	"gorm.io/gorm"
 	"sd-point/app/user/service/internal/biz"
+	"sd-point/app/user/service/internal/define"
 )
 
 type userRepo struct {
@@ -40,6 +43,10 @@ func (r *userRepo) GetUser(ctx context.Context, cond *biz.UserCond) (user *biz.U
 		Where(whereStage, args...).
 		First(&user).
 		Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = define.ErrRecordNotFound
+			return
+		}
 		r.log.Errorf("db error: %v", err)
 	}
 	return

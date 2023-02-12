@@ -7,7 +7,7 @@ import (
 )
 
 // ProviderSet is biz providers.
-var ProviderSet = wire.NewSet(NewUserUseCase, NewPointUsecase)
+var ProviderSet = wire.NewSet(NewWechatUseCase, NewUserUseCase, NewPointUsecase)
 
 type UserCond struct {
 	UIDs []uint32

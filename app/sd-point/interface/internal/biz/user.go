@@ -15,14 +15,16 @@ func NewUserUseCase(repo UserRepo, logger log.Logger) *UserUseCase {
 }
 
 type UserRepo interface {
-	ListUser(ctx context.Context, cond *UserCond) (users []*User, err error)
+	GetPublicKey(ctx context.Context) (key []byte, err error)
+	GetSession(ctx context.Context, sessionId string) (s *Session, err error)
 	GetUser(ctx context.Context, uid uint32) (user *User, err error)
+	ListUser(ctx context.Context, cond *UserCond) (users []*User, err error)
 	Login(ctx context.Context, account *OriginAccount) (sessionId string, err error)
 	Logout(ctx context.Context, sessionId string) (err error)
 	Register(ctx context.Context, account *OriginAccount) (uid uint32, err error)
 	WechatLogin(ctx context.Context, account *WechatAccount) (sessionId string, err error)
 	WechatRegister(ctx context.Context, account *WechatAccount) (uid uint32, err error)
-	WechatBind(ctx context.Context, account *WechatAccount) (err error)
+	WechatBind(ctx context.Context, uid uint32, account *WechatAccount) (err error)
 }
 
 type User struct {
@@ -40,12 +42,39 @@ type OriginAccount struct {
 	Password string
 }
 
-// WechatAccount 使用微信进行账号操作所需要的字段
-type WechatAccount struct {
+// WechatAccountCode 使用微信进行账号操作所需要的字段
+type WechatAccountCode struct {
 	// 向微信后台服务器换取openID的code
-	OpenIDCode string
+	OpenidCode string
 	// 向微信后台服务器换取手机号的code
 	PhoneNumberCode string
+}
+
+// WechatAccount 微信账号
+type WechatAccount struct {
+	// 微信openID
+	Openid string
+	// 微信手机号
+	PhoneNumber string
+}
+
+type Session struct {
+	// 用户编号
+	UID uint32
+}
+
+func (uc *UserUseCase) GetPublicKey(ctx context.Context) (key []byte, err error) {
+	if key, err = uc.repo.GetPublicKey(ctx); err != nil {
+		uc.log.Errorf("failed to get user, error: %v", err)
+	}
+	return
+}
+
+func (uc *UserUseCase) GetSession(ctx context.Context, sessionId string) (s *Session, err error) {
+	if s, err = uc.repo.GetSession(ctx, sessionId); err != nil {
+		uc.log.Errorf("failed to get user, error: %v", err)
+	}
+	return
 }
 
 func (uc *UserUseCase) Get(ctx context.Context, uid uint32) (user *User, err error) {
@@ -107,8 +136,8 @@ func (uc *UserUseCase) WechatPhoneNumberRegister(ctx context.Context, account *W
 	return
 }
 
-func (uc *UserUseCase) WechatBind(ctx context.Context, account *WechatAccount) (err error) {
-	if err = uc.repo.WechatBind(ctx, account); err != nil {
+func (uc *UserUseCase) WechatBind(ctx context.Context, uid uint32, account *WechatAccount) (err error) {
+	if err = uc.repo.WechatBind(ctx, uid, account); err != nil {
 		uc.log.Errorf("failed to login by wechat, error: %v", err)
 	}
 	return

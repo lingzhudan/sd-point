@@ -23,7 +23,7 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Data, auth *conf.Auth, logger log.Logger) (*kratos.App, func(), error) {
+func wireApp(confServer *conf.Server, registry *conf.Registry, wechat *conf.Wechat, confData *conf.Data, auth *conf.Auth, logger log.Logger) (*kratos.App, func(), error) {
 	discovery := data.NewDiscovery(registry)
 	userClient := data.NewUserServiceClient(auth, discovery)
 	pointClient := data.NewPointServiceClient(auth, discovery)
@@ -35,9 +35,11 @@ func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Da
 	userUseCase := biz.NewUserUseCase(userRepo, logger)
 	pointRepo := data.NewPointRepo(dataData, logger)
 	pointUseCase := biz.NewPointUsecase(pointRepo, logger)
-	sdPointInterfaceService := service.NewSdPointInterfaceService(userUseCase, pointUseCase, logger)
+	wechatRepo := data.NewWechatRepo(wechat, logger)
+	wechatUseCase := biz.NewWechatUseCase(wechatRepo, logger)
+	sdPointInterfaceService := service.NewSdPointInterfaceService(userUseCase, pointUseCase, wechatUseCase, logger)
 	grpcServer := server.NewGRPCServer(confServer, sdPointInterfaceService, logger)
-	httpServer := server.NewHTTPServer(confServer, sdPointInterfaceService, logger)
+	httpServer := server.NewHTTPServer(confServer, sdPointInterfaceService, userUseCase, logger)
 	registrar := data.NewRegistrar(registry)
 	app := newApp(logger, grpcServer, httpServer, registrar)
 	return app, func() {

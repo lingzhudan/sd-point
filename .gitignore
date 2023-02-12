@@ -5,6 +5,9 @@
 *.dll
 *.dylib
 
+# Config
+*.yaml
+
 # Test binary, built with `go test -c`
 *.test
 
