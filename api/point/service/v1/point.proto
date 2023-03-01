@@ -26,18 +26,30 @@ service Point {
 	rpc DeleteRecord (DeleteRecordRequest) returns (google.protobuf.Empty);
 	// 删除记录
 	rpc UpdateRecord (UpdateRecordRequest) returns (google.protobuf.Empty);
+	// 获取记录
+	rpc GetRecord (GetRecordRequest) returns (GetRecordReply);
 	// 获取记录列表
 	rpc ListRecord (ListRecordRequest) returns (ListRecordReply);
 }
 
+// 新增点数信息
 message CreatePointRequest {
-	// 新增点数信息
-	GetPointReply.Point point = 1 [(validate.rules).message.required = true];
+	// 用户编号
+	uint32 uid = 1;
+	// 点数名称
+	string name = 2 [(validate.rules).string = {min_len: 1, max_len: 32}];
+	// 点数描述
+	string desc = 3 [(validate.rules).string = {max_len: 1024}];
 }
 
+// 待更新点数信息
 message UpdatePointRequest {
-	// 待更新点数信息
-	GetPointReply.Point point = 1 [(validate.rules).message.required = true];
+	// 点数编号
+	uint32 pid = 1;
+	// 点数名称
+	string name = 2 [(validate.rules).string = {min_len: 1, max_len: 32}];
+	// 点数描述
+	string desc = 3 [(validate.rules).string = {max_len: 1024}];
 }
 
 message DeletePointRequest {
@@ -66,16 +78,15 @@ message GetPointReply {
 		uint64 created_at = 6;
 		// 更新时间
 		uint64 updated_at = 7;
-		// 删除时间
-		uint64 deleted_at = 8;
 	}
 	GetPointReply.Point point = 1;
 }
 
 message ListPointRequest {
 	uint32 begin = 1;
-	uint32 count = 2;
-	repeated uint32 pids = 3;
+	uint32 count = 2[(validate.rules).uint32 = {lt: 32}];
+	// 用户编号
+	uint32 uid = 3;
 }
 message ListPointReply {
 	bool finished = 1;
@@ -103,9 +114,16 @@ message Record {
 	uint64 deleted_at = 8;
 }
 
+// 新增点数信息
 message CreateRecordRequest {
-	// 新增点数信息
-	Record record = 1 [(validate.rules).message = {required: true}];
+	// 点数编号
+	uint32 pid = 1;
+	// 点数数量
+	int32 num = 2 [(validate.rules).int32 = {gte: -65536, lte: 65535}];
+	// 记录新增时间
+	uint64 clicked_at = 3;
+	// 记录描述
+	string desc = 4 [(validate.rules).string = {max_len: 1024}];
 }
 
 message DeleteRecordRequest {
@@ -113,28 +131,37 @@ message DeleteRecordRequest {
 	uint32 rid = 1;
 }
 
+// 待更新的记录编号
 message UpdateRecordRequest {
-	// 待更新的记录编号
-	Record record = 1 [(validate.rules).message.required = true];
+	// 记录编号
+	uint32 rid = 1;
+	// 点数数量
+	int32 num = 2 [(validate.rules).int32 = {gte: -65536, lte: 65535}];
+	// 记录新增时间
+	uint64 clicked_at = 3;
+	// 记录描述
+	string desc = 4 [(validate.rules).string = {max_len: 1024}];
 }
 
 message CountRecordRequest {
-	repeated uint32 rids = 1;
-	repeated uint32 pids = 2;
-	uint64 min_clicked_at = 3;
-	uint64 max_clicked_at = 4;
+	uint32 pid = 1;
 }
 message CountRecordReply {
 	uint32 count = 1;
 }
 
+message GetRecordRequest {
+	// 记录编号
+	uint32 rid = 1;
+}
+message GetRecordReply {
+	Record record = 1;
+}
+
 message ListRecordRequest {
 	uint32 begin = 1;
 	uint32 count = 2;
-	repeated uint32 rids = 3;
-	repeated uint32 pids = 4;
-	uint64 min_clicked_at = 5;
-	uint64 max_clicked_at = 6;
+	uint32 pid = 4;
 }
 message ListRecordReply {
 	bool finished = 1;

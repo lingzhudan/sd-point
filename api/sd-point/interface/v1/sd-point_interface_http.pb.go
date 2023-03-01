@@ -59,7 +59,7 @@ type SdPointInterfaceHTTPServer interface {
 func RegisterSdPointInterfaceHTTPServer(s *http.Server, srv SdPointInterfaceHTTPServer) {
 	r := s.Route("/")
 	r.POST("/v1/point", _SdPointInterface_CreatePoint0_HTTP_Handler(srv))
-	r.PUT("/v1/point/{point.pid}", _SdPointInterface_UpdatePoint0_HTTP_Handler(srv))
+	r.PUT("/v1/point/{pid}", _SdPointInterface_UpdatePoint0_HTTP_Handler(srv))
 	r.DELETE("/v1/point/{pid}", _SdPointInterface_DeletePoint0_HTTP_Handler(srv))
 	r.GET("/v1/point/{pid}", _SdPointInterface_GetPoint0_HTTP_Handler(srv))
 	r.GET("/v1/point", _SdPointInterface_ListPoint0_HTTP_Handler(srv))
@@ -618,7 +618,7 @@ func (c *SdPointInterfaceHTTPClientImpl) Register(ctx context.Context, in *Regis
 
 func (c *SdPointInterfaceHTTPClientImpl) UpdatePoint(ctx context.Context, in *UpdatePointRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
 	var out emptypb.Empty
-	pattern := "/v1/point/{point.pid}"
+	pattern := "/v1/point/{pid}"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationSdPointInterfaceUpdatePoint))
 	opts = append(opts, http.PathTemplate(pattern))

@@ -1,6 +1,6 @@
-wechat:
-  openIdUrl: https://api.weixin.qq.com/sns/jscode2session?grant_type=authorization_code&appid=%s&secret=%s&js_code=%s
-  tokenUrl: https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s
-  phoneNumberUrl: https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=%s
-  appId: 你的appID
-  appSecret: 你的app密码
+app_id: wx37fe4e3931384f5e
+app_secret: f16d583c3544e13723a0c20bae9a505e
+token_url: https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s
+token_effective_time: 600
+openid_url: https://api.weixin.qq.com/sns/jscode2session?grant_type=authorization_code&appid=%s&secret=%s&js_code=%s
+phone_number_url: https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=%s

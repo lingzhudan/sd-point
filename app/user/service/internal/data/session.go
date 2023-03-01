@@ -2,9 +2,14 @@ package data
 
 import (
 	"context"
+	"encoding/json"
+	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/go-redis/redis/v8"
+	"github.com/google/uuid"
 	"sd-point/app/user/service/internal/biz"
 	"sd-point/app/user/service/internal/define"
+	"strconv"
 )
 
 type sessionRepo struct {
@@ -20,28 +25,63 @@ func NewSessionRepo(data *Data, logger log.Logger) biz.SessionRepo {
 	}
 }
 
-// Set 设置redis数据
-func (r *sessionRepo) Set(ctx context.Context, key string, value interface{}) (err error) {
-	if err = r.data.rdb.MSet(ctx, key, value).Err(); err != nil {
-		r.log.Errorf("db error: %v", err)
+// SetSession 设置登录session
+func (r *sessionRepo) SetSession(ctx context.Context, session *biz.Session) (sessionId string, err error) {
+	newUuid, err := uuid.NewUUID()
+	if err != nil {
+		r.log.Errorf("failed to create uuid for session id, error: %v", err)
+		return
 	}
-	return
-}
-
-// Get 获取redis数据
-func (r *sessionRepo) Get(ctx context.Context, key string) (value interface{}, err error) {
-	if value, err = r.data.rdb.Get(ctx, key).Result(); err != nil {
+	sessionId = strconv.Itoa(int(session.UID)) + ":" + newUuid.String()
+	if err = r.data.rdb.Set(ctx, sessionId, session, 0).Err(); err != nil {
 		r.log.Errorf("rdb error: %v", err)
 	}
-	if value == "" {
-		err = define.ErrRecordNotFound
+	return
+}
+
+// GetSession 获取登录session
+func (r *sessionRepo) GetSession(ctx context.Context, sessionId string) (session *biz.Session, err error) {
+	value, err := r.data.rdb.Get(ctx, sessionId).Result()
+	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			err = define.ErrRecordNotFound
+			return
+		}
+		r.log.Errorf("rdb error: %v", err)
+		return
+	}
+	err = json.Unmarshal([]byte(value), &session)
+	if err != nil {
+		r.log.Errorf("failed to unmarshal session, error: %v", err)
 	}
 	return
 }
 
-// Del 删除redis数据
-func (r *sessionRepo) Del(ctx context.Context, keys []string) (err error) {
-	if _, err = r.data.rdb.Del(ctx, keys...).Result(); err != nil {
+// GetSessionByUID 获取用户所有登录session
+func (r *sessionRepo) GetSessionByUID(ctx context.Context, uid uint32) (sessions []*biz.Session, err error) {
+	values, err := r.data.rdb.Keys(ctx, strconv.Itoa(int(uid))+":*").Result()
+	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			err = define.ErrRecordNotFound
+			return
+		}
+		r.log.Errorf("rdb error: %v", err)
+		return
+	}
+	for _, value := range values {
+		session := new(biz.Session)
+		err = json.Unmarshal([]byte(value), &session)
+		if err != nil {
+			r.log.Errorf("failed to unmarshal session, error: %v", err)
+		}
+		sessions = append(sessions, session)
+	}
+	return
+}
+
+// DelSession 删除登录session
+func (r *sessionRepo) DelSession(ctx context.Context, sessionId string) (err error) {
+	if _, err = r.data.rdb.Del(ctx, sessionId).Result(); err != nil {
 		r.log.Errorf("db error: %v", err)
 	}
 	return

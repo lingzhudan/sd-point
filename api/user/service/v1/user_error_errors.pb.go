@@ -150,3 +150,17 @@ func IsPhoneNumberRegistered(err error) bool {
 func ErrorPhoneNumberRegistered(format string, args ...interface{}) *errors.Error {
 	return errors.New(401, ErrorReason_PHONE_NUMBER_REGISTERED.String(), fmt.Sprintf(format, args...))
 }
+
+// 未登录
+func IsNotLoggedIn(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ErrorReason_NOT_LOGGED_IN.String() && e.Code == 400
+}
+
+// 未登录
+func ErrorNotLoggedIn(format string, args ...interface{}) *errors.Error {
+	return errors.New(400, ErrorReason_NOT_LOGGED_IN.String(), fmt.Sprintf(format, args...))
+}

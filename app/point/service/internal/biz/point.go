@@ -3,7 +3,6 @@ package biz
 import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
-	"gorm.io/gorm"
 	"time"
 )
 
@@ -20,60 +19,78 @@ func NewPointUseCase(repo PointRepo, logger log.Logger) *PointUseCase {
 
 type PointRepo interface {
 	GetPoint(ctx context.Context, pid uint32) (point *Point, err error)
-	ListPoint(ctx context.Context, cond *PointCond) (points []*Point, err error)
-	CreatePoint(ctx context.Context, point *Point) (err error)
-	UpdatePoint(ctx context.Context, point *Point) (err error)
+	ListPoint(ctx context.Context, begin int, count int, uid uint32) (points []*Point, err error)
+	CreatePoint(ctx context.Context, uid uint32, name string, desc string) (err error)
+	UpdatePoint(ctx context.Context, pid uint32, name string, desc string) (err error)
 	DeletePoint(ctx context.Context, pid uint32) error
+
+	TotalRepo
+	RecordRepo
 }
 
 type Point struct {
-	PID  uint32 `gorm:"column:pid;primaryKey;comment:自律点编号;"`
-	UID  uint32 `gorm:"column:uid;index;comment:用户编号;"`
-	Name string `gorm:"column:name;size:32;comment:自律点名称;"`
-	Desc string `gorm:"column:desc;size:1024;comment:点数描述;"`
+	PID   uint32
+	UID   uint32
+	Name  string
+	Total int32
+	Desc  string
 
-	CreatedAt time.Time      `gorm:"column:created_at;autoCreateTime;comment:创建时间;"`
-	UpdatedAt time.Time      `gorm:"column:updated_at;autoUpdateTime;comment:更新时间;"`
-	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at;comment:删除时间;"`
-}
-
-func (p *Point) TableName() string {
-	return "sd-point"
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt time.Time
 }
 
 // point method
 
-func (uc *PointUseCase) Get(ctx context.Context, pid uint32) (point *Point, err error) {
+func (uc *PointUseCase) GetPoint(ctx context.Context, pid uint32) (point *Point, err error) {
 	if point, err = uc.repo.GetPoint(ctx, pid); err != nil {
-		uc.log.Debugf("failed to get point, error: %v", err)
+		uc.log.Errorf("failed to get point, error: %v", err)
+	}
+	total, err := uc.GetTotal(ctx, pid)
+	if err != nil {
+		uc.log.Errorf("failed to get total, error: %v", err)
+	}
+	point.Total = total
+	return
+}
+
+func (uc *PointUseCase) ListPoint(ctx context.Context, begin, count int, uid uint32) (points []*Point, err error) {
+	if points, err = uc.repo.ListPoint(ctx, begin, count, uid); err != nil {
+		uc.log.Errorf("failed to get points, error: %v", err)
+	}
+	for _, p := range points {
+		total, err := uc.GetTotal(ctx, p.PID)
+		if err != nil {
+			uc.log.Errorf("failed to get total, error: %v", err)
+		}
+		p.Total = total
 	}
 	return
 }
 
-func (uc *PointUseCase) List(ctx context.Context, cond *PointCond) (points []*Point, err error) {
-	if points, err = uc.repo.ListPoint(ctx, cond); err != nil {
-		uc.log.Debugf("failed to get points, error: %v", err)
+func (uc *PointUseCase) CreatePoint(ctx context.Context, uid uint32, name string, desc string) (err error) {
+	if err = uc.repo.CreatePoint(ctx, uid, name, desc); err != nil {
+		uc.log.Errorf("failed to create point, error: %v", err)
 	}
 	return
 }
 
-func (uc *PointUseCase) Create(ctx context.Context, point *Point) (err error) {
-	if err = uc.repo.CreatePoint(ctx, point); err != nil {
-		uc.log.Debugf("failed to create point, error: %v", err)
+func (uc *PointUseCase) UpdatePoint(ctx context.Context, uid uint32, name string, desc string) (err error) {
+	if err = uc.repo.UpdatePoint(ctx, uid, name, desc); err != nil {
+		uc.log.Errorf("failed to update point, error: %v", err)
 	}
 	return
 }
 
-func (uc *PointUseCase) Update(ctx context.Context, point *Point) (err error) {
-	if err = uc.repo.UpdatePoint(ctx, point); err != nil {
-		uc.log.Debugf("failed to update point, error: %v", err)
-	}
-	return
-}
-
-func (uc *PointUseCase) Delete(ctx context.Context, pid uint32) (err error) {
+func (uc *PointUseCase) DeletePoint(ctx context.Context, pid uint32) (err error) {
 	if err = uc.repo.DeletePoint(ctx, pid); err != nil {
 		uc.log.Errorf("failed to delete point, error: %v", err)
+	}
+	if err = uc.repo.DeleteRecords(ctx, pid); err != nil {
+		uc.log.Errorf("failed to delete record, error: %v", err)
+	}
+	if err = uc.repo.DeleteTotal(ctx, pid); err != nil {
+		uc.log.Errorf("failed to delete total, error: %v", err)
 	}
 	return
 }

@@ -32,37 +32,40 @@ func NewSdPointInterfaceService(
 	}
 }
 
-func (s *SdPointInterfaceService) CreatePoint(ctx context.Context, req *pb.CreatePointRequest) (_ *emptypb.Empty, err error) {
+func (s *SdPointInterfaceService) CreatePoint(ctx context.Context, req *pb.CreatePointRequest) (rep *emptypb.Empty, err error) {
+	rep = new(emptypb.Empty)
 	uid := GetSession(ctx).UID
 	if err = s.pc.CreatePoint(ctx, &biz.Point{
 		UID:  uid,
-		Name: req.Point.Name,
-		Desc: req.Point.Desc,
+		Name: req.Name,
+		Desc: req.Desc,
 	}); err != nil {
 		s.log.Errorf("internal error: %v", err)
 	}
 	return
 }
-func (s *SdPointInterfaceService) UpdatePoint(ctx context.Context, req *pb.UpdatePointRequest) (_ *emptypb.Empty, err error) {
+func (s *SdPointInterfaceService) UpdatePoint(ctx context.Context, req *pb.UpdatePointRequest) (rep *emptypb.Empty, err error) {
+	rep = new(emptypb.Empty)
 	uid := GetSession(ctx).UID
-	p := req.Point
 	if err = s.pc.UpdatePoint(ctx, &biz.Point{
-		PID:  p.Pid,
+		PID:  req.Pid,
 		UID:  uid,
-		Name: p.Name,
-		Desc: p.Desc,
+		Name: req.Name,
+		Desc: req.Desc,
 	}); err != nil {
 		s.log.Errorf("internal error: %v", err)
 	}
 	return
 }
-func (s *SdPointInterfaceService) DeletePoint(ctx context.Context, req *pb.DeletePointRequest) (_ *emptypb.Empty, err error) {
+func (s *SdPointInterfaceService) DeletePoint(ctx context.Context, req *pb.DeletePointRequest) (rep *emptypb.Empty, err error) {
+	rep = new(emptypb.Empty)
 	if err = s.pc.DeletePoint(ctx, req.Pid); err != nil {
 		s.log.Errorf("internal error: %v", err)
 	}
 	return
 }
 func (s *SdPointInterfaceService) GetPoint(ctx context.Context, req *pb.GetPointRequest) (rep *pb.GetPointReply, err error) {
+	rep = new(pb.GetPointReply)
 	var p *biz.Point
 	if p, err = s.pc.GetPoint(ctx, req.Pid); err != nil {
 		s.log.Errorf("internal error: %v", err)
@@ -79,12 +82,12 @@ func (s *SdPointInterfaceService) GetPoint(ctx context.Context, req *pb.GetPoint
 	return
 }
 func (s *SdPointInterfaceService) ListPoint(ctx context.Context, req *pb.ListPointRequest) (rep *pb.ListPointReply, err error) {
+	rep = new(pb.ListPointReply)
 	uid := GetSession(ctx).UID
 	var ps []*biz.Point
 	if ps, err = s.pc.ListPoint(ctx, &biz.PointCond{
 		Begin: req.Begin,
 		Count: req.Count,
-		PIDs:  req.Pids,
 		UIDs:  []uint32{uid},
 	}); err != nil {
 		s.log.Errorf("internal error: %v", err)
@@ -102,7 +105,8 @@ func (s *SdPointInterfaceService) ListPoint(ctx context.Context, req *pb.ListPoi
 	}
 	return
 }
-func (s *SdPointInterfaceService) CreateRecord(ctx context.Context, req *pb.CreateRecordRequest) (_ *emptypb.Empty, err error) {
+func (s *SdPointInterfaceService) CreateRecord(ctx context.Context, req *pb.CreateRecordRequest) (rep *emptypb.Empty, err error) {
+	rep = new(emptypb.Empty)
 	r := req.Record
 	if err = s.pc.CreatRecord(ctx, &biz.Record{
 		PID:       r.Pid,
@@ -114,13 +118,15 @@ func (s *SdPointInterfaceService) CreateRecord(ctx context.Context, req *pb.Crea
 	}
 	return
 }
-func (s *SdPointInterfaceService) DeleteRecord(ctx context.Context, req *pb.DeleteRecordRequest) (_ *emptypb.Empty, err error) {
+func (s *SdPointInterfaceService) DeleteRecord(ctx context.Context, req *pb.DeleteRecordRequest) (rep *emptypb.Empty, err error) {
+	rep = new(emptypb.Empty)
 	if err = s.pc.DeleteRecord(ctx, req.Rid); err != nil {
 		s.log.Errorf("internal error: %v", err)
 	}
 	return
 }
-func (s *SdPointInterfaceService) UpdateRecord(ctx context.Context, req *pb.UpdateRecordRequest) (_ *emptypb.Empty, err error) {
+func (s *SdPointInterfaceService) UpdateRecord(ctx context.Context, req *pb.UpdateRecordRequest) (rep *emptypb.Empty, err error) {
+	rep = new(emptypb.Empty)
 	r := req.Record
 	if err = s.pc.UpdateRecord(ctx, &biz.Record{
 		RID:       r.Rid,
@@ -136,12 +142,8 @@ func (s *SdPointInterfaceService) ListRecord(ctx context.Context, req *pb.ListRe
 	rep = new(pb.ListRecordReply)
 	var rs []*biz.Record
 	if rs, err = s.pc.ListRecord(ctx, &biz.RecordCond{
-		Begin:        req.Begin,
-		Count:        req.Count + 1,
-		RIDs:         req.Rids,
-		PIDs:         req.Pids,
-		MinClickedAt: req.MinClickedAt,
-		MaxClickedAt: req.MaxClickedAt,
+		Begin: req.Begin,
+		Count: req.Count + 1,
 	}); err != nil {
 		s.log.Errorf("internal error: %v", err)
 	}
@@ -157,7 +159,6 @@ func (s *SdPointInterfaceService) ListRecord(ctx context.Context, req *pb.ListRe
 			Desc:      r.Desc,
 			CreatedAt: r.CreatedAt,
 			UpdatedAt: r.UpdatedAt,
-			DeletedAt: r.DeletedAt,
 		})
 	}
 	rep.Finished = uint32(len(rs)) <= req.Count
@@ -190,8 +191,7 @@ func (s *SdPointInterfaceService) Login(ctx context.Context, req *pb.LoginReques
 		c := req.WechatAccountCode
 		var a *biz.WechatAccount
 		if a, err = s.wc.GetOpenid(ctx, &biz.WechatAccountCode{
-			OpenidCode:      c.OpenidCode,
-			PhoneNumberCode: c.PhoneNumberCode,
+			OpenidCode: c.OpenidCode,
 		}); err != nil {
 			s.log.Errorf("internal error: %v", err)
 			return
@@ -217,10 +217,10 @@ func (s *SdPointInterfaceService) Login(ctx context.Context, req *pb.LoginReques
 	}
 	return
 }
-func (s *SdPointInterfaceService) Logout(ctx context.Context, _ *emptypb.Empty) (_ *emptypb.Empty, err error) {
-	// TODO 此处应该由header中提取sessionID
-	sessionId := ""
-	if err = s.uc.Logout(ctx, sessionId); err != nil {
+func (s *SdPointInterfaceService) Logout(ctx context.Context, _ *emptypb.Empty) (rep *emptypb.Empty, err error) {
+	rep = new(emptypb.Empty)
+	sId := GetSessionID(ctx)
+	if err = s.uc.Logout(ctx, sId); err != nil {
 		s.log.Errorf("internal error: %v", err)
 	}
 	return
@@ -272,7 +272,8 @@ func (s *SdPointInterfaceService) Register(ctx context.Context, req *pb.Register
 	}
 	return
 }
-func (s *SdPointInterfaceService) BindAccount(ctx context.Context, req *pb.BindAccountRequest) (_ *emptypb.Empty, err error) {
+func (s *SdPointInterfaceService) BindAccount(ctx context.Context, req *pb.BindAccountRequest) (rep *emptypb.Empty, err error) {
+	rep = new(emptypb.Empty)
 	var uid uint32
 	switch req.BindType {
 	case 0:
@@ -311,6 +312,7 @@ func (s *SdPointInterfaceService) GetUser(ctx context.Context, req *pb.GetUserRe
 	var u *biz.User
 	if u, err = s.uc.Get(ctx, req.Uid); err != nil {
 		s.log.Errorf("internal error: %v", err)
+		return
 	}
 	rep.User = &pb.GetUserReply_User{
 		Uid:      u.UID,

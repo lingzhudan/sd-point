@@ -83,12 +83,11 @@ XQIDAQAB
 	s := base64.StdEncoding.EncodeToString(ciphertext)
 	fmt.Printf("密文srs: %+v\n", s)
 	var c []byte
-	if c, err = base64.StdEncoding.DecodeString(s); err != nil {
-		fmt.Printf("err: %v\n", err)
+	if c, err = base64.StdEncoding.DecodeString("B8dNoGw+kiy5WUsM79BlPs2j7Ag3ytoh6uqwxAkOILUc5TDPuxCw45nq6x8EFIEEJdq9/Tt0ZyJqFEeM+BM5okmnVBLUFlL8cxT7qWBbW54mbZKKkYFojIyQVt4wTNbD+J942xreVFNZ/ZLVWQYN/+82lsjZyXbT2X3Kvefw8gQhNxIWcsU1ksripewa0H18uxcqHXYqylpqrj7A/jp5MaalV5+WrKVXfzJNtSlEZ8MpYUQboG6DUPTcXyAoa/1e3tLpE4VFrjiSFyB5Nr3oTiKMXTcYJFJc/Ay/Z9KLT9V03AWAYWxJmU0MtIjJllyHfQX2my8xSKtVN7/nf2kkIQ=="); err != nil {
+		t.Errorf("err: %v\n", err)
 		panic(err)
 	}
-	fmt.Printf("D/z7MAEyWJZPu5+QmS5xWJ7pBjElJTs2/N835kuH6hYnNEH/KHht6qP9omu9rEPubXRY68I4+33Kvnnz/JTf2ieSabPDeevmjcGIVhGTm/IMMzrjIVYbrocsrblofG1J8I1jupW3f/o0UdpjF/T2nNeC9S930fBcNt+nSzmhH2OAVSCV6d9Lo6dysKxlgUX6swHNsI+23hdihbxDJL+VB1lHox9NeeUCHNmskrGhxVk5j3aDvA2YPXCkMRaeP1QJ+Od1cKLzCZSnl0puuxqFRC84jHZgiA18bPkpKPBe/NcErS2TF207sTeh6ge/iC3YsxVG0xexTBuIZutCDCfWJg==")
-	fmt.Printf("明文srs: %+v\n", string(c))
+	fmt.Printf("D/z7MAEyWJZPu5+QmS5xWJ7pBjElJTs2/N835kuH6hYnNEH/KHht6qP9omu9rEPubXRY68I4+33Kvnnz/JTf2ieSabPDeevmjcGIVhGTm/IMMzrjIVYbrocsrblofG1J8I1jupW3f/o0UdpjF/T2nNeC9S930fBcNt+nSzmhH2OAVSCV6d9Lo6dysKxlgUX6swHNsI+23hdihbxDJL+VB1lHox9NeeUCHNmskrGhxVk5j3aDvA2YPXCkMRaeP1QJ+Od1cKLzCZSnl0puuxqFRC84jHZgiA18bPkpKPBe/NcErS2TF207sTeh6ge/iC3YsxVG0xexTBuIZutCDCfWJg==\n")
 
 	pk := `-----BEGIN PrivateKey-----
 MIIEogIBAAKCAQEAtbdqlS6wjF8tddJSUF5fJkJjs1R+UQa/FheUgDCNa8PzKDNV
@@ -122,17 +121,17 @@ yYYTyZtcjVyKL9QJLL0axqsX1Pxy1g/QVxjnAET3KpVkbXnJ8ss=
 	//获取私钥
 	block, _ = pem.Decode([]byte(pk))
 	if block == nil {
-		panic("private key error!")
+		t.Errorf("private key error!\n")
 	}
 	//解析PKCS1格式的私钥
 	priv, err := x509.ParsePKCS1PrivateKey(block.Bytes)
 	if err != nil {
-		panic(err)
+		t.Errorf("err: %v\n", err)
 	}
 	// 解密
 	data, err := rsa.DecryptPKCS1v15(rand.Reader, priv, c)
 	if err != nil {
-		panic(err)
+		t.Errorf("err: %v\n", err)
 	}
-	fmt.Printf("明文: %+v\n", string(data))
+	t.Errorf("明文: %+v\n", string(data))
 }

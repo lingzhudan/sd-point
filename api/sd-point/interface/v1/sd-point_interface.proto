@@ -22,7 +22,7 @@ service SdPointInterface {
 	// 更新点数
 	rpc UpdatePoint (UpdatePointRequest) returns (google.protobuf.Empty){
 		option (google.api.http) = {
-			put: "/v1/point/{point.pid}",
+			put: "/v1/point/{pid}",
 			body: "*",
 		};
 	};
@@ -136,14 +136,22 @@ service SdPointInterface {
 
 /* 点数模块 */
 
+// 新增点数信息
 message CreatePointRequest {
-	// 新增点数信息
-	GetPointReply.Point point = 1;
+	// 点数名称
+	string name = 1 [(validate.rules).string = {min_len: 1, max_len: 32}];
+	// 点数描述
+	string desc = 2 [(validate.rules).string = {max_len: 1024}];
 }
 
+// 待更新点数信息
 message UpdatePointRequest {
-	// 待更新点数信息
-	GetPointReply.Point point = 1;
+	// 点数编号
+	uint32 pid = 1;
+	// 点数名称
+	string name = 2 [(validate.rules).string = {min_len: 1, max_len: 32}];
+	// 点数描述
+	string desc = 3 [(validate.rules).string = {max_len: 1024}];
 }
 
 message DeletePointRequest {
@@ -178,8 +186,7 @@ message GetPointReply {
 
 message ListPointRequest {
 	uint32 begin = 1;
-	uint32 count = 2;
-	repeated uint32 pids = 3;
+	uint32 count = 2[(validate.rules).uint32 = {lt: 32}];
 }
 message ListPointReply {
 	bool finished = 1;
@@ -203,8 +210,6 @@ message Record {
 	uint64 created_at = 6;
 	// 更新时间
 	uint64 updated_at = 7;
-	// 删除时间
-	uint64 deleted_at = 8;
 }
 
 message CreateRecordRequest {
@@ -223,10 +228,7 @@ message UpdateRecordRequest {
 }
 
 message CountRecordRequest {
-	repeated uint32 rids = 1;
-	repeated uint32 pids = 2;
-	uint64 min_clicked_at = 3;
-	uint64 max_clicked_at = 4;
+	uint32 pid = 1;
 }
 message CountRecordReply {
 	uint32 count = 1;
@@ -234,11 +236,8 @@ message CountRecordReply {
 
 message ListRecordRequest {
 	uint32 begin = 1;
-	uint32 count = 2;
-	repeated uint32 rids = 3;
-	repeated uint32 pids = 4;
-	uint64 min_clicked_at = 5;
-	uint64 max_clicked_at = 6;
+	uint32 count = 2[(validate.rules).uint32 = {lt: 32}];
+	uint32 pid = 3;
 }
 message ListRecordReply {
 	bool finished = 1;

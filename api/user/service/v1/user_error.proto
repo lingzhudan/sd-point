@@ -30,4 +30,6 @@ enum ErrorReason {
   USER_NOT_FOUND = 8 [(errors.code) = 404];
   // 微信已注册
   PHONE_NUMBER_REGISTERED = 9 [(errors.code) = 401];
+  // 未登录
+  NOT_LOGGED_IN = 10 [(errors.code) = 400];
 }

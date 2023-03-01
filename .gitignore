@@ -7,6 +7,7 @@
 
 # Config
 *.yaml
+*.pem
 
 # Test binary, built with `go test -c`
 *.test
@@ -34,6 +35,8 @@ Thumbs.db
 *.key
 *.log
 bin/
+
+configs/
 
 # Develop tools
 .vscode/

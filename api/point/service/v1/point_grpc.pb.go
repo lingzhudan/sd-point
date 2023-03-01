@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.19.1
-// source: v1/point.proto
+// source: point/service/v1/point.proto
 
 package v1
 
@@ -39,6 +39,8 @@ type PointClient interface {
 	DeleteRecord(ctx context.Context, in *DeleteRecordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// 删除记录
 	UpdateRecord(ctx context.Context, in *UpdateRecordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 获取记录
+	GetRecord(ctx context.Context, in *GetRecordRequest, opts ...grpc.CallOption) (*GetRecordReply, error)
 	// 获取记录列表
 	ListRecord(ctx context.Context, in *ListRecordRequest, opts ...grpc.CallOption) (*ListRecordReply, error)
 }
@@ -123,6 +125,15 @@ func (c *pointClient) UpdateRecord(ctx context.Context, in *UpdateRecordRequest,
 	return out, nil
 }
 
+func (c *pointClient) GetRecord(ctx context.Context, in *GetRecordRequest, opts ...grpc.CallOption) (*GetRecordReply, error) {
+	out := new(GetRecordReply)
+	err := c.cc.Invoke(ctx, "/api.point.v1.Point/GetRecord", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *pointClient) ListRecord(ctx context.Context, in *ListRecordRequest, opts ...grpc.CallOption) (*ListRecordReply, error) {
 	out := new(ListRecordReply)
 	err := c.cc.Invoke(ctx, "/api.point.v1.Point/ListRecord", in, out, opts...)
@@ -152,6 +163,8 @@ type PointServer interface {
 	DeleteRecord(context.Context, *DeleteRecordRequest) (*emptypb.Empty, error)
 	// 删除记录
 	UpdateRecord(context.Context, *UpdateRecordRequest) (*emptypb.Empty, error)
+	// 获取记录
+	GetRecord(context.Context, *GetRecordRequest) (*GetRecordReply, error)
 	// 获取记录列表
 	ListRecord(context.Context, *ListRecordRequest) (*ListRecordReply, error)
 	mustEmbedUnimplementedPointServer()
@@ -184,6 +197,9 @@ func (UnimplementedPointServer) DeleteRecord(context.Context, *DeleteRecordReque
 }
 func (UnimplementedPointServer) UpdateRecord(context.Context, *UpdateRecordRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRecord not implemented")
+}
+func (UnimplementedPointServer) GetRecord(context.Context, *GetRecordRequest) (*GetRecordReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRecord not implemented")
 }
 func (UnimplementedPointServer) ListRecord(context.Context, *ListRecordRequest) (*ListRecordReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListRecord not implemented")
@@ -345,6 +361,24 @@ func _Point_UpdateRecord_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Point_GetRecord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRecordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PointServer).GetRecord(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.point.v1.Point/GetRecord",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PointServer).GetRecord(ctx, req.(*GetRecordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Point_ListRecord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListRecordRequest)
 	if err := dec(in); err != nil {
@@ -403,10 +437,14 @@ var Point_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Point_UpdateRecord_Handler,
 		},
 		{
+			MethodName: "GetRecord",
+			Handler:    _Point_GetRecord_Handler,
+		},
+		{
 			MethodName: "ListRecord",
 			Handler:    _Point_ListRecord_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "v1/point.proto",
+	Metadata: "point/service/v1/point.proto",
 }

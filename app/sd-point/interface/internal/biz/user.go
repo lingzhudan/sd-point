@@ -64,59 +64,35 @@ type Session struct {
 }
 
 func (uc *UserUseCase) GetPublicKey(ctx context.Context) (key []byte, err error) {
-	if key, err = uc.repo.GetPublicKey(ctx); err != nil {
-		uc.log.Errorf("failed to get user, error: %v", err)
-	}
-	return
+	return uc.repo.GetPublicKey(ctx)
 }
 
 func (uc *UserUseCase) GetSession(ctx context.Context, sessionId string) (s *Session, err error) {
-	if s, err = uc.repo.GetSession(ctx, sessionId); err != nil {
-		uc.log.Errorf("failed to get user, error: %v", err)
-	}
-	return
+	return uc.repo.GetSession(ctx, sessionId)
 }
 
 func (uc *UserUseCase) Get(ctx context.Context, uid uint32) (user *User, err error) {
-	if user, err = uc.repo.GetUser(ctx, uid); err != nil {
-		uc.log.Errorf("failed to get user, error: %v", err)
-	}
-	return
+	return uc.repo.GetUser(ctx, uid)
 }
 
 func (uc *UserUseCase) List(ctx context.Context, cond *UserCond) (users []*User, err error) {
-	if users, err = uc.repo.ListUser(ctx, cond); err != nil {
-		uc.log.Errorf("failed to get user list, error: %v", err)
-	}
-	return
+	return uc.repo.ListUser(ctx, cond)
 }
 
 func (uc *UserUseCase) Login(ctx context.Context, account *OriginAccount) (sessionId string, err error) {
-	if sessionId, err = uc.repo.Login(ctx, account); err != nil {
-		uc.log.Errorf("failed to login, error: %v", err)
-	}
-	return
+	return uc.repo.Login(ctx, account)
 }
 
 func (uc *UserUseCase) Logout(ctx context.Context, sessionId string) (err error) {
-	if err = uc.repo.Logout(ctx, sessionId); err != nil {
-		uc.log.Errorf("failed to logout, error: %v", err)
-	}
-	return
+	return uc.repo.Logout(ctx, sessionId)
 }
 
 func (uc *UserUseCase) Register(ctx context.Context, account *OriginAccount) (uid uint32, err error) {
-	if uid, err = uc.repo.Register(ctx, account); err != nil {
-		uc.log.Errorf("failed to register, error: %v", err)
-	}
-	return
+	return uc.repo.Register(ctx, account)
 }
 
 func (uc *UserUseCase) WechatLogin(ctx context.Context, account *WechatAccount) (sessionId string, err error) {
-	if sessionId, err = uc.repo.WechatLogin(ctx, account); err != nil {
-		uc.log.Errorf("failed to login by wechat, error: %v", err)
-	}
-	return
+	return uc.repo.WechatLogin(ctx, account)
 }
 
 func (uc *UserUseCase) WechatPhoneNumberLogin(ctx context.Context, account *WechatAccount) (sessionId string, err error) {
@@ -125,10 +101,7 @@ func (uc *UserUseCase) WechatPhoneNumberLogin(ctx context.Context, account *Wech
 }
 
 func (uc *UserUseCase) WechatRegister(ctx context.Context, account *WechatAccount) (uid uint32, err error) {
-	if uid, err = uc.repo.WechatRegister(ctx, account); err != nil {
-		uc.log.Errorf("failed to login by wechat, error: %v", err)
-	}
-	return
+	return uc.repo.WechatRegister(ctx, account)
 }
 
 func (uc *UserUseCase) WechatPhoneNumberRegister(ctx context.Context, account *WechatAccount) (uid uint32, err error) {
@@ -137,10 +110,7 @@ func (uc *UserUseCase) WechatPhoneNumberRegister(ctx context.Context, account *W
 }
 
 func (uc *UserUseCase) WechatBind(ctx context.Context, uid uint32, account *WechatAccount) (err error) {
-	if err = uc.repo.WechatBind(ctx, uid, account); err != nil {
-		uc.log.Errorf("failed to login by wechat, error: %v", err)
-	}
-	return
+	return uc.repo.WechatBind(ctx, uid, account)
 }
 
 func (uc *UserUseCase) WechatPhoneNumberBind(ctx context.Context, account *WechatAccount) (err error) {

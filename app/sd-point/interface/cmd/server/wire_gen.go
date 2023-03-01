@@ -23,7 +23,7 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func wireApp(confServer *conf.Server, registry *conf.Registry, wechat *conf.Wechat, confData *conf.Data, auth *conf.Auth, logger log.Logger) (*kratos.App, func(), error) {
+func wireApp(confServer *conf.Server, registry *conf.Registry, wechat *conf.Wechat, auth *conf.Auth, logger log.Logger) (*kratos.App, func(), error) {
 	discovery := data.NewDiscovery(registry)
 	userClient := data.NewUserServiceClient(auth, discovery)
 	pointClient := data.NewPointServiceClient(auth, discovery)
@@ -38,10 +38,9 @@ func wireApp(confServer *conf.Server, registry *conf.Registry, wechat *conf.Wech
 	wechatRepo := data.NewWechatRepo(wechat, logger)
 	wechatUseCase := biz.NewWechatUseCase(wechatRepo, logger)
 	sdPointInterfaceService := service.NewSdPointInterfaceService(userUseCase, pointUseCase, wechatUseCase, logger)
-	grpcServer := server.NewGRPCServer(confServer, sdPointInterfaceService, logger)
 	httpServer := server.NewHTTPServer(confServer, sdPointInterfaceService, userUseCase, logger)
 	registrar := data.NewRegistrar(registry)
-	app := newApp(logger, grpcServer, httpServer, registrar)
+	app := newApp(logger, httpServer, registrar)
 	return app, func() {
 		cleanup()
 	}, nil

@@ -21,7 +21,6 @@ import (
 // ProviderSet is data providers.
 var ProviderSet = wire.NewSet(
 	NewData,
-	NewRegistrar,
 	NewDiscovery,
 	NewUserServiceClient,
 	NewPointServiceClient,
@@ -55,18 +54,6 @@ func NewData(
 
 // NewDiscovery 服务注册发现的提供方法
 func NewDiscovery(conf *conf.Registry) registry.Discovery {
-	// new etcd client
-	client, err := clientv3.New(clientv3.Config{
-		Endpoints: []string{conf.Etcd.Address},
-	})
-	if err != nil {
-		panic(err)
-	}
-	return etcd.New(client)
-}
-
-// NewRegistrar 服务注册发现的提供方法
-func NewRegistrar(conf *conf.Registry) registry.Registrar {
 	// new etcd client
 	client, err := clientv3.New(clientv3.Config{
 		Endpoints: []string{conf.Etcd.Address},

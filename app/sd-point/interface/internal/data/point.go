@@ -33,7 +33,6 @@ func (pr *pointRepo) GetPoint(ctx context.Context, pid uint32) (point *biz.Point
 		Desc:      p.Desc,
 		CreatedAt: p.CreatedAt,
 		UpdatedAt: p.UpdatedAt,
-		DeletedAt: p.DeletedAt,
 	}
 	return
 }
@@ -43,7 +42,6 @@ func (pr *pointRepo) ListPoint(ctx context.Context, cond *biz.PointCond) (points
 	if reply, err = pr.data.pc.ListPoint(ctx, &pointv1.ListPointRequest{
 		Begin: cond.Begin,
 		Count: cond.Count + 1,
-		Pids:  cond.PIDs,
 	}); err != nil {
 		pr.log.Errorf("grpc client error: %v", err)
 	}
@@ -55,30 +53,28 @@ func (pr *pointRepo) ListPoint(ctx context.Context, cond *biz.PointCond) (points
 			Desc:      p.Desc,
 			CreatedAt: p.CreatedAt,
 			UpdatedAt: p.UpdatedAt,
-			DeletedAt: p.DeletedAt,
 		})
 	}
 	return
 }
 
 func (pr *pointRepo) CreatePoint(ctx context.Context, point *biz.Point) (err error) {
-	if _, err = pr.data.pc.CreatePoint(ctx, &pointv1.CreatePointRequest{Point: &pointv1.GetPointReply_Point{
-		Pid:  point.PID,
+	if _, err = pr.data.pc.CreatePoint(ctx, &pointv1.CreatePointRequest{
 		Uid:  point.UID,
 		Name: point.Name,
 		Desc: point.Desc,
-	}}); err != nil {
+	}); err != nil {
 		pr.log.Errorf("grpc client error: %v", err)
 	}
 	return
 }
 
 func (pr *pointRepo) UpdatePoint(ctx context.Context, point *biz.Point) (err error) {
-	if _, err = pr.data.pc.UpdatePoint(ctx, &pointv1.UpdatePointRequest{Point: &pointv1.GetPointReply_Point{
+	if _, err = pr.data.pc.UpdatePoint(ctx, &pointv1.UpdatePointRequest{
 		Pid:  point.PID,
 		Name: point.Name,
 		Desc: point.Desc,
-	}}); err != nil {
+	}); err != nil {
 		pr.log.Errorf("grpc client error: %v", err)
 	}
 	return
@@ -92,19 +88,31 @@ func (pr *pointRepo) DeletePoint(ctx context.Context, pid uint32) (err error) {
 }
 
 func (pr *pointRepo) GetRecord(ctx context.Context, rid uint32) (record *biz.Record, err error) {
-	// TODO 确定是否需要使用这个方法
-	return &biz.Record{}, nil
+	var reply *pointv1.GetRecordReply
+	if reply, err = pr.data.pc.GetRecord(ctx, &pointv1.GetRecordRequest{
+		Rid: rid,
+	}); err != nil {
+		pr.log.Errorf("grpc client error: %v", err)
+	}
+	r := reply.Record
+	record = &biz.Record{
+		RID:       r.Rid,
+		PID:       r.Pid,
+		Num:       r.Num,
+		Desc:      r.Desc,
+		ClickedAt: r.ClickedAt,
+		CreatedAt: r.CreatedAt,
+		UpdatedAt: r.UpdatedAt,
+		DeletedAt: r.DeletedAt,
+	}
+	return record, nil
 }
 
 func (pr *pointRepo) ListRecord(ctx context.Context, cond *biz.RecordCond) (records []*biz.Record, err error) {
 	var reply *pointv1.ListRecordReply
 	if reply, err = pr.data.pc.ListRecord(ctx, &pointv1.ListRecordRequest{
-		Begin:        cond.Begin,
-		Count:        cond.Count,
-		Rids:         cond.RIDs,
-		Pids:         cond.PIDs,
-		MinClickedAt: cond.MinClickedAt,
-		MaxClickedAt: cond.MaxClickedAt,
+		Begin: cond.Begin,
+		Count: cond.Count,
 	}); err != nil {
 		pr.log.Errorf("grpc client error: %v", err)
 	}
@@ -115,8 +123,8 @@ func (pr *pointRepo) ListRecord(ctx context.Context, cond *biz.RecordCond) (reco
 			Num:       r.Num,
 			Desc:      r.Desc,
 			ClickedAt: r.ClickedAt,
-			CreatedAt: r.ClickedAt,
-			UpdatedAt: r.ClickedAt,
+			CreatedAt: r.CreatedAt,
+			UpdatedAt: r.UpdatedAt,
 			DeletedAt: r.DeletedAt,
 		})
 	}
@@ -124,25 +132,24 @@ func (pr *pointRepo) ListRecord(ctx context.Context, cond *biz.RecordCond) (reco
 }
 
 func (pr *pointRepo) CreateRecord(ctx context.Context, record *biz.Record) (err error) {
-	if _, err = pr.data.pc.CreateRecord(ctx, &pointv1.CreateRecordRequest{Record: &pointv1.Record{
-		Rid:       record.RID,
+	if _, err = pr.data.pc.CreateRecord(ctx, &pointv1.CreateRecordRequest{
 		Pid:       record.PID,
 		Num:       record.Num,
 		ClickedAt: record.ClickedAt,
 		Desc:      record.Desc,
-	}}); err != nil {
+	}); err != nil {
 		pr.log.Errorf("grpc client error: %v", err)
 	}
 	return
 }
 
 func (pr *pointRepo) UpdateRecord(ctx context.Context, record *biz.Record) (err error) {
-	if _, err = pr.data.pc.UpdateRecord(ctx, &pointv1.UpdateRecordRequest{Record: &pointv1.Record{
+	if _, err = pr.data.pc.UpdateRecord(ctx, &pointv1.UpdateRecordRequest{
 		Rid:       record.RID,
 		Num:       record.Num,
 		ClickedAt: record.ClickedAt,
 		Desc:      record.Desc,
-	}}); err != nil {
+	}); err != nil {
 		pr.log.Errorf("grpc client error: %v", err)
 	}
 	return

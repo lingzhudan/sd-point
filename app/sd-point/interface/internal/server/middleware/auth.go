@@ -16,12 +16,13 @@ func CheckAuthorization(uc *biz.UserUseCase) middleware.Middleware {
 				var sessionId string
 				var session *biz.Session
 				if sessionId = tr.RequestHeader().Get("Authorization"); len(sessionId) == 0 {
-					return nil, pb.ErrorNotLoggedIn("", "")
+					return nil, pb.ErrorNotLoggedIn("not logged in")
 				}
 				if session, err = uc.GetSession(ctx, sessionId); err != nil {
 					return nil, err
 				}
 				ctx = context.WithValue(ctx, "session", session)
+				ctx = context.WithValue(ctx, "sessionId", sessionId)
 				defer func() {
 					// Do something on exiting
 				}()
