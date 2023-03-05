@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.19.1
-// source: sd-point/interface/v1/sd-point_interface.proto
+// source: v1/sd-point_interface.proto
 
 package v1
 
@@ -674,5 +674,5 @@ var SdPointInterface_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "sd-point/interface/v1/sd-point_interface.proto",
+	Metadata: "v1/sd-point_interface.proto",
 }

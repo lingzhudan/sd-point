@@ -60,7 +60,7 @@ message GetPublicKeyReply {
 }
 
 message GetSessionRequest {
-	string session_id  = 1 [(validate.rules).string = {len: 36}];
+	string session_id  = 1 [(validate.rules).string = {max_len: 64}];
 }
 message GetSessionReply {
 	message Session {
@@ -78,7 +78,7 @@ message LoginRequest {
 }
 message WechatLoginRequest {
 	// 微信openID
-	string open_id = 1 [(validate.rules).string = {len: 32}];
+	string open_id = 1 [(validate.rules).string = {max_len: 64}];
 }
 message PhoneNumberLoginRequest {
 	// 手机号
@@ -99,7 +99,7 @@ message RegisterRequest {
 }
 message WechatRegisterRequest {
 	// 微信openid
-	string openid = 1 [(validate.rules).string = {len: 32}];
+	string openid = 1 [(validate.rules).string = {max_len: 64}];
 }
 message PhoneNumberRegisterRequest {
 	// 手机号
@@ -113,7 +113,7 @@ message WechatBindRequest {
 	// 待绑定用户编号
 	uint32 uid = 1;
 	// 微信openid
-	string openid = 2 [(validate.rules).string = {len: 32}];
+	string openid = 2 [(validate.rules).string = {max_len: 64}];
 }
 message PhoneNumberBindRequest {
 	// 待绑定用户编号

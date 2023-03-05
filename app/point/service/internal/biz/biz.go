@@ -7,7 +7,7 @@ import (
 )
 
 // ProviderSet is biz providers.
-var ProviderSet = wire.NewSet(NewPointUseCase, NewRecordUseCase, NewTotalUseCase)
+var ProviderSet = wire.NewSet(NewPointUseCase)
 
 type PointCond struct {
 	Begin uint32

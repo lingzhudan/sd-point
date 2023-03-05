@@ -39,8 +39,7 @@ func wireApp(confServer *conf.Server, registry *conf.Registry, wechat *conf.Wech
 	wechatUseCase := biz.NewWechatUseCase(wechatRepo, logger)
 	sdPointInterfaceService := service.NewSdPointInterfaceService(userUseCase, pointUseCase, wechatUseCase, logger)
 	httpServer := server.NewHTTPServer(confServer, sdPointInterfaceService, userUseCase, logger)
-	registrar := data.NewRegistrar(registry)
-	app := newApp(logger, httpServer, registrar)
+	app := newApp(logger, httpServer)
 	return app, func() {
 		cleanup()
 	}, nil

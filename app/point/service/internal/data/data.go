@@ -3,7 +3,6 @@ package data
 import (
 	"github.com/go-kratos/kratos/v2/registry"
 	"os"
-	"sd-point/app/point/service/internal/biz"
 	"sd-point/app/point/service/internal/conf"
 	"time"
 
@@ -20,7 +19,7 @@ import (
 )
 
 // ProviderSet is data providers.
-var ProviderSet = wire.NewSet(NewData, NewRegistrar, NewPointRepo, NewRecordRepo, NewTotalRepo)
+var ProviderSet = wire.NewSet(NewData, NewRegistrar, NewPointRepo)
 
 // Data .
 type Data struct {
@@ -115,5 +114,5 @@ func NewDatabase(driver, source string) (db *gorm.DB, err error) {
 }
 
 func DBAutoMigrate(db *gorm.DB) error {
-	return db.AutoMigrate(&biz.Point{}, &biz.Record{})
+	return db.AutoMigrate(&Point{}, &Record{})
 }

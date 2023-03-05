@@ -66,7 +66,7 @@ service SdPointInterface {
 	// 更新记录
 	rpc UpdateRecord (UpdateRecordRequest) returns (google.protobuf.Empty){
 		option (google.api.http) = {
-			put: "/v1/record/{record.rid}",
+			put: "/v1/record/{rid}",
 			body: "*",
 		};
 	};
@@ -213,8 +213,14 @@ message Record {
 }
 
 message CreateRecordRequest {
-	// 新增点数信息
-	Record record = 1 [(validate.rules).message = {required: true}];
+	// 点数编号
+	uint32 pid = 2;
+	// 点数数量
+	int32 num = 3 [(validate.rules).int32 = {gte: -65536, lte: 65535}];
+	// 记录新增时间
+	uint64 clicked_at = 4;
+	// 记录描述
+	string desc = 5 [(validate.rules).string = {max_len: 1024}];
 }
 
 message DeleteRecordRequest {
@@ -223,8 +229,14 @@ message DeleteRecordRequest {
 }
 
 message UpdateRecordRequest {
-	// 待更新的记录编号
-	Record record = 1 [(validate.rules).message.required = true];
+	// 记录编号
+	uint32 rid = 2;
+	// 点数数量
+	int32 num = 3 [(validate.rules).int32 = {gte: -65536, lte: 65535}];
+	// 记录新增时间
+	uint64 clicked_at = 4;
+	// 记录描述
+	string desc = 5 [(validate.rules).string = {max_len: 1024}];
 }
 
 message CountRecordRequest {
@@ -261,9 +273,9 @@ message LoginRequest {
 	}
 	message WechatAccountCode {
 		// 微信换取openid的code字符串
-		string openid_code = 1 [(validate.rules).string = {len: 32}];
+		string openid_code = 1 [(validate.rules).string = {max_len: 64}];
 		// 微信换取手机号的code字符串
-		string phone_number_code = 2 [(validate.rules).string = {len: 32}];
+		string phone_number_code = 2 [(validate.rules).string = {max_len: 64}];
 	}
 	// 登录类型 0 为原始账号 1 为微信登录 2 为微信手机号登录 4 为手机号登录
 	uint32 login_type = 1;

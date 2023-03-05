@@ -33,26 +33,30 @@ func (r *userRepo) GetPublicKey(ctx context.Context) (key []byte, err error) {
 
 func (r *userRepo) GetSession(ctx context.Context, sessionId string) (s *biz.Session, err error) {
 	s = new(biz.Session)
-	var reply *userv1.GetSessionReply
-	if reply, err = r.data.uc.GetSession(ctx, &userv1.GetSessionRequest{SessionId: sessionId}); err != nil {
-		if define.IsErrRecordNotFound(err) {
-			r.log.Error("session not found")
+	rep, err := r.data.uc.GetSession(ctx, &userv1.GetSessionRequest{SessionId: sessionId})
+	if err != nil {
+		if userv1.IsSessionIdNotFound(err) {
+			err = define.ErrSessionNotFound
 			return
 		}
 		r.log.Errorf("grpc client error: %v", err)
 		return
 	}
-	s.UID = reply.Session.Uid
+	s.UID = rep.Session.Uid
 	return
 }
 
 func (r *userRepo) GetUser(ctx context.Context, uid uint32) (user *biz.User, err error) {
-	var reply *userv1.GetUserReply
-	if reply, err = r.data.uc.GetUser(ctx, &userv1.GetUserRequest{Uid: uid}); err != nil {
+	rep, err := r.data.uc.GetUser(ctx, &userv1.GetUserRequest{Uid: uid})
+	if err != nil {
+		if userv1.IsUserNotFound(err) {
+			err = define.ErrUserNotFound
+			return
+		}
 		r.log.Errorf("grpc client error: %v", err)
 		return
 	}
-	u := reply.User
+	u := rep.User
 	user = &biz.User{
 		UID:      u.Uid,
 		Username: u.Username,
@@ -61,12 +65,12 @@ func (r *userRepo) GetUser(ctx context.Context, uid uint32) (user *biz.User, err
 }
 
 func (r *userRepo) ListUser(ctx context.Context, cond *biz.UserCond) (users []*biz.User, err error) {
-	var reply *userv1.ListUserReply
-	if reply, err = r.data.uc.ListUser(ctx, &userv1.ListUserRequest{Uids: cond.UIDs}); err != nil {
+	rep, err := r.data.uc.ListUser(ctx, &userv1.ListUserRequest{Uids: cond.UIDs})
+	if err != nil {
 		r.log.Errorf("grpc client error: %v", err)
 		return
 	}
-	for _, u := range reply.Users {
+	for _, u := range rep.Users {
 		users = append(users, &biz.User{
 			UID:      u.Uid,
 			Username: u.Username,
@@ -83,52 +87,67 @@ func (r *userRepo) Logout(ctx context.Context, sessionId string) (err error) {
 }
 
 func (r *userRepo) Login(ctx context.Context, account *biz.OriginAccount) (sessionId string, err error) {
-	var reply *userv1.LoginReply
-	if reply, err = r.data.uc.Login(ctx, &userv1.LoginRequest{
+	rep, err := r.data.uc.Login(ctx, &userv1.LoginRequest{
 		Account:  account.Account,
 		Password: account.Password,
-	}); err != nil {
+	})
+	if err != nil {
+		if userv1.IsUserNotFound(err) {
+			return "", define.ErrAccountNotFound
+		}
+		if userv1.IsPasswordError(err) {
+			return "", define.ErrPasswordError
+		}
 		r.log.Errorf("grpc client error: %v", err)
 		return
 	}
-	sessionId = reply.SessionId
+	sessionId = rep.SessionId
 	return
 }
 
 func (r *userRepo) Register(ctx context.Context, account *biz.OriginAccount) (uid uint32, err error) {
-	var reply *userv1.RegisterReply
-	if reply, err = r.data.uc.Register(ctx, &userv1.RegisterRequest{
+	rep, err := r.data.uc.Register(ctx, &userv1.RegisterRequest{
 		Account:  account.Account,
 		Password: account.Password,
-	}); err != nil {
+	})
+	if err != nil {
+		if userv1.IsAccountRegistered(err) {
+			return 0, define.ErrAccountRegistered
+		}
 		r.log.Errorf("grpc client error: %v", err)
 		return
 	}
-	uid = reply.Uid
+	uid = rep.Uid
 	return
 }
 
 func (r *userRepo) WechatLogin(ctx context.Context, account *biz.WechatAccount) (sessionId string, err error) {
-	var reply *userv1.LoginReply
-	if reply, err = r.data.uc.WechatLogin(ctx, &userv1.WechatLoginRequest{
+	rep, err := r.data.uc.WechatLogin(ctx, &userv1.WechatLoginRequest{
 		OpenId: account.Openid,
-	}); err != nil {
+	})
+	if err != nil {
+		if userv1.IsUserNotFound(err) {
+			return "", define.ErrUserNotFound
+		}
 		r.log.Errorf("grpc client error: %v", err)
 		return
 	}
-	sessionId = reply.SessionId
+	sessionId = rep.SessionId
 	return
 }
 
 func (r *userRepo) WechatRegister(ctx context.Context, account *biz.WechatAccount) (uid uint32, err error) {
-	var reply *userv1.RegisterReply
-	if reply, err = r.data.uc.WechatRegister(ctx, &userv1.WechatRegisterRequest{
+	rep, err := r.data.uc.WechatRegister(ctx, &userv1.WechatRegisterRequest{
 		Openid: account.Openid,
-	}); err != nil {
+	})
+	if err != nil {
+		if userv1.IsWechatRegistered(err) {
+			return 0, define.ErrWechatRegistered
+		}
 		r.log.Errorf("grpc client error: %v", err)
 		return
 	}
-	uid = reply.Uid
+	uid = rep.Uid
 	return
 }
 

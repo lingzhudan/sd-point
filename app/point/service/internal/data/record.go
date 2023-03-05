@@ -93,13 +93,15 @@ func (r *pointRepo) UpdateRecord(
 	rid uint32,
 	num int32,
 	desc string,
+	clickedAt time.Time,
 ) (err error) {
 	if err = r.data.db.
 		WithContext(ctx).
 		Model(&Record{RID: rid}).
 		Updates(&Record{
-			Num:  num,
-			Desc: desc,
+			Num:       num,
+			Desc:      desc,
+			ClickedAt: clickedAt,
 		}).Error; err != nil {
 		r.log.Errorf("db error: %v", err)
 	}

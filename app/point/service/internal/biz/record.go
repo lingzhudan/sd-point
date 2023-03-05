@@ -9,7 +9,7 @@ type RecordRepo interface {
 	GetRecord(ctx context.Context, rid uint32) (record *Record, err error)
 	ListRecord(ctx context.Context, begin int, count int, uid uint32) (records []*Record, err error)
 	CreateRecord(ctx context.Context, pid uint32, num int32, desc string, clickedAt time.Time) (err error)
-	UpdateRecord(ctx context.Context, rid uint32, num int32, desc string) (err error)
+	UpdateRecord(ctx context.Context, rid uint32, num int32, desc string, clickedAt time.Time) (err error)
 	DeleteRecord(ctx context.Context, rid uint32) (err error)
 	DeleteRecords(ctx context.Context, pid uint32) (err error)
 }
@@ -52,13 +52,13 @@ func (uc *PointUseCase) CreateRecord(ctx context.Context, pid uint32, num int32,
 	return
 }
 
-func (uc *PointUseCase) UpdateRecord(ctx context.Context, rid uint32, num int32, desc string) (err error) {
+func (uc *PointUseCase) UpdateRecord(ctx context.Context, rid uint32, num int32, desc string, clickedAt time.Time) (err error) {
 	r, err := uc.GetRecord(ctx, rid)
 	if err != nil {
 		uc.log.Errorf("internal error: %v", err)
 		return
 	}
-	if err = uc.repo.UpdateRecord(ctx, rid, num, desc); err != nil {
+	if err = uc.repo.UpdateRecord(ctx, rid, num, desc, clickedAt); err != nil {
 		uc.log.Errorf("failed to update record, error: %v", err)
 	}
 	n := num - r.Num

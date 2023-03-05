@@ -18,15 +18,15 @@ func NewPointUsecase(repo PointRepo, logger log.Logger) *PointUseCase {
 
 type PointRepo interface {
 	GetPoint(ctx context.Context, pid uint32) (point *Point, err error)
-	ListPoint(ctx context.Context, cond *PointCond) (points []*Point, err error)
-	CreatePoint(ctx context.Context, point *Point) (err error)
-	UpdatePoint(ctx context.Context, point *Point) (err error)
+	ListPoint(ctx context.Context, begin, count, uid uint32) (points *ListPoint, err error)
+	CreatePoint(ctx context.Context, uid uint32, name, desc string) (err error)
+	UpdatePoint(ctx context.Context, pid uint32, name, desc string) (err error)
 	DeletePoint(ctx context.Context, pid uint32) error
 
 	GetRecord(ctx context.Context, rid uint32) (record *Record, err error)
-	ListRecord(ctx context.Context, cond *RecordCond) (records []*Record, err error)
-	CreateRecord(ctx context.Context, record *Record) (err error)
-	UpdateRecord(ctx context.Context, record *Record) (err error)
+	ListRecord(ctx context.Context, begin, count, pid uint32) (records *ListRecord, err error)
+	CreateRecord(ctx context.Context, pid uint32, num int32, desc string, clickedAt uint64) (err error)
+	UpdateRecord(ctx context.Context, rid uint32, num int32, desc string, clickedAt uint64) (err error)
 	DeleteRecord(ctx context.Context, rid uint32) (err error)
 }
 
@@ -50,6 +50,11 @@ type Point struct {
 	DeletedAt uint64
 }
 
+type ListPoint struct {
+	Finished bool
+	Points   []*Point
+}
+
 type Record struct {
 	// 点数记录编号
 	RID uint32
@@ -70,76 +75,51 @@ type Record struct {
 	DeletedAt uint64
 }
 
+type ListRecord struct {
+	Finished bool
+	Records  []*Record
+}
+
 // 点数方法
 
 func (uc *PointUseCase) GetPoint(ctx context.Context, pid uint32) (point *Point, err error) {
-	if point, err = uc.repo.GetPoint(ctx, pid); err != nil {
-		uc.log.Errorf("failed to get point, error: %v", err)
-	}
-	return
+	return uc.repo.GetPoint(ctx, pid)
 }
 
-func (uc *PointUseCase) ListPoint(ctx context.Context, cond *PointCond) (points []*Point, err error) {
-	if points, err = uc.repo.ListPoint(ctx, cond); err != nil {
-		uc.log.Errorf("failed to get point, error: %v", err)
-	}
-	return
+func (uc *PointUseCase) ListPoint(ctx context.Context, begin, count, uid uint32) (points *ListPoint, err error) {
+	return uc.repo.ListPoint(ctx, begin, count, uid)
 }
 
-func (uc *PointUseCase) CreatePoint(ctx context.Context, point *Point) (err error) {
-	if err = uc.repo.CreatePoint(ctx, point); err != nil {
-		uc.log.Errorf("failed to get point, error: %v", err)
-	}
-	return
+func (uc *PointUseCase) CreatePoint(ctx context.Context, uid uint32, name, desc string) (err error) {
+	return uc.repo.CreatePoint(ctx, uid, name, desc)
 }
 
-func (uc *PointUseCase) UpdatePoint(ctx context.Context, point *Point) (err error) {
-	if err = uc.repo.UpdatePoint(ctx, point); err != nil {
-		uc.log.Errorf("failed to get point, error: %v", err)
-	}
-	return
+func (uc *PointUseCase) UpdatePoint(ctx context.Context, pid uint32, name, desc string) (err error) {
+	return uc.repo.UpdatePoint(ctx, pid, name, desc)
 }
 
 func (uc *PointUseCase) DeletePoint(ctx context.Context, pid uint32) (err error) {
-	if err = uc.repo.DeletePoint(ctx, pid); err != nil {
-		uc.log.Errorf("failed to get point, error: %v", err)
-	}
-	return
+	return uc.repo.DeletePoint(ctx, pid)
 }
 
 // 点数记录方法
 
 func (uc *PointUseCase) GetRecord(ctx context.Context, rid uint32) (record *Record, err error) {
-	if record, err = uc.repo.GetRecord(ctx, rid); err != nil {
-		uc.log.Debugf("failed to get record, error: %v", err)
-	}
-	return
+	return uc.repo.GetRecord(ctx, rid)
 }
 
-func (uc *PointUseCase) ListRecord(ctx context.Context, cond *RecordCond) (records []*Record, err error) {
-	if records, err = uc.repo.ListRecord(ctx, cond); err != nil {
-		uc.log.Debugf("failed to get records, error: %v", err)
-	}
-	return
+func (uc *PointUseCase) ListRecord(ctx context.Context, begin, count, pid uint32) (records *ListRecord, err error) {
+	return uc.repo.ListRecord(ctx, begin, count, pid)
 }
 
-func (uc *PointUseCase) CreatRecord(ctx context.Context, record *Record) (err error) {
-	if err = uc.repo.CreateRecord(ctx, record); err != nil {
-		uc.log.Debugf("failed to create records, error: %v", err)
-	}
-	return
+func (uc *PointUseCase) CreatRecord(ctx context.Context, pid uint32, num int32, desc string, clickedAt uint64) (err error) {
+	return uc.repo.CreateRecord(ctx, pid, num, desc, clickedAt)
 }
 
-func (uc *PointUseCase) UpdateRecord(ctx context.Context, record *Record) (err error) {
-	if err = uc.repo.UpdateRecord(ctx, record); err != nil {
-		uc.log.Debugf("failed to update record, error: %v", err)
-	}
-	return
+func (uc *PointUseCase) UpdateRecord(ctx context.Context, rid uint32, num int32, desc string, clickedAt uint64) (err error) {
+	return uc.repo.UpdateRecord(ctx, rid, num, desc, clickedAt)
 }
 
 func (uc *PointUseCase) DeleteRecord(ctx context.Context, rid uint32) (err error) {
-	if err = uc.repo.DeleteRecord(ctx, rid); err != nil {
-		uc.log.Debugf("failed to delete record, error: %v", err)
-	}
-	return
+	return uc.repo.DeleteRecord(ctx, rid)
 }

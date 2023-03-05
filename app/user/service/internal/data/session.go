@@ -10,6 +10,7 @@ import (
 	"sd-point/app/user/service/internal/biz"
 	"sd-point/app/user/service/internal/define"
 	"strconv"
+	"time"
 )
 
 type sessionRepo struct {
@@ -33,10 +34,23 @@ func (r *sessionRepo) SetSession(ctx context.Context, session *biz.Session) (ses
 		return
 	}
 	sessionId = strconv.Itoa(int(session.UID)) + ":" + newUuid.String()
-	if err = r.data.rdb.Set(ctx, sessionId, session, 0).Err(); err != nil {
+	sessionStr, err := NewSession(session)
+	if err != nil {
+		r.log.Errorf("failed to marshal session, error: %v", err)
+		return "", err
+	}
+	if err = r.data.rdb.Set(ctx, sessionId, sessionStr, time.Hour).Err(); err != nil {
 		r.log.Errorf("rdb error: %v", err)
 	}
 	return
+}
+
+func NewSession(s *biz.Session) (string, error) {
+	js, err := json.Marshal(s)
+	if err != nil {
+		return "", err
+	}
+	return string(js), nil
 }
 
 // GetSession 获取登录session

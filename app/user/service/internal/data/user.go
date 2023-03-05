@@ -32,8 +32,8 @@ type User struct {
 	Name        string `gorm:"column:name;size:32;comment:用户名称;"`
 	Account     string `gorm:"column:account;uniqueIndex;size:64;comment:系统账号;"`
 	Password    string `gorm:"column:password;size:64;comment:加密系统密码;"`
-	Openid      string `gorm:"column:openid;uniqueIndex;size:64;comment:微信openID;"`
-	PhoneNumber string `gorm:"column:phone_number;uniqueIndex;size:16;comment:手机号;"`
+	Openid      string `gorm:"column:openid;size:64;comment:微信openID;"`
+	PhoneNumber string `gorm:"column:phone_number;size:16;comment:手机号;"`
 
 	CreatedAt time.Time      `gorm:"column:created_at;autoCreateTime;comment:创建时间;"`
 	UpdatedAt time.Time      `gorm:"column:updated_at;autoUpdateTime;comment:更新时间;"`

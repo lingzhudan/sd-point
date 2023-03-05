@@ -56,7 +56,7 @@ func (r *pointRepo) ListPoint(ctx context.Context, begin int, count int, uid uin
 	dPs := make([]*Point, 0)
 	if err = r.data.db.
 		WithContext(ctx).
-		Where("`uid` = ?", uid).
+		Where(&Point{UID: uid}).
 		Limit(count).
 		Offset(begin).
 		Find(&dPs).
@@ -98,7 +98,7 @@ func (r *pointRepo) CreatePoint(ctx context.Context, uid uint32, name string, de
 func (r *pointRepo) UpdatePoint(ctx context.Context, pid uint32, name string, desc string) (err error) {
 	if err = r.data.db.
 		WithContext(ctx).
-		Model(&Point{PID: pid}).
+		Where(&Point{PID: pid}).
 		Updates(&Point{
 			Name: name,
 			Desc: desc,

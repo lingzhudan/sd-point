@@ -7,22 +7,6 @@ info:
     version: 0.0.1
 paths:
     /v1/point:
-        post:
-            tags:
-                - SdPointInterface
-            description: 创建点数
-            operationId: SdPointInterface_CreatePoint
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/api.sd_point.interface.v1.CreatePointRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content: {}
-    /v1/point/list:
         get:
             tags:
                 - SdPointInterface
@@ -39,13 +23,6 @@ paths:
                   schema:
                     type: integer
                     format: uint32
-                - name: pids
-                  in: query
-                  schema:
-                    type: array
-                    items:
-                        type: integer
-                        format: uint32
             responses:
                 "200":
                     description: OK
@@ -53,6 +30,21 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/api.sd_point.interface.v1.ListPointReply'
+        post:
+            tags:
+                - SdPointInterface
+            description: 创建点数
+            operationId: SdPointInterface_CreatePoint
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.sd_point.interface.v1.CreatePointRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
     /v1/point/{pid}:
         get:
             tags:
@@ -74,6 +66,29 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/api.sd_point.interface.v1.GetPointReply'
+        put:
+            tags:
+                - SdPointInterface
+            description: 更新点数
+            operationId: SdPointInterface_UpdatePoint
+            parameters:
+                - name: pid
+                  in: path
+                  description: 点数编号
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.sd_point.interface.v1.UpdatePointRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
         delete:
             tags:
                 - SdPointInterface
@@ -91,45 +106,7 @@ paths:
                 "200":
                     description: OK
                     content: {}
-    /v1/point/{point.pid}:
-        put:
-            tags:
-                - SdPointInterface
-            description: 更新点数
-            operationId: SdPointInterface_UpdatePoint
-            parameters:
-                - name: point.pid
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/api.sd_point.interface.v1.UpdatePointRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content: {}
     /v1/record:
-        post:
-            tags:
-                - SdPointInterface
-            description: 创建记录
-            operationId: SdPointInterface_CreateRecord
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/api.sd_point.interface.v1.CreateRecordRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content: {}
-    /v1/record/list:
         get:
             tags:
                 - SdPointInterface
@@ -146,30 +123,11 @@ paths:
                   schema:
                     type: integer
                     format: uint32
-                - name: rids
-                  in: query
-                  schema:
-                    type: array
-                    items:
-                        type: integer
-                        format: uint32
-                - name: pids
-                  in: query
-                  schema:
-                    type: array
-                    items:
-                        type: integer
-                        format: uint32
-                - name: minClickedAt
+                - name: pid
                   in: query
                   schema:
                     type: integer
-                    format: uint64
-                - name: maxClickedAt
-                  in: query
-                  schema:
-                    type: integer
-                    format: uint64
+                    format: uint32
             responses:
                 "200":
                     description: OK
@@ -177,18 +135,35 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/api.sd_point.interface.v1.ListRecordReply'
-    /v1/record/{record.rid}:
+        post:
+            tags:
+                - SdPointInterface
+            description: 创建记录
+            operationId: SdPointInterface_CreateRecord
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.sd_point.interface.v1.CreateRecordRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /v1/record/{rid}:
         put:
             tags:
                 - SdPointInterface
             description: 更新记录
             operationId: SdPointInterface_UpdateRecord
             parameters:
-                - name: record.rid
+                - name: rid
                   in: path
+                  description: 记录编号
                   required: true
                   schema:
-                    type: string
+                    type: integer
+                    format: uint32
             requestBody:
                 content:
                     application/json:
@@ -199,7 +174,6 @@ paths:
                 "200":
                     description: OK
                     content: {}
-    /v1/record/{rid}:
         delete:
             tags:
                 - SdPointInterface
@@ -377,13 +351,31 @@ components:
         api.sd_point.interface.v1.CreatePointRequest:
             type: object
             properties:
-                point:
-                    $ref: '#/components/schemas/api.sd_point.interface.v1.GetPointReply_Point'
+                name:
+                    type: string
+                    description: 点数名称
+                desc:
+                    type: string
+                    description: 点数描述
+            description: 新增点数信息
         api.sd_point.interface.v1.CreateRecordRequest:
             type: object
             properties:
-                record:
-                    $ref: '#/components/schemas/api.sd_point.interface.v1.Record'
+                pid:
+                    type: integer
+                    description: 点数编号
+                    format: uint32
+                num:
+                    type: integer
+                    description: 点数数量
+                    format: int32
+                clickedAt:
+                    type: integer
+                    description: 记录新增时间
+                    format: uint64
+                desc:
+                    type: string
+                    description: 记录描述
         api.sd_point.interface.v1.GetPointReply:
             type: object
             properties:
@@ -424,7 +416,6 @@ components:
                 publicKey:
                     type: string
                     description: 公钥
-                    format: bytes
         api.sd_point.interface.v1.GetUserReply:
             type: object
             properties:
@@ -533,10 +524,6 @@ components:
                     type: integer
                     description: 更新时间
                     format: uint64
-                deletedAt:
-                    type: integer
-                    description: 删除时间
-                    format: uint64
         api.sd_point.interface.v1.RegisterReply:
             type: object
             properties:
@@ -557,12 +544,34 @@ components:
         api.sd_point.interface.v1.UpdatePointRequest:
             type: object
             properties:
-                point:
-                    $ref: '#/components/schemas/api.sd_point.interface.v1.GetPointReply_Point'
+                pid:
+                    type: integer
+                    description: 点数编号
+                    format: uint32
+                name:
+                    type: string
+                    description: 点数名称
+                desc:
+                    type: string
+                    description: 点数描述
+            description: 待更新点数信息
         api.sd_point.interface.v1.UpdateRecordRequest:
             type: object
             properties:
-                record:
-                    $ref: '#/components/schemas/api.sd_point.interface.v1.Record'
+                rid:
+                    type: integer
+                    description: 记录编号
+                    format: uint32
+                num:
+                    type: integer
+                    description: 点数数量
+                    format: int32
+                clickedAt:
+                    type: integer
+                    description: 记录新增时间
+                    format: uint64
+                desc:
+                    type: string
+                    description: 记录描述
 tags:
     - name: SdPointInterface

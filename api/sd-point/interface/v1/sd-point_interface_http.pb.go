@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-http v2.5.3
 // - protoc             v3.19.1
-// source: sd-point/interface/v1/sd-point_interface.proto
+// source: v1/sd-point_interface.proto
 
 package v1
 
@@ -65,7 +65,7 @@ func RegisterSdPointInterfaceHTTPServer(s *http.Server, srv SdPointInterfaceHTTP
 	r.GET("/v1/point", _SdPointInterface_ListPoint0_HTTP_Handler(srv))
 	r.POST("/v1/record", _SdPointInterface_CreateRecord0_HTTP_Handler(srv))
 	r.DELETE("/v1/record/{rid}", _SdPointInterface_DeleteRecord0_HTTP_Handler(srv))
-	r.PUT("/v1/record/{record.rid}", _SdPointInterface_UpdateRecord0_HTTP_Handler(srv))
+	r.PUT("/v1/record/{rid}", _SdPointInterface_UpdateRecord0_HTTP_Handler(srv))
 	r.GET("/v1/record", _SdPointInterface_ListRecord0_HTTP_Handler(srv))
 	r.GET("/v1/user/public_key", _SdPointInterface_GetPublicKey0_HTTP_Handler(srv))
 	r.POST("/v1/user/login/{login_type}", _SdPointInterface_Login0_HTTP_Handler(srv))
@@ -631,7 +631,7 @@ func (c *SdPointInterfaceHTTPClientImpl) UpdatePoint(ctx context.Context, in *Up
 
 func (c *SdPointInterfaceHTTPClientImpl) UpdateRecord(ctx context.Context, in *UpdateRecordRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
 	var out emptypb.Empty
-	pattern := "/v1/record/{record.rid}"
+	pattern := "/v1/record/{rid}"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationSdPointInterfaceUpdateRecord))
 	opts = append(opts, http.PathTemplate(pattern))

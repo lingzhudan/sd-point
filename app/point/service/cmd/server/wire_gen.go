@@ -26,11 +26,7 @@ func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Da
 	}
 	pointRepo := data.NewPointRepo(dataData, logger)
 	pointUseCase := biz.NewPointUseCase(pointRepo, logger)
-	recordRepo := data.NewRecordRepo(dataData, logger)
-	recordUseCase := biz.NewRecordUseCase(recordRepo, logger)
-	totalRepo := data.NewTotalRepo(dataData, logger)
-	totalUseCase := biz.NewTotalUseCase(totalRepo, logger)
-	pointService := service.NewPointService(pointUseCase, recordUseCase, totalUseCase, logger)
+	pointService := service.NewPointService(pointUseCase, logger)
 	grpcServer := server.NewGRPCServer(confServer, auth, pointService, logger)
 	registrar := data.NewRegistrar(registry)
 	app := newApp(logger, grpcServer, registrar)

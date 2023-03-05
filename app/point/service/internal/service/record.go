@@ -19,7 +19,7 @@ func (s *PointService) DeleteRecord(ctx context.Context, req *v1.DeleteRecordReq
 }
 
 func (s *PointService) UpdateRecord(ctx context.Context, req *v1.UpdateRecordRequest) (rep *emptypb.Empty, err error) {
-	return new(emptypb.Empty), s.uc.UpdateRecord(ctx, req.Rid, req.Num, req.Desc)
+	return new(emptypb.Empty), s.uc.UpdateRecord(ctx, req.Rid, req.Num, req.Desc, time.Unix(int64(req.ClickedAt), 0))
 }
 
 func (s *PointService) GetRecord(ctx context.Context, req *v1.GetRecordRequest) (rep *v1.GetRecordReply, err error) {

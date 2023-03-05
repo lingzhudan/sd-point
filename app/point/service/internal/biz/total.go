@@ -68,13 +68,14 @@ func (uc *PointUseCase) GetOrExistsTotal(ctx context.Context, pid uint32) (total
 		rs, err := uc.ListRecord(ctx, 0, 0, pid)
 		if err != nil {
 			uc.log.Errorf("internal error: %v", err)
-			return
+			return 0, err
 		}
 		for _, r := range rs {
 			total += r.Num
 		}
 		if err = uc.SetTotal(ctx, pid, total); err != nil {
 			uc.log.Errorf("internal error: %v", err)
+			return 0, err
 		}
 	}
 	if total, err = uc.repo.GetTotal(ctx, pid); err != nil {

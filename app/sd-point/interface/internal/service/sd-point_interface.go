@@ -2,8 +2,10 @@ package service
 
 import (
 	"context"
+	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"sd-point/app/sd-point/interface/internal/biz"
+	"sd-point/app/sd-point/interface/internal/define"
 
 	"google.golang.org/protobuf/types/known/emptypb"
 	pb "sd-point/api/sd-point/interface/v1"
@@ -35,24 +37,14 @@ func NewSdPointInterfaceService(
 func (s *SdPointInterfaceService) CreatePoint(ctx context.Context, req *pb.CreatePointRequest) (rep *emptypb.Empty, err error) {
 	rep = new(emptypb.Empty)
 	uid := GetSession(ctx).UID
-	if err = s.pc.CreatePoint(ctx, &biz.Point{
-		UID:  uid,
-		Name: req.Name,
-		Desc: req.Desc,
-	}); err != nil {
+	if err = s.pc.CreatePoint(ctx, uid, req.Name, req.Desc); err != nil {
 		s.log.Errorf("internal error: %v", err)
 	}
 	return
 }
 func (s *SdPointInterfaceService) UpdatePoint(ctx context.Context, req *pb.UpdatePointRequest) (rep *emptypb.Empty, err error) {
 	rep = new(emptypb.Empty)
-	uid := GetSession(ctx).UID
-	if err = s.pc.UpdatePoint(ctx, &biz.Point{
-		PID:  req.Pid,
-		UID:  uid,
-		Name: req.Name,
-		Desc: req.Desc,
-	}); err != nil {
+	if err = s.pc.UpdatePoint(ctx, req.Pid, req.Name, req.Desc); err != nil {
 		s.log.Errorf("internal error: %v", err)
 	}
 	return
@@ -84,15 +76,12 @@ func (s *SdPointInterfaceService) GetPoint(ctx context.Context, req *pb.GetPoint
 func (s *SdPointInterfaceService) ListPoint(ctx context.Context, req *pb.ListPointRequest) (rep *pb.ListPointReply, err error) {
 	rep = new(pb.ListPointReply)
 	uid := GetSession(ctx).UID
-	var ps []*biz.Point
-	if ps, err = s.pc.ListPoint(ctx, &biz.PointCond{
-		Begin: req.Begin,
-		Count: req.Count,
-		UIDs:  []uint32{uid},
-	}); err != nil {
+	ps, err := s.pc.ListPoint(ctx, req.Begin, req.Count, uid)
+	if err != nil {
 		s.log.Errorf("internal error: %v", err)
+		return
 	}
-	for _, p := range ps {
+	for _, p := range ps.Points {
 		rep.Points = append(rep.Points, &pb.GetPointReply_Point{
 			Pid:       p.PID,
 			Total:     p.Total,
@@ -103,17 +92,13 @@ func (s *SdPointInterfaceService) ListPoint(ctx context.Context, req *pb.ListPoi
 			DeletedAt: p.DeletedAt,
 		})
 	}
+	rep.Finished = ps.Finished
+	rep.Count = uint32(len(ps.Points))
 	return
 }
 func (s *SdPointInterfaceService) CreateRecord(ctx context.Context, req *pb.CreateRecordRequest) (rep *emptypb.Empty, err error) {
 	rep = new(emptypb.Empty)
-	r := req.Record
-	if err = s.pc.CreatRecord(ctx, &biz.Record{
-		PID:       r.Pid,
-		Num:       r.Num,
-		Desc:      r.Desc,
-		ClickedAt: r.ClickedAt,
-	}); err != nil {
+	if err = s.pc.CreatRecord(ctx, req.Pid, req.Num, req.Desc, req.ClickedAt); err != nil {
 		s.log.Errorf("internal error: %v", err)
 	}
 	return
@@ -127,27 +112,18 @@ func (s *SdPointInterfaceService) DeleteRecord(ctx context.Context, req *pb.Dele
 }
 func (s *SdPointInterfaceService) UpdateRecord(ctx context.Context, req *pb.UpdateRecordRequest) (rep *emptypb.Empty, err error) {
 	rep = new(emptypb.Empty)
-	r := req.Record
-	if err = s.pc.UpdateRecord(ctx, &biz.Record{
-		RID:       r.Rid,
-		Num:       r.Num,
-		Desc:      r.Desc,
-		ClickedAt: r.ClickedAt,
-	}); err != nil {
+	if err = s.pc.UpdateRecord(ctx, req.Rid, req.Num, req.Desc, req.ClickedAt); err != nil {
 		s.log.Errorf("internal error: %v", err)
 	}
 	return
 }
 func (s *SdPointInterfaceService) ListRecord(ctx context.Context, req *pb.ListRecordRequest) (rep *pb.ListRecordReply, err error) {
 	rep = new(pb.ListRecordReply)
-	var rs []*biz.Record
-	if rs, err = s.pc.ListRecord(ctx, &biz.RecordCond{
-		Begin: req.Begin,
-		Count: req.Count + 1,
-	}); err != nil {
+	rs, err := s.pc.ListRecord(ctx, req.Begin, req.Count, req.Pid)
+	if err != nil {
 		s.log.Errorf("internal error: %v", err)
 	}
-	for _, r := range rs {
+	for _, r := range rs.Records {
 		if uint32(len(rep.Records)) >= req.Count {
 			break
 		}
@@ -161,14 +137,14 @@ func (s *SdPointInterfaceService) ListRecord(ctx context.Context, req *pb.ListRe
 			UpdatedAt: r.UpdatedAt,
 		})
 	}
-	rep.Finished = uint32(len(rs)) <= req.Count
+	rep.Finished = rs.Finished
 	rep.Count = uint32(len(rep.Records))
 	return
 }
 func (s *SdPointInterfaceService) GetPublicKey(ctx context.Context, _ *emptypb.Empty) (rep *pb.GetPublicKeyReply, err error) {
 	rep = new(pb.GetPublicKeyReply)
-	var bs []byte
-	if bs, err = s.uc.GetPublicKey(ctx); err != nil {
+	bs, err := s.uc.GetPublicKey(ctx)
+	if err != nil {
 		s.log.Errorf("internal error: %v", err)
 	}
 	rep.PublicKey = string(bs)
@@ -197,6 +173,13 @@ func (s *SdPointInterfaceService) Login(ctx context.Context, req *pb.LoginReques
 			return
 		}
 		if rep.SessionId, err = s.uc.WechatLogin(ctx, a); err != nil {
+			if errors.Is(err, define.ErrAccountNotFound) {
+				_, _ = s.uc.WechatRegister(ctx, a)
+				if rep.SessionId, err = s.uc.WechatLogin(ctx, a); err != nil {
+					s.log.Errorf("internal error: %v", err)
+				}
+				return
+			}
 			s.log.Errorf("internal error: %v", err)
 		}
 	case 2:
@@ -210,6 +193,13 @@ func (s *SdPointInterfaceService) Login(ctx context.Context, req *pb.LoginReques
 			return
 		}
 		if rep.SessionId, err = s.uc.WechatPhoneNumberLogin(ctx, a); err != nil {
+			if errors.Is(err, define.ErrAccountNotFound) {
+				_, _ = s.uc.WechatPhoneNumberRegister(ctx, a)
+				if rep.SessionId, err = s.uc.WechatPhoneNumberLogin(ctx, a); err != nil {
+					s.log.Errorf("internal error: %v", err)
+				}
+				return
+			}
 			s.log.Errorf("internal error: %v", err)
 		}
 	case 4:

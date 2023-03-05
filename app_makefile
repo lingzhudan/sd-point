@@ -1,11 +1,25 @@
+# 本机环境变量GOPATH
 GOPATH:=$(shell go env GOPATH)
+# git的最后一个提交版本
 VERSION=$(shell git describe --tags --always)
+# 获取服务路径 例如 /sd-point/app/user/service 返回 user/service
+# basename返回当前路径的最后一个文件或文件夹名
 APP_RELATIVE_PATH=$(shell a=`basename $$PWD` && cd .. && b=`basename $$PWD` && echo $$b/$$a)
+# find 查找./internal目录下全部以.proto结尾的文件名
 INTERNAL_PROTO_FILES=$(shell find internal -name *.proto)
+# cd 转到项目api/服务路径
+# 获取路径下的全部以.proto结尾的文件名
 API_PROTO_FILES=$(shell cd ../../../api/$(APP_RELATIVE_PATH) && find . -name *.proto)
+# go mod graph 获取go.mod中的依赖包
+# grep 过滤kratos包
+# head 获取第一行记录
+# awk 将@符号作为分隔符 切割kratos包版本字符串获取版本号
 KRATOS_VERSION=$(shell go mod graph |grep go-kratos/kratos/v2 |head -n 1 |awk -F '@' '{print $$2}')
+# kratos包在本机的路径
 KRATOS=$(GOPATH)/pkg/mod/github.com/go-kratos/kratos/v2@$(KRATOS_VERSION)
+# sed 替换服务路径中'/'为'-' /p为服务路径不包含'/'则不输出
 APP_NAME=$(shell echo $(APP_RELATIVE_PATH) | sed -En "s/\//-/p")
+# awk 将@符号作为分隔符 避免shell报错
 DOCKER_IMAGE=$(shell echo $(APP_NAME) |awk -F '@' '{print "sd-point-" $$0 ":0.1.0"}')
 
 .PHONY: init
@@ -16,9 +30,8 @@ init:
 	go get -u github.com/go-kratos/kratos/cmd/protoc-gen-go-http/v2
 	go get -u github.com/google/wire/cmd/wire
 	go get -u github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
+	go get github.com/go-kratos/kratos/cmd/protoc-gen-go-errors/v2
 	go install github.com/envoyproxy/protoc-gen-validate@latest
-	# 附加中间件
-	go install github.com/go-kratos/kratos/cmd/protoc-gen-go-errors/v2
 
 .PHONY: grpc
 # generate grpc code
@@ -107,7 +120,7 @@ wire:
 
 .PHONY: api
 # generate api proto
-api: grpc http errors validate swagger
+api: grpc http errors validate
 
 .PHONY: all
 # generate all

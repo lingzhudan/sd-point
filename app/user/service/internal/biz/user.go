@@ -3,6 +3,7 @@ package biz
 import (
 	"context"
 	_ "embed"
+	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"sd-point/app/user/service/internal/define"
 	"time"
@@ -10,11 +11,11 @@ import (
 
 type UserUseCase struct {
 	ur  UserRepo
-	sc  SessionUseCase
+	sc  *SessionUseCase
 	log *log.Helper
 }
 
-func NewUserUseCase(ur UserRepo, sc SessionUseCase, logger log.Logger) *UserUseCase {
+func NewUserUseCase(ur UserRepo, sc *SessionUseCase, logger log.Logger) *UserUseCase {
 	return &UserUseCase{
 		ur:  ur,
 		sc:  sc,
@@ -52,7 +53,13 @@ type User struct {
 }
 
 func (uc *UserUseCase) GetUser(ctx context.Context, uid uint32) (user *User, err error) {
-	return uc.ur.GetUser(ctx, uid)
+	user, err = uc.ur.GetUser(ctx, uid)
+	if err != nil {
+		if errors.Is(err, define.ErrRecordNotFound) {
+			err = define.ErrUserNotFound
+		}
+	}
+	return
 }
 
 func (uc *UserUseCase) ListUser(ctx context.Context, uids []uint32) (users []*User, err error) {
@@ -66,6 +73,9 @@ func (uc *UserUseCase) DeleteUser(ctx context.Context, uid uint32) (err error) {
 func (uc *UserUseCase) Login(ctx context.Context, account string, password string) (sessionId string, err error) {
 	u, err := uc.ur.GetUserByAccount(ctx, account)
 	if err != nil {
+		if errors.Is(err, define.ErrRecordNotFound) {
+			return "", define.ErrUserNotFound
+		}
 		return
 	} else if u.Password != password {
 		return "", define.ErrPasswordIncorrect
@@ -75,6 +85,9 @@ func (uc *UserUseCase) Login(ctx context.Context, account string, password strin
 func (uc *UserUseCase) WechatLogin(ctx context.Context, openid string) (sessionId string, err error) {
 	u, err := uc.ur.GetUserByWechat(ctx, openid)
 	if err != nil {
+		if errors.Is(err, define.ErrRecordNotFound) {
+			return "", define.ErrUserNotFound
+		}
 		return
 	}
 	return uc.newSessionID(ctx, u.UID)
@@ -82,18 +95,42 @@ func (uc *UserUseCase) WechatLogin(ctx context.Context, openid string) (sessionI
 func (uc *UserUseCase) PhoneNumberLogin(ctx context.Context, phoneNumber string) (sessionId string, err error) {
 	u, err := uc.ur.GetUserByPhoneNumber(ctx, phoneNumber)
 	if err != nil {
+		if errors.Is(err, define.ErrRecordNotFound) {
+			return "", define.ErrUserNotFound
+		}
 		return
 	}
 	return uc.newSessionID(ctx, u.UID)
 }
 func (uc *UserUseCase) Register(ctx context.Context, account string, password string) (uid uint32, err error) {
-	return uc.ur.Register(ctx, account, password)
+	_, err = uc.ur.GetUserByAccount(ctx, account)
+	if err != nil {
+		if errors.Is(err, define.ErrRecordNotFound) {
+			return uc.ur.Register(ctx, account, password)
+		}
+		return
+	}
+	return 0, define.ErrAccountRegistered
 }
 func (uc *UserUseCase) WechatRegister(ctx context.Context, openid string) (uid uint32, err error) {
-	return uc.ur.RegisterByWechat(ctx, openid)
+	_, err = uc.ur.GetUserByWechat(ctx, openid)
+	if err != nil {
+		if errors.Is(err, define.ErrRecordNotFound) {
+			return uc.ur.RegisterByWechat(ctx, openid)
+		}
+		return
+	}
+	return 0, define.ErrWechatRegistered
 }
 func (uc *UserUseCase) PhoneNumberRegister(ctx context.Context, phoneNumber string) (uid uint32, err error) {
-	return uc.ur.RegisterByPhoneNumber(ctx, phoneNumber)
+	_, err = uc.ur.GetUserByPhoneNumber(ctx, phoneNumber)
+	if err != nil {
+		if errors.Is(err, define.ErrRecordNotFound) {
+			return uc.ur.RegisterByPhoneNumber(ctx, phoneNumber)
+		}
+		return
+	}
+	return 0, define.ErrPhoneNumberRegistered
 }
 func (uc *UserUseCase) BindWechat(ctx context.Context, uid uint32, openid string) (err error) {
 	if err = uc.ur.UnbindWechat(ctx, openid); err != nil {

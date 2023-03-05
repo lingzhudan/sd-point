@@ -123,53 +123,6 @@ func (x *Server) GetHttp() *Server_HTTP {
 	return nil
 }
 
-type Registry struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Etcd *Registry_Etcd `protobuf:"bytes,1,opt,name=etcd,proto3" json:"etcd,omitempty"`
-}
-
-func (x *Registry) Reset() {
-	*x = Registry{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_conf_conf_proto_msgTypes[2]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *Registry) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Registry) ProtoMessage() {}
-
-func (x *Registry) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_conf_conf_proto_msgTypes[2]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Registry.ProtoReflect.Descriptor instead.
-func (*Registry) Descriptor() ([]byte, []int) {
-	return file_internal_conf_conf_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *Registry) GetEtcd() *Registry_Etcd {
-	if x != nil {
-		return x.Etcd
-	}
-	return nil
-}
-
 type Auth struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -181,7 +134,7 @@ type Auth struct {
 func (x *Auth) Reset() {
 	*x = Auth{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_conf_conf_proto_msgTypes[3]
+		mi := &file_internal_conf_conf_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -194,7 +147,7 @@ func (x *Auth) String() string {
 func (*Auth) ProtoMessage() {}
 
 func (x *Auth) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_conf_conf_proto_msgTypes[3]
+	mi := &file_internal_conf_conf_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -207,7 +160,7 @@ func (x *Auth) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Auth.ProtoReflect.Descriptor instead.
 func (*Auth) Descriptor() ([]byte, []int) {
-	return file_internal_conf_conf_proto_rawDescGZIP(), []int{3}
+	return file_internal_conf_conf_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *Auth) GetJwtKey() string {
@@ -215,6 +168,53 @@ func (x *Auth) GetJwtKey() string {
 		return x.JwtKey
 	}
 	return ""
+}
+
+type Registry struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Etcd *Registry_Etcd `protobuf:"bytes,1,opt,name=etcd,proto3" json:"etcd,omitempty"`
+}
+
+func (x *Registry) Reset() {
+	*x = Registry{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_internal_conf_conf_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Registry) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Registry) ProtoMessage() {}
+
+func (x *Registry) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_conf_conf_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Registry.ProtoReflect.Descriptor instead.
+func (*Registry) Descriptor() ([]byte, []int) {
+	return file_internal_conf_conf_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *Registry) GetEtcd() *Registry_Etcd {
+	if x != nil {
+		return x.Etcd
+	}
+	return nil
 }
 
 type Wechat struct {
@@ -405,7 +405,7 @@ func (x *Registry_Etcd) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Registry_Etcd.ProtoReflect.Descriptor instead.
 func (*Registry_Etcd) Descriptor() ([]byte, []int) {
-	return file_internal_conf_conf_proto_rawDescGZIP(), []int{2, 0}
+	return file_internal_conf_conf_proto_rawDescGZIP(), []int{3, 0}
 }
 
 func (x *Registry_Etcd) GetAddress() string {
@@ -445,16 +445,16 @@ var file_internal_conf_conf_proto_rawDesc = []byte{
 	0x64, 0x64, 0x72, 0x12, 0x33, 0x0a, 0x07, 0x74, 0x69, 0x6d, 0x65, 0x6f, 0x75, 0x74, 0x18, 0x03,
 	0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
 	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52,
-	0x07, 0x74, 0x69, 0x6d, 0x65, 0x6f, 0x75, 0x74, 0x22, 0x73, 0x0a, 0x08, 0x52, 0x65, 0x67, 0x69,
-	0x73, 0x74, 0x72, 0x79, 0x12, 0x2d, 0x0a, 0x04, 0x65, 0x74, 0x63, 0x64, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x0b, 0x32, 0x19, 0x2e, 0x6b, 0x72, 0x61, 0x74, 0x6f, 0x73, 0x2e, 0x61, 0x70, 0x69, 0x2e,
-	0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x72, 0x79, 0x2e, 0x45, 0x74, 0x63, 0x64, 0x52, 0x04, 0x65,
-	0x74, 0x63, 0x64, 0x1a, 0x38, 0x0a, 0x04, 0x45, 0x74, 0x63, 0x64, 0x12, 0x18, 0x0a, 0x07, 0x61,
-	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64,
-	0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x63, 0x68, 0x65, 0x6d, 0x65, 0x18,
-	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x73, 0x63, 0x68, 0x65, 0x6d, 0x65, 0x22, 0x1f, 0x0a,
-	0x04, 0x41, 0x75, 0x74, 0x68, 0x12, 0x17, 0x0a, 0x07, 0x6a, 0x77, 0x74, 0x5f, 0x6b, 0x65, 0x79,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x6a, 0x77, 0x74, 0x4b, 0x65, 0x79, 0x22, 0xd6,
+	0x07, 0x74, 0x69, 0x6d, 0x65, 0x6f, 0x75, 0x74, 0x22, 0x1f, 0x0a, 0x04, 0x41, 0x75, 0x74, 0x68,
+	0x12, 0x17, 0x0a, 0x07, 0x6a, 0x77, 0x74, 0x5f, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x06, 0x6a, 0x77, 0x74, 0x4b, 0x65, 0x79, 0x22, 0x73, 0x0a, 0x08, 0x52, 0x65, 0x67,
+	0x69, 0x73, 0x74, 0x72, 0x79, 0x12, 0x2d, 0x0a, 0x04, 0x65, 0x74, 0x63, 0x64, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x6b, 0x72, 0x61, 0x74, 0x6f, 0x73, 0x2e, 0x61, 0x70, 0x69,
+	0x2e, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x72, 0x79, 0x2e, 0x45, 0x74, 0x63, 0x64, 0x52, 0x04,
+	0x65, 0x74, 0x63, 0x64, 0x1a, 0x38, 0x0a, 0x04, 0x45, 0x74, 0x63, 0x64, 0x12, 0x18, 0x0a, 0x07,
+	0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61,
+	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x63, 0x68, 0x65, 0x6d, 0x65,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x73, 0x63, 0x68, 0x65, 0x6d, 0x65, 0x22, 0xd6,
 	0x01, 0x0a, 0x06, 0x57, 0x65, 0x63, 0x68, 0x61, 0x74, 0x12, 0x15, 0x0a, 0x06, 0x61, 0x70, 0x70,
 	0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x61, 0x70, 0x70, 0x49, 0x64,
 	0x12, 0x1d, 0x0a, 0x0a, 0x61, 0x70, 0x70, 0x5f, 0x73, 0x65, 0x63, 0x72, 0x65, 0x74, 0x18, 0x02,
@@ -491,8 +491,8 @@ var file_internal_conf_conf_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_internal_conf_conf_proto_goTypes = []interface{}{
 	(*Bootstrap)(nil),           // 0: kratos.api.Bootstrap
 	(*Server)(nil),              // 1: kratos.api.Server
-	(*Registry)(nil),            // 2: kratos.api.Registry
-	(*Auth)(nil),                // 3: kratos.api.Auth
+	(*Auth)(nil),                // 2: kratos.api.Auth
+	(*Registry)(nil),            // 3: kratos.api.Registry
 	(*Wechat)(nil),              // 4: kratos.api.Wechat
 	(*Server_HTTP)(nil),         // 5: kratos.api.Server.HTTP
 	(*Registry_Etcd)(nil),       // 6: kratos.api.Registry.Etcd
@@ -500,7 +500,7 @@ var file_internal_conf_conf_proto_goTypes = []interface{}{
 }
 var file_internal_conf_conf_proto_depIdxs = []int32{
 	1, // 0: kratos.api.Bootstrap.server:type_name -> kratos.api.Server
-	3, // 1: kratos.api.Bootstrap.auth:type_name -> kratos.api.Auth
+	2, // 1: kratos.api.Bootstrap.auth:type_name -> kratos.api.Auth
 	5, // 2: kratos.api.Server.http:type_name -> kratos.api.Server.HTTP
 	6, // 3: kratos.api.Registry.etcd:type_name -> kratos.api.Registry.Etcd
 	7, // 4: kratos.api.Server.HTTP.timeout:type_name -> google.protobuf.Duration
@@ -542,7 +542,7 @@ func file_internal_conf_conf_proto_init() {
 			}
 		}
 		file_internal_conf_conf_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Registry); i {
+			switch v := v.(*Auth); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -554,7 +554,7 @@ func file_internal_conf_conf_proto_init() {
 			}
 		}
 		file_internal_conf_conf_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Auth); i {
+			switch v := v.(*Registry); i {
 			case 0:
 				return &v.state
 			case 1:

@@ -2,11 +2,10 @@ syntax = "proto3";
 
 package api.point.v1;
 
-import "google/protobuf/empty.proto";
-import "validate/validate.proto";
-
 option go_package = "sd-point/api/point/service/v1;v1";
 
+import "google/protobuf/empty.proto";
+import "validate/validate.proto";
 
 service Point {
 	// 创建点数

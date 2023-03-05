@@ -21,11 +21,12 @@ func NewPointRepo(data *Data, logger log.Logger) biz.PointRepo {
 }
 
 func (pr *pointRepo) GetPoint(ctx context.Context, pid uint32) (point *biz.Point, err error) {
-	var reply *pointv1.GetPointReply
-	if reply, err = pr.data.pc.GetPoint(ctx, &pointv1.GetPointRequest{Pid: pid}); err != nil {
+	rep, err := pr.data.pc.GetPoint(ctx, &pointv1.GetPointRequest{Pid: pid})
+	if err != nil {
 		pr.log.Errorf("grpc client error: %v", err)
+		return
 	}
-	p := reply.Point
+	p := rep.Point
 	point = &biz.Point{
 		PID:       p.Pid,
 		Name:      p.Name,
@@ -37,16 +38,19 @@ func (pr *pointRepo) GetPoint(ctx context.Context, pid uint32) (point *biz.Point
 	return
 }
 
-func (pr *pointRepo) ListPoint(ctx context.Context, cond *biz.PointCond) (points []*biz.Point, err error) {
-	var reply *pointv1.ListPointReply
-	if reply, err = pr.data.pc.ListPoint(ctx, &pointv1.ListPointRequest{
-		Begin: cond.Begin,
-		Count: cond.Count + 1,
-	}); err != nil {
+func (pr *pointRepo) ListPoint(ctx context.Context, begin, count, uid uint32) (points *biz.ListPoint, err error) {
+	rep, err := pr.data.pc.ListPoint(ctx, &pointv1.ListPointRequest{
+		Begin: begin,
+		Count: count,
+		Uid:   uid,
+	})
+	if err != nil {
 		pr.log.Errorf("grpc client error: %v", err)
+		return
 	}
-	for _, p := range reply.Points {
-		points = append(points, &biz.Point{
+	points = &biz.ListPoint{Finished: rep.Finished}
+	for _, p := range rep.Points {
+		points.Points = append(points.Points, &biz.Point{
 			PID:       p.Pid,
 			Name:      p.Name,
 			Total:     p.Total,
@@ -58,22 +62,22 @@ func (pr *pointRepo) ListPoint(ctx context.Context, cond *biz.PointCond) (points
 	return
 }
 
-func (pr *pointRepo) CreatePoint(ctx context.Context, point *biz.Point) (err error) {
+func (pr *pointRepo) CreatePoint(ctx context.Context, uid uint32, name, desc string) (err error) {
 	if _, err = pr.data.pc.CreatePoint(ctx, &pointv1.CreatePointRequest{
-		Uid:  point.UID,
-		Name: point.Name,
-		Desc: point.Desc,
+		Uid:  uid,
+		Name: name,
+		Desc: desc,
 	}); err != nil {
 		pr.log.Errorf("grpc client error: %v", err)
 	}
 	return
 }
 
-func (pr *pointRepo) UpdatePoint(ctx context.Context, point *biz.Point) (err error) {
+func (pr *pointRepo) UpdatePoint(ctx context.Context, pid uint32, name, desc string) (err error) {
 	if _, err = pr.data.pc.UpdatePoint(ctx, &pointv1.UpdatePointRequest{
-		Pid:  point.PID,
-		Name: point.Name,
-		Desc: point.Desc,
+		Pid:  pid,
+		Name: name,
+		Desc: desc,
 	}); err != nil {
 		pr.log.Errorf("grpc client error: %v", err)
 	}
@@ -88,13 +92,14 @@ func (pr *pointRepo) DeletePoint(ctx context.Context, pid uint32) (err error) {
 }
 
 func (pr *pointRepo) GetRecord(ctx context.Context, rid uint32) (record *biz.Record, err error) {
-	var reply *pointv1.GetRecordReply
-	if reply, err = pr.data.pc.GetRecord(ctx, &pointv1.GetRecordRequest{
+	rep, err := pr.data.pc.GetRecord(ctx, &pointv1.GetRecordRequest{
 		Rid: rid,
-	}); err != nil {
+	})
+	if err != nil {
 		pr.log.Errorf("grpc client error: %v", err)
+		return
 	}
-	r := reply.Record
+	r := rep.Record
 	record = &biz.Record{
 		RID:       r.Rid,
 		PID:       r.Pid,
@@ -108,16 +113,19 @@ func (pr *pointRepo) GetRecord(ctx context.Context, rid uint32) (record *biz.Rec
 	return record, nil
 }
 
-func (pr *pointRepo) ListRecord(ctx context.Context, cond *biz.RecordCond) (records []*biz.Record, err error) {
-	var reply *pointv1.ListRecordReply
-	if reply, err = pr.data.pc.ListRecord(ctx, &pointv1.ListRecordRequest{
-		Begin: cond.Begin,
-		Count: cond.Count,
-	}); err != nil {
+func (pr *pointRepo) ListRecord(ctx context.Context, begin, count, pid uint32) (records *biz.ListRecord, err error) {
+	rep, err := pr.data.pc.ListRecord(ctx, &pointv1.ListRecordRequest{
+		Begin: begin,
+		Count: count,
+		Pid:   pid,
+	})
+	if err != nil {
 		pr.log.Errorf("grpc client error: %v", err)
+		return
 	}
-	for _, r := range reply.Records {
-		records = append(records, &biz.Record{
+	records = &biz.ListRecord{Finished: rep.Finished}
+	for _, r := range rep.Records {
+		records.Records = append(records.Records, &biz.Record{
 			RID:       r.Rid,
 			PID:       r.Pid,
 			Num:       r.Num,
@@ -131,24 +139,24 @@ func (pr *pointRepo) ListRecord(ctx context.Context, cond *biz.RecordCond) (reco
 	return
 }
 
-func (pr *pointRepo) CreateRecord(ctx context.Context, record *biz.Record) (err error) {
+func (pr *pointRepo) CreateRecord(ctx context.Context, pid uint32, num int32, desc string, clickedAt uint64) (err error) {
 	if _, err = pr.data.pc.CreateRecord(ctx, &pointv1.CreateRecordRequest{
-		Pid:       record.PID,
-		Num:       record.Num,
-		ClickedAt: record.ClickedAt,
-		Desc:      record.Desc,
+		Pid:       pid,
+		Num:       num,
+		ClickedAt: clickedAt,
+		Desc:      desc,
 	}); err != nil {
 		pr.log.Errorf("grpc client error: %v", err)
 	}
 	return
 }
 
-func (pr *pointRepo) UpdateRecord(ctx context.Context, record *biz.Record) (err error) {
+func (pr *pointRepo) UpdateRecord(ctx context.Context, rid uint32, num int32, desc string, clickedAt uint64) (err error) {
 	if _, err = pr.data.pc.UpdateRecord(ctx, &pointv1.UpdateRecordRequest{
-		Rid:       record.RID,
-		Num:       record.Num,
-		ClickedAt: record.ClickedAt,
-		Desc:      record.Desc,
+		Rid:       rid,
+		Num:       num,
+		ClickedAt: clickedAt,
+		Desc:      desc,
 	}); err != nil {
 		pr.log.Errorf("grpc client error: %v", err)
 	}

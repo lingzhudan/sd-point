@@ -66,6 +66,7 @@ func (s *UserService) GetSession(ctx context.Context, req *pb.GetSessionRequest)
 		if errors.Is(err, define.ErrRecordNotFound) {
 			err = pb.ErrorNotLoggedIn("用户未登录")
 		}
+		return
 	}
 	rep.Session.Uid = session.UID
 	return
@@ -110,7 +111,7 @@ func (s *UserService) Register(ctx context.Context, req *pb.RegisterRequest) (re
 	rep = new(pb.RegisterReply)
 	rep.Uid, err = s.uc.Register(ctx, req.Account, s.rsaDecrypt(req.Password))
 	if err != nil {
-		if errors.Is(err, define.ErrDuplicateKey) {
+		if errors.Is(err, define.ErrAccountRegistered) {
 			err = pb.ErrorAccountRegistered("账号: %s 已经被注册", req.Account)
 			return
 		}
@@ -121,7 +122,7 @@ func (s *UserService) WechatRegister(ctx context.Context, req *pb.WechatRegister
 	rep = new(pb.RegisterReply)
 	rep.Uid, err = s.uc.WechatRegister(ctx, req.Openid)
 	if err != nil {
-		if errors.Is(err, define.ErrDuplicateKey) {
+		if errors.Is(err, define.ErrWechatRegistered) {
 			err = pb.ErrorWechatRegistered("微信用户: %s 已经被注册", req.Openid)
 		}
 	}
@@ -131,7 +132,7 @@ func (s *UserService) PhoneNumberRegister(ctx context.Context, req *pb.PhoneNumb
 	rep = new(pb.RegisterReply)
 	rep.Uid, err = s.uc.PhoneNumberRegister(ctx, req.PhoneNumber)
 	if err != nil {
-		if errors.Is(err, define.ErrDuplicateKey) {
+		if errors.Is(err, define.ErrPhoneNumberRegistered) {
 			err = pb.ErrorPhoneNumberRegistered("手机号: %s 已经被注册", req.PhoneNumber)
 		}
 	}
@@ -148,8 +149,8 @@ func (s *UserService) GetUser(ctx context.Context, req *pb.GetUserRequest) (rep 
 	rep = new(pb.GetUserReply)
 	user, err := s.uc.GetUser(ctx, req.Uid)
 	if err != nil {
-		if errors.Is(err, define.ErrRecordNotFound) {
-			err = pb.ErrorUserNotFound("没有找到用户: %s", req.Uid)
+		if errors.Is(err, define.ErrUserNotFound) {
+			err = pb.ErrorUserNotFound("没有找到用户: %d", req.Uid)
 		}
 		return
 	}

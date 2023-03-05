@@ -8,8 +8,10 @@
 # Config
 *.yaml
 *.pem
+configs/
 
 # Test binary, built with `go test -c`
+*_test/
 *.test
 
 # Output of the go coverage tool, specifically when used with LiteIDE
@@ -36,7 +38,6 @@ Thumbs.db
 *.log
 bin/
 
-configs/
 
 # Develop tools
 .vscode/

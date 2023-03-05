@@ -69,13 +69,7 @@ generate:
 
 .PHONY: all
 # generate all
-all:
-	make api;
-	make config;
-	make generate;
-	# 附加中间件
-	make errors;
-	make validate;
+all: api generate errors validate
 
 # show help
 help:

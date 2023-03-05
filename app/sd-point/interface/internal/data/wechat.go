@@ -48,20 +48,20 @@ func NewWechatRepo(wc *conf.Wechat, logger log.Logger) biz.WechatRepo {
 	}
 }
 
-func (r *wechatRepo) RefreshToken(ctx context.Context) (err error) {
+func (r *wechatRepo) RefreshToken(_ context.Context) (err error) {
 	nowUnix := time.Now().Unix()
 	if len(r.token) != 0 && r.tokenInvalidAt < nowUnix {
 		return
 	}
-	var t *biz.TokenResponse
-	var resp *http.Response
-	var body []byte
-	if resp, err = http.Get(fmt.Sprintf(r.tokenURL, r.appID, r.appSecret)); err != nil {
+	t := new(biz.TokenResponse)
+	resp, err := http.Get(fmt.Sprintf(r.tokenURL, r.appID, r.appSecret))
+	if err != nil {
 		r.log.Errorf("failed to get token from wechat server, error: %v", err)
 		return
 	}
 	defer resp.Body.Close()
-	if body, err = io.ReadAll(resp.Body); err != nil {
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
 		r.log.Errorf("failed to read http body, error: %v", err)
 		return
 	}
@@ -74,17 +74,17 @@ func (r *wechatRepo) RefreshToken(ctx context.Context) (err error) {
 	return
 }
 
-func (r *wechatRepo) GetOpenid(ctx context.Context, c *biz.WechatAccountCode) (a *biz.WechatAccount, err error) {
+func (r *wechatRepo) GetOpenid(_ context.Context, c *biz.WechatAccountCode) (a *biz.WechatAccount, err error) {
 	a = new(biz.WechatAccount)
-	var o *biz.OpenidResponse
-	var resp *http.Response
-	var body []byte
-	if resp, err = http.Get(fmt.Sprintf(r.openidURL, r.appID, r.appSecret, c.OpenidCode)); err != nil {
+	o := new(biz.OpenidResponse)
+	resp, err := http.Get(fmt.Sprintf(r.openidURL, r.appID, r.appSecret, c.OpenidCode))
+	if err != nil {
 		r.log.Errorf("failed to get openid from wechat server, error: %v", err)
 		return
 	}
 	defer resp.Body.Close()
-	if body, err = io.ReadAll(resp.Body); err != nil {
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
 		r.log.Errorf("failed to read http response, error: %v", err)
 		return
 	}
@@ -100,21 +100,21 @@ func (r *wechatRepo) GetOpenid(ctx context.Context, c *biz.WechatAccountCode) (a
 
 func (r *wechatRepo) GetPhoneNumber(ctx context.Context, c *biz.WechatAccountCode) (a *biz.WechatAccount, err error) {
 	a = new(biz.WechatAccount)
-	var p *biz.PhoneNumberResponse
-	var resp *http.Response
-	var body []byte
+	p := new(biz.PhoneNumberResponse)
 	if err = r.RefreshToken(ctx); err != nil {
 		r.log.Errorf("failed to get token from wechat server, error: %v", err)
 		return
 	}
-	if resp, err = http.Post(fmt.Sprintf(r.phoneNumberURL, r.token),
+	resp, err := http.Post(fmt.Sprintf(r.phoneNumberURL, r.token),
 		"application/x-www-form-urlencoded",
-		strings.NewReader(fmt.Sprintf("code=%s", c.PhoneNumberCode))); err != nil {
+		strings.NewReader(fmt.Sprintf("code=%s", c.PhoneNumberCode)))
+	if err != nil {
 		r.log.Errorf("failed to get phone number from wechat server, error: %v", err)
 		return
 	}
 	defer resp.Body.Close()
-	if body, err = io.ReadAll(resp.Body); err != nil {
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
 		r.log.Errorf("failed to read http response, error: %v", err)
 		return
 	}
